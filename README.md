@@ -1,11 +1,33 @@
 # Financeiro do Yago
 
-Aplicação de finanças pessoais.
+Aplicação financeira construída com React, Vite e Supabase.
 
-## OCR de Recibos
+## Setup
+1. Instale as dependências:
+   ```bash
+   npm ci
+   ```
+2. Configure as variáveis de ambiente:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   
+   No Vercel, adicione essas variáveis no painel do projeto.
+3. Inicie o ambiente de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
 
-- Bucket de storage `receipts` com acesso restrito ao dono.
-- Função Edge `parse_receipt` usa [Tesseract.js](https://github.com/naptha/tesseract.js) para extrair descrição, valor, data, CNPJ, forma de pagamento e categoria sugerida.
-- Logs das extrações são gravados em `receipt_parses` para auditoria.
+## Backups e Restauração
+### Backups
+- O workflow `nightly-backup` exporta `schema.sql` e `seed.sql` diariamente usando `pg_dump` e armazena os arquivos como artifact do GitHub.
+- Localmente você pode usar `./backup-all.sh` para gerar um pacote completo com código, variáveis de ambiente e banco.
 
-Em produção podemos substituir o Tesseract.js por serviços como Google Vision ou AWS Textract para maior precisão e performance.
+### Restauração
+1. Restaure o schema:
+   ```bash
+   psql "$DATABASE_URL" < schema.sql
+   ```
+2. Restaure os dados:
+   ```bash
+   psql "$DATABASE_URL" < seed.sql
+   ```
