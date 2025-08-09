@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
+import { supabase } from '@/lib/supabaseClient';
 import MoneyInput from './MoneyInput';
 import SourcePicker from './SourcePicker';
 import { useAccounts } from '@/hooks/useAccounts';
@@ -89,6 +90,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
   const [form, setForm] = useState<FormData>(defaultForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [extracting, setExtracting] = useState(false);
 
   const { data: accounts } = useAccounts();
   const { flat: categories } = useCategories();
@@ -100,9 +102,9 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     }
   }, [open, initialData]);
 
-  const handleChange = (key: keyof FormData, value: any) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  };
+  const handleChange = <K extends keyof BaseData>(key: K, v: BaseData[K]) =>
+    setForm((prev) => ({ ...prev, [key]: v }));
+
 
   const parentCats = categories.filter((c) => c.parent_id === null && c.kind === form.type);
   const subCats = categories.filter((c) => c.parent_id === form.category_parent);
@@ -170,7 +172,33 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     }
   };
 
-  const showInstallments = form.type === 'expense' && form.source.kind === 'card';
+  const handleExtract = async () => {
+    if (!form.attachment_file) return;
+    setExtracting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('not logged in');
+      const ext = form.attachment_file.name.split('.').pop();
+      const filePath = `${user.id}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('receipts').upload(filePath, form.attachment_file);
+      if (uploadError) throw uploadError;
+      const { data, error } = await supabase.functions.invoke('parse_receipt', {
+        body: { path: filePath },
+      });
+      if (error) throw error;
+      if (data?.description) handleChange('description', data.description);
+      if (data?.value) handleChange('value', Number(data.value));
+      if (data?.date) handleChange('date', data.date);
+      if (data?.payment_method) handleChange('payment_method', data.payment_method);
+      if (data?.category) handleChange('category', data.category);
+    } catch (e) {
+      console.error('extract error', e);
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+  const showInstallments = form.type === 'expense' && (form.payment_method || '').toLowerCase().startsWith('cart');
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -328,6 +356,32 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
                 />
               </div>
             </div>
+          )}
+
+          {/* Anexo (nota/recibo) */}
+          <div className="grid gap-1">
+            <Label>Anexo (nota/recibo — PDF/Imagem)</Label>
+            <input
+              type="file"
+              accept="application/pdf,image/*"
+              onChange={(e) => handleChange('attachment_file', e.target.files?.[0] || null)}
+            />
+            <span className="text-xs text-slate-500">(Opcional; upload/extração OCR entram no próximo passo.)</span>
+            {form.attachment_file && (
+              <Button type="button" variant="secondary" onClick={handleExtract} disabled={extracting}>
+                {extracting ? 'Extraindo…' : 'Extrair dados'}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose} disabled={loading}>Cancelar</Button>
+          <Button onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Salvando…' : 'Salvar'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
 
             <DialogFooter>
               <Button variant="ghost" onClick={onClose} disabled={loading}>
