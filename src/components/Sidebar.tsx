@@ -4,7 +4,9 @@ import * as RTooltip from "@radix-ui/react-tooltip";
 import {
   LayoutDashboard, Wallet, CalendarRange, PiggyBank, Landmark, Building2,
   CandlestickChart, Coins, Target, Plane, Gift, ShoppingCart, Settings,
+  FolderTree,
   ChevronDown, ChevronsLeft, ChevronsRight,
+  Bell, ChevronDown, ChevronsLeft, ChevronsRight,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
@@ -21,8 +23,11 @@ const sections: Section[] = [
       {
         type: "group", label: "Finanças", icon: Wallet,
         children: [
+          { type: "item", label: "Resumo", to: "/financas", icon: LayoutDashboard },
           { type: "item", label: "Mensal", to: "/financas/mensal", icon: CalendarRange },
           { type: "item", label: "Anual", to: "/financas/anual", icon: CalendarRange },
+          { type: "item", label: "Categorias", to: "/financas/categorias", icon: FolderTree },
+          { type: "item", label: "Contas a Vencer", to: "/financas/contas-a-vencer", icon: Bell },
         ],
       },
     ],
