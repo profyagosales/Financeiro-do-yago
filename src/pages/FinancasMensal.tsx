@@ -13,6 +13,7 @@ import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Coins, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import TransactionsTable from '@/components/TransactionsTable';
+import { useUpcomingBills } from '@/hooks/useBills';
 
 import DailyBars from '@/components/charts/DailyBars';
 import CategoryDonut from '@/components/charts/CategoryDonut';
@@ -78,6 +79,8 @@ export default function FinancasMensal() {
       .reduce((s, t) => s + t.value, 0);
   }, [transacoes]);
 
+  const { data: contasAVencer, loading: loadingBills } = useUpcomingBills();
+
   /* handlers modal */
   const abrirNovo = () => { setEditando(null); setModalAberto(true); };
   const abrirEditar = (t: Transaction) => { setEditando(t); setModalAberto(true); };
@@ -87,14 +90,22 @@ export default function FinancasMensal() {
       if (editando) { await update(editando.id, data); toast.success('Transação atualizada!'); }
       else { await add(data); toast.success('Transação adicionada!'); }
       setModalAberto(false);
-    } catch (err: any) {
-      console.error(err); toast.error(err?.message || 'Erro ao salvar');
+    } catch (err) {
+      console.error(err);
+      const msg = err instanceof Error ? err.message : 'Erro ao salvar';
+      toast.error(msg);
     }
   };
 
   const excluir = async (id: number) => {
-    try { await remove(id); toast.success('Transação excluída!'); }
-    catch (err: any) { console.error(err); toast.error(err?.message || 'Erro ao excluir'); }
+    try {
+      await remove(id);
+      toast.success('Transação excluída!');
+    } catch (err) {
+      console.error(err);
+      const msg = err instanceof Error ? err.message : 'Erro ao excluir';
+      toast.error(msg);
+    }
   };
 
   return (
@@ -192,6 +203,26 @@ export default function FinancasMensal() {
         <div className="lg:col-span-1">
           <CategoryDonut transacoes={transacoes} />
         </div>
+      </section>
+
+      {/* Contas a vencer */}
+      <section>
+        <h2 className="text-lg font-semibold mb-2">Contas a vencer</h2>
+        {loadingBills ? (
+          <p>Carregando...</p>
+        ) : (
+          <ul className="divide-y divide-slate-200 dark:divide-slate-700">
+            {contasAVencer.map((c) => (
+              <li key={c.id} className="flex items-center justify-between py-2">
+                <span>{c.description}</span>
+                <span>{dayjs(c.due_date).format('DD/MM')} - {c.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+              </li>
+            ))}
+            {contasAVencer.length === 0 && (
+              <li className="py-4 text-sm text-slate-500">Nenhuma conta nos próximos dias.</li>
+            )}
+          </ul>
+        )}
       </section>
 
       {/* mensagens de estado */}
