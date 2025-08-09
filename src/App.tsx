@@ -16,6 +16,8 @@ const Dashboard      = lazy(() => import('./pages/Dashboard'));
 const FinancasMensal = lazy(() => import('./pages/FinancasMensal'));
 const FinancasAnual  = lazy(() => import('./pages/FinancasAnual'));
 const FinancasCategorias = lazy(() => import('./pages/FinancasCategorias'));
+const ContasAVencer  = lazy(() => import('./pages/ContasAVencer'));
+const Financas      = lazy(() => import('./pages/Financas'));
 
 // ✅ manter apenas a página em PT-BR
 const Investimentos  = lazy(() => import('./pages/Investimentos'));
@@ -75,9 +77,11 @@ function AppRoutes() {
             <Route path="/dashboard" element={<Dashboard />} />
 
             {/* Finanças */}
+            <Route path="/financas" element={<Financas />} />
             <Route path="/financas/mensal" element={<FinancasMensal />} />
             <Route path="/financas/anual"  element={<FinancasAnual />} />
             <Route path="/financas/categorias" element={<FinancasCategorias />} />
+            <Route path="/financas/contas-a-vencer" element={<ContasAVencer />} />
 
             {/* Investimentos */}
             <Route path="/investimentos"               element={<Investimentos />} />

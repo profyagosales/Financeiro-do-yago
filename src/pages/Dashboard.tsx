@@ -28,6 +28,7 @@ import {
 import BrandIcon from "@/components/BrandIcon";
 import FilterBar from "@/components/FilterBar";
 import { usePeriod, periodRange } from "@/state/periodFilter";
+import { useUpcomingBills } from "@/hooks/useBills";
 
 // ---------------------------------- helpers
 const brl = (n: number) =>
@@ -137,11 +138,7 @@ export default function Dashboard() {
     "hsl(var(--chart-amber))",
   ];
 
-  const contasAVencer = [
-    { nome: "Internet", vencimento: "2025-08-12", valor: 129.9 },
-    { nome: "Luz", vencimento: "2025-08-14", valor: 220.5 },
-    { nome: "Cartão Nubank", vencimento: "2025-08-16", valor: 830.0 },
-  ];
+  const { data: contasAVencer, loading: loadingBills } = useUpcomingBills();
 
   const aportesRecentes = [
     { data: "2025-08-03", tipo: "Renda fixa", ativo: "Tesouro Selic 2029", qtd: 1, preco: 550 },
@@ -151,7 +148,7 @@ export default function Dashboard() {
   ];
 
   const { mode, month, year } = usePeriod();
-  const { start, end } = periodRange({ mode, month, year }); // guardado para busca real
+  const { start: _start, end: _end } = periodRange({ mode, month, year }); // guardado para busca real
   const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
 
   const container = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0, transition: { staggerChildren: 0.06 } } };
@@ -250,7 +247,7 @@ export default function Dashboard() {
                     tickLine={false}
                   />
                   <Tooltip
-                    formatter={(v: any) => brl(Number(v))}
+                    formatter={(v: unknown) => brl(Number(v))}
                     contentStyle={{
                       borderRadius: 12,
                       border: '1px solid hsl(var(--border))',
@@ -327,21 +324,28 @@ export default function Dashboard() {
         <motion.div variants={item}>
           <Card className="h-full">
             <CardHeader title="Próximas contas a vencer" subtitle="Próximos 10 dias" />
-            <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
-              {contasAVencer.map((c) => (
-                <li key={c.nome + c.vencimento} className="flex items-center gap-3 py-3">
-                  <BrandIcon name={c.nome} />
-                  <div className="min-w-0">
-                    <div className="font-medium truncate">{c.nome}</div>
-                    <div className="text-xs text-muted-foreground">
-                      vence em {new Date(c.vencimento).toLocaleDateString("pt-BR")}
+            {loadingBills ? (
+              <p className="p-3 text-sm text-muted-foreground">Carregando...</p>
+            ) : (
+              <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
+                {contasAVencer.map((c) => (
+                  <li key={c.id} className="flex items-center gap-3 py-3">
+                    <BrandIcon name={c.description} />
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{c.description}</div>
+                      <div className="text-xs text-muted-foreground">
+                        vence em {new Date(c.due_date).toLocaleDateString("pt-BR")}
+                      </div>
                     </div>
-                  </div>
-                  <div className="ml-auto font-medium">{brl(c.valor)}</div>
-                </li>
-              ))}
-            </ul>
-            <CardFooterAction to="/financas/mensal" label="Ver Finanças" />
+                    <div className="ml-auto font-medium">{brl(c.amount)}</div>
+                  </li>
+                ))}
+                {contasAVencer.length === 0 && (
+                  <li className="py-4 text-sm text-muted-foreground">Nenhuma conta no período.</li>
+                )}
+              </ul>
+            )}
+            <CardFooterAction to="/financas/contas-a-vencer" label="Ver todas" />
           </Card>
         </motion.div>
 

@@ -1,103 +1,123 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { useState } from 'react';
+import dayjs from 'dayjs';
+import { supabase } from '@/lib/supabaseClient';
+import {
+  Transaction,
+  TransactionInput,
+  TransactionInputSchema,
+  TransactionSchema,
+} from '@/types/finance';
 
-export type Transaction = {
-  id: number; // bigint
-  date: string; // "YYYY-MM-DD"
-  description: string;
-  amount: number; // <0 despesa, >0 receita
-  category_id?: string | null;
-  account_id?: string | null;
-  card_id?: string | null;
-  installment_no?: number | null;
-  installment_total?: number | null;
-  parent_installment_id?: number | null;
-};
-
-// Helpers seguros contra timezone/inputs inválidos
-function coercePeriod(year?: any, month?: any) {
-  const now = new Date();
-  let y = Number(year);
-  let m = Number(month);
-  if (!Number.isInteger(y) || y < 1970 || y > 9999) y = now.getFullYear();
-  if (!Number.isInteger(m) || m < 1 || m > 12) m = now.getMonth() + 1;
-  return { y, m };
-}
-function isoDateUTC(y: number, mZeroBased: number, day: number) {
-  const d = new Date(Date.UTC(y, mZeroBased, day));
-  return d.toISOString().slice(0, 10); // YYYY-MM-DD
-}
-function monthBoundsISO(year?: any, month?: any) {
-  const { y, m } = coercePeriod(year, month);
-  const start = isoDateUTC(y, m - 1, 1);
-  const end = isoDateUTC(y, m, 0); // dia 0 do mês seguinte = último dia do mês
-  return { y, m, start, end };
+export interface TransactionFilters {
+  categoryId?: string;
+  sourceType?: 'account' | 'card';
+  sourceId?: string;
 }
 
-export function useTransactions(year?: any, month?: any) {
+export function useTransactions() {
   const [data, setData] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const { y, m, start, end } = useMemo(() => monthBoundsISO(year, month), [year, month]);
-
-  const list = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("transactions")
-        .select("*")
-        .gte("date", start)
-        .lte("date", end)
-        .order("date", { ascending: true });
-      if (error) throw error;
-      setData((data || []) as Transaction[]);
-    } catch (e) {
-      console.error("[useTransactions] list error:", e);
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [start, end]);
-
-  useEffect(() => {
-    if (!start || !end) return; // evita rodar com datas inválidas
-    void list();
-  }, [list, start, end]);
-
-  const create = async (t: Omit<Transaction, "id">) => {
-    const { error } = await supabase.from("transactions").insert(t as any);
+  const listByPeriod = async (
+    userId: string,
+    start: string,
+    end: string,
+    filters: TransactionFilters = {},
+  ) => {
+    setLoading(true);
+    let q = supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('date', start)
+      .lte('date', end)
+      .order('date', { ascending: true });
+    if (filters.categoryId) q = q.eq('category_id', filters.categoryId);
+    if (filters.sourceType) q = q.eq('source_type', filters.sourceType);
+    if (filters.sourceId) q = q.eq('source_id', filters.sourceId);
+    const { data, error } = await q;
     if (error) throw error;
-    await list();
+    setData(data as Transaction[]);
+    setLoading(false);
+    return data as Transaction[];
   };
 
-  const bulkCreate = async (rows: Omit<Transaction, "id">[]) => {
-    const { error } = await supabase.from("transactions").insert(rows as any);
+  const add = async (payload: TransactionInput) => {
+    const parsed = TransactionInputSchema.parse(payload);
+    const installments = parsed.installments_total ?? 1;
+    const rows: any[] = [];
+    for (let i = 0; i < installments; i++) {
+      const date = dayjs(parsed.date).add(i, 'month').format('YYYY-MM-DD');
+      rows.push({
+        ...parsed,
+        date,
+        installment_no: installments > 1 ? i + 1 : null,
+        installments_total: installments > 1 ? installments : null,
+        parent_installment_id: null,
+      });
+    }
+    const { data, error } = await supabase
+      .from('transactions')
+      .insert(rows)
+      .select();
     if (error) throw error;
-    await list();
+    const inserted = (data || []) as Transaction[];
+    if (installments > 1 && inserted.length > 0) {
+      const parentId = inserted[0].id;
+      const ids = inserted.map((t) => t.id);
+      await supabase
+        .from('transactions')
+        .update({ parent_installment_id: parentId })
+        .in('id', ids);
+      inserted.forEach((t) => (t.parent_installment_id = parentId));
+    }
+    setData((d) => [...d, ...inserted]);
+    return inserted;
   };
 
   const update = async (id: number, patch: Partial<Transaction>) => {
-    const { error } = await supabase.from("transactions").update(patch).eq("id", id);
+    const parsed = TransactionSchema.omit({ id: true, user_id: true })
+      .partial()
+      .parse(patch);
+    const { data, error } = await supabase
+      .from('transactions')
+      .update(parsed)
+      .eq('id', id)
+      .select()
+      .single();
     if (error) throw error;
-    await list();
+    setData((d) => d.map((t) => (t.id === id ? (data as Transaction) : t)));
   };
 
   const remove = async (id: number) => {
-    const { error } = await supabase.from("transactions").delete().eq("id", id);
+    const { error } = await supabase.from('transactions').delete().eq('id', id);
     if (error) throw error;
-    await list();
+    setData((d) => d.filter((t) => t.id !== id));
   };
 
-  const kpis = useMemo(() => {
-    const entradas = data.filter(d => d.amount > 0).reduce((s, d) => s + d.amount, 0);
-    const saidas = data.filter(d => d.amount < 0).reduce((s, d) => s + d.amount, 0);
-    return {
-      entradas,
-      saidas: Math.abs(saidas),
-      saldo: entradas + saidas,
-    };
-  }, [data]);
+  const ensureBucket = async () => {
+    const { data: bucket } = await supabase.storage.getBucket('receipts');
+    if (!bucket) {
+      await supabase.storage.createBucket('receipts', { public: true });
+    }
+  };
 
-  const add = create;
-  return { data, loading, list, create, add, bulkCreate, update, remove, kpis, start, end, year: y, month: m };
+  const uploadAttachment = async (id: number, file: File) => {
+    await ensureBucket();
+    const filePath = `${id}-${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage.from('receipts').upload(filePath, file, {
+      upsert: true,
+    });
+    if (error) throw error;
+    const { data } = supabase.storage.from('receipts').getPublicUrl(filePath);
+    const url = data.publicUrl;
+    await supabase
+      .from('transactions')
+      .update({ attachment_url: url })
+      .eq('id', id);
+    setData((d) => d.map((t) => (t.id === id ? { ...t, attachment_url: url } : t)));
+    return url;
+  };
+
+  return { data, loading, listByPeriod, add, update, remove, uploadAttachment };
 }
