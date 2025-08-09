@@ -4,8 +4,9 @@ type Props = {
   value: number;
   onChange: (v: number) => void;
   placeholder?: string;
+  autoFocus?: boolean;
 };
-export default function MoneyInput({ value, onChange, placeholder }: Props) {
+export default function MoneyInput({ value, onChange, placeholder, autoFocus }: Props) {
   const [raw, setRaw] = React.useState(
     (value ?? 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   );
@@ -25,6 +26,7 @@ export default function MoneyInput({ value, onChange, placeholder }: Props) {
       inputMode="decimal"
       value={raw}
       placeholder={placeholder || "0,00"}
+      autoFocus={autoFocus}
       onChange={(e) => {
         const v = e.target.value;
         setRaw(v);
