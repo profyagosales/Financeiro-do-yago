@@ -4,11 +4,11 @@ import { supabase } from "@/lib/supabaseClient";
 export type CreditCard = {
   id: string;
   name: string;
-  bank: string | null;
-  limit_amount: number | null;
-  cut_day: number | null;
-  due_day: number | null;
-  account_id: string | null;
+  brand: string | null;
+  limit_value: number;
+  closing_day: number;
+  due_day: number;
+  account_id: string;
 };
 
 export function useCreditCards() {
@@ -19,7 +19,7 @@ export function useCreditCards() {
     setLoading(true);
     const { data, error } = await supabase
       .from("credit_cards")
-      .select("id,name,bank,limit_amount,cut_day,due_day,account_id")
+      .select("id,name,brand,limit_value,closing_day,due_day,account_id")
       .order("name", { ascending: true });
     if (error) throw error;
     setData(data as CreditCard[]);
@@ -28,5 +28,29 @@ export function useCreditCards() {
 
   useEffect(() => { list(); }, [list]);
 
-  return { data, loading, list };
+  const create = async (payload: Partial<CreditCard>) => {
+    const { error } = await supabase.from("credit_cards").insert(payload);
+    if (error) throw error;
+    await list();
+  };
+
+  const update = async (id: string, patch: Partial<CreditCard>) => {
+    const { error } = await supabase
+      .from("credit_cards")
+      .update(patch)
+      .eq("id", id);
+    if (error) throw error;
+    await list();
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase
+      .from("credit_cards")
+      .delete()
+      .eq("id", id);
+    if (error) throw error;
+    await list();
+  };
+
+  return { data, loading, list, create, update, remove };
 }

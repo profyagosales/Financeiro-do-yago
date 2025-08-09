@@ -18,13 +18,14 @@ const sections: Section[] = [
     label: "Geral",
     items: [
       { type: "item", label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
-      {
-        type: "group", label: "Finanças", icon: Wallet,
-        children: [
-          { type: "item", label: "Mensal", to: "/financas/mensal", icon: CalendarRange },
-          { type: "item", label: "Anual", to: "/financas/anual", icon: CalendarRange },
-        ],
-      },
+          {
+            type: "group", label: "Finanças", icon: Wallet,
+            children: [
+              { type: "item", label: "Fontes", to: "/financas/fontes", icon: Coins },
+              { type: "item", label: "Mensal", to: "/financas/mensal", icon: CalendarRange },
+              { type: "item", label: "Anual", to: "/financas/anual", icon: CalendarRange },
+            ],
+          },
     ],
   },
   {
