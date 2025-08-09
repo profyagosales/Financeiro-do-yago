@@ -217,11 +217,16 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
                 {errors.date && <p className="text-xs text-red-500">{errors.date}</p>}
               </div>
 
-              <div className="grid gap-1">
-                <Label>Descrição</Label>
-                <Input value={form.description} onChange={(e) => handleChange('description', e.target.value)} />
-                {errors.description && <p className="text-xs text-red-500">{errors.description}</p>}
-              </div>
+          <div className="grid gap-1">
+            <Label>Descrição</Label>
+            <Input
+              placeholder="Ex.: Mercado, Salário..."
+              value={form.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              autoFocus
+            />
+          </div>
+
 
               <div className="grid gap-1">
                 <Label>Valor</Label>

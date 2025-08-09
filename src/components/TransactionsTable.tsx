@@ -77,7 +77,7 @@ export default function TransactionsTable({ transacoes, onEdit, onDelete }: Prop
 
       {/* Tabela */}
       <div className="rounded-xl border bg-white dark:bg-slate-900 overflow-hidden">
-        <Table>
+        <Table aria-label="Tabela de transações" tabIndex={0}>
           <TableHeader>
             <TableRow className="bg-gray-50 dark:bg-slate-800">
               <Th onClick={() => toggleSort('date')} label="Data" active={sortKey==='date'} dir={sortDir} />
@@ -146,14 +146,18 @@ function Th({
   label, onClick, active, dir, right
 }: { label: string; onClick: () => void; active: boolean; dir: 'asc'|'desc'; right?: boolean }) {
   return (
-    <TableHead>
+    <TableHead aria-sort={active ? (dir === 'asc' ? 'ascending' : 'descending') : 'none'}>
       <button
         onClick={onClick}
         className={`group inline-flex items-center gap-1 ${right ? 'float-right' : ''}`}
         title="Ordenar"
+        aria-label={`Ordenar por ${label}`}
       >
         <span className="font-medium">{label}</span>
-        <ArrowUpDown size={14} className={`opacity-60 group-hover:opacity-100 ${active ? 'text-slate-900 dark:text-slate-100' : ''}`} />
+        <ArrowUpDown
+          size={14}
+          className={`opacity-60 group-hover:opacity-100 ${active ? 'text-slate-900 dark:text-slate-100' : ''}`}
+        />
         {active && <span className="sr-only">{dir === 'asc' ? '(asc)' : '(desc)'}</span>}
       </button>
     </TableHead>
