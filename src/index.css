@@ -1,0 +1,173 @@
+/* === Fontes variáveis locais (sem Google) === */
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/sora";
+
+/* Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Preferência de tema */
+:root { color-scheme: light; }
+.dark { color-scheme: dark; }
+
+/* Tokens (mantém compatível com shadcn) */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --primary: 183 80% 28%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 1rem;
+
+    --chart-1: 172 67% 45%;
+    --chart-2: 223 76% 63%;
+    --chart-3: 43 95% 62%;
+    --chart-4: 12 90% 60%;
+    --chart-5: 338 78% 62%;
+    /* Named chart tokens */
+    --chart-blue: 217 91% 60%;      /* ~blue-500 */
+    --chart-emerald: 160 84% 39%;   /* ~emerald-500 */
+    --chart-rose: 346 77% 57%;      /* ~rose-500 */
+    --chart-violet: 251 89% 68%;    /* ~violet-500 */
+    --chart-amber: 38 92% 58%;      /* ~amber-500 */
+    /* Axes & grid */
+    --chart-grid: 215 20% 88%;
+    --chart-grid-strong: 215 16% 80%;
+    --chart-axis: 215 16% 47%;
+    /* Tooltip */
+    --chart-tooltip-bg: 0 0% 100%;
+    --chart-tooltip-fg: 222.2 47.4% 11.2%;
+
+    --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol";
+    --font-display: "Sora Variable", var(--font-sans);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 6%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 6%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 173 80% 41%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 22%;
+    --input: 217.2 32.6% 22%;
+    --ring: 173 80% 41%;
+    /* Charts (dark) */
+    --chart-grid: 217 19% 24%;
+    --chart-grid-strong: 217 19% 28%;
+    --chart-axis: 215 15% 65%;
+    --chart-tooltip-bg: 222.2 84% 8%;
+    --chart-tooltip-fg: 210 40% 98%;
+  }
+
+  * { @apply border-border; }
+  html, body, #root { height: 100%; }
+  html { font-family: var(--font-sans); }
+  body { @apply bg-background text-foreground antialiased; }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+}
+
+/* ==== Background artístico (sempre ATRÁS do conteúdo) ==== */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;           /* <- garante que não cobre o app */
+  pointer-events: none;  /* <- nunca intercepta cliques */
+}
+
+/* Canvas base (sem grid; visual limpo) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* removemos o grid para um fundo mais clean */
+  background: transparent;
+  opacity: 0;
+}
+.dark body::before {
+  background: transparent;
+  opacity: 0;
+}
+
+/* Gradientes radiais nas bordas */
+body::after {
+  background:
+    radial-gradient(800px 400px at -10% -10%, hsla(var(--primary), .18), transparent 60%),
+    radial-gradient(900px 500px at 110% -10%, hsla(220, 90%, 60%, .12), transparent 60%),
+    radial-gradient(700px 400px at 50% 120%, hsla(280, 70%, 60%, .10), transparent 60%);
+  filter: saturate(1.1);
+}
+
+/* Cards “glass” utilitário opcional */
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-sm;
+  }
+  .dark .glass {
+    @apply bg-white/5 border-white/10;
+  }
+  /* Cards e KPIs padronizados */
+  .card-surface {
+    @apply rounded-2xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-sm;
+  }
+  .dark .card-surface {
+    @apply bg-white/5 border-white/10;
+  }
+  .kpi {
+    @apply card-surface p-5 sm:p-6 flex items-start gap-4;
+  }
+  .kpi-icon {
+    @apply size-10 rounded-xl flex items-center justify-center text-white shadow-md;
+    background: linear-gradient(135deg, hsl(var(--primary)/.95), hsl(var(--primary)/.7));
+  }
+  .kpi-title { @apply text-sm text-muted-foreground; }
+  .kpi-value { @apply text-2xl sm:text-3xl font-semibold tracking-tight; }
+}
+
+/* Ajuste fino para sidebar */
+:root { --sidebar-border: 1px; }
+
+/* === Charts (Recharts) theming — usa tokens acima === */
+.recharts-cartesian-grid line { stroke: hsl(var(--chart-grid)); }
+.recharts-xAxis .recharts-cartesian-axis-line,
+.recharts-yAxis .recharts-cartesian-axis-line { stroke: transparent; }
+.recharts-cartesian-axis-tick-line { stroke: transparent; }
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  border-radius: 12px !important;
+  border: 1px solid hsl(var(--border)) !important;
+  background: hsl(var(--chart-tooltip-bg)) !important;
+  color: hsl(var(--chart-tooltip-fg)) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08) !important;
+}
