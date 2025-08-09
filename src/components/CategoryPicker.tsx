@@ -11,7 +11,7 @@ export default function CategoryPicker({
   onChange: (id: string | null) => void;
   placeholder?: string;
 }) {
-  const { flat, loading } = useCategories();
+  const { categories, loading } = useCategories();
 
   return (
     <div className="relative inline-flex w-full items-center rounded-xl border border-white/30 bg-white/70 px-3 backdrop-blur dark:border-white/10 dark:bg-zinc-900/50">
@@ -22,7 +22,7 @@ export default function CategoryPicker({
         disabled={loading}
       >
         <option value="">{placeholder}</option>
-        {flat.map((c) => (
+        {categories.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name}
           </option>
