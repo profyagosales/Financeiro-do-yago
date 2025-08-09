@@ -15,6 +15,7 @@ import { PeriodProvider } from './state/periodFilter';
 const Dashboard      = lazy(() => import('./pages/Dashboard'));
 const FinancasMensal = lazy(() => import('./pages/FinancasMensal'));
 const FinancasAnual  = lazy(() => import('./pages/FinancasAnual'));
+const ContasAVencer  = lazy(() => import('./pages/ContasAVencer'));
 const Financas      = lazy(() => import('./pages/Financas'));
 
 // ✅ manter apenas a página em PT-BR
@@ -78,6 +79,7 @@ function AppRoutes() {
             <Route path="/financas" element={<Financas />} />
             <Route path="/financas/mensal" element={<FinancasMensal />} />
             <Route path="/financas/anual"  element={<FinancasAnual />} />
+            <Route path="/financas/contas-a-vencer" element={<ContasAVencer />} />
 
             {/* Investimentos */}
             <Route path="/investimentos"               element={<Investimentos />} />

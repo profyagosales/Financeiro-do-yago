@@ -1,3 +1,25 @@
+import { useState, useMemo } from 'react';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
+
+import { useTransactions } from '../hooks/useTransactions';
+import type { Transaction } from '../hooks/useTransactions';
+import { ModalTransacao } from '../components/ModalTransacao';
+import { useAuth } from '../contexts/AuthContext';
+
+import { PageHeader } from '@/components/PageHeader';
+import { MotionCard } from '@/components/ui/MotionCard';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
+import { Coins, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { toast } from 'sonner';
+import TransactionsTable from '@/components/TransactionsTable';
+import { useUpcomingBills } from '@/hooks/useBills';
+
+import DailyBars from '@/components/charts/DailyBars';
+import CategoryDonut from '@/components/charts/CategoryDonut';
+
+// shadcn/ui
+import { Button } from '@/components/ui/button';
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
@@ -95,6 +117,11 @@ export default function FinancasMensal() {
     });
   }, [data, query, categoryDesc, source]);
 
+  const { data: contasAVencer, loading: loadingBills } = useUpcomingBills();
+
+  /* handlers modal */
+  const abrirNovo = () => { setEditando(null); setModalAberto(true); };
+  const abrirEditar = (t: Transaction) => { setEditando(t); setModalAberto(true); };
   const totalFiltrado = useMemo(() => filtered.reduce((s, t) => s + t.amount, 0), [filtered]);
 
   const [selected, setSelected] = useState<number[]>([]);
@@ -129,6 +156,25 @@ export default function FinancasMensal() {
       parent_installment_id: null,
     };
     try {
+      if (editando) { await update(editando.id, data); toast.success('Transação atualizada!'); }
+      else { await add(data); toast.success('Transação adicionada!'); }
+      setModalAberto(false);
+    } catch (err) {
+      console.error(err);
+      const msg = err instanceof Error ? err.message : 'Erro ao salvar';
+      toast.error(msg);
+    }
+  };
+
+  const excluir = async (id: number) => {
+    try {
+      await remove(id);
+      toast.success('Transação excluída!');
+    } catch (err) {
+      console.error(err);
+      const msg = err instanceof Error ? err.message : 'Erro ao excluir';
+      toast.error(msg);
+    }
       if (editing) await update(editing.id, payload);
       else await add(payload);
       toast.success("Transação salva!");
@@ -303,6 +349,30 @@ export default function FinancasMensal() {
         </div>
       </section>
 
+      {/* Contas a vencer */}
+      <section>
+        <h2 className="text-lg font-semibold mb-2">Contas a vencer</h2>
+        {loadingBills ? (
+          <p>Carregando...</p>
+        ) : (
+          <ul className="divide-y divide-slate-200 dark:divide-slate-700">
+            {contasAVencer.map((c) => (
+              <li key={c.id} className="flex items-center justify-between py-2">
+                <span>{c.description}</span>
+                <span>{dayjs(c.due_date).format('DD/MM')} - {c.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+              </li>
+            ))}
+            {contasAVencer.length === 0 && (
+              <li className="py-4 text-sm text-slate-500">Nenhuma conta nos próximos dias.</li>
+            )}
+          </ul>
+        )}
+      </section>
+
+      {/* mensagens de estado */}
+      {loading && <p>Carregando…</p>}
+      {error && <p className="text-red-600">{error}</p>}
+     
       {/* Tabela */}
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
