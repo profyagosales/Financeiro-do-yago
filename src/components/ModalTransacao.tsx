@@ -104,6 +104,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
               placeholder="Ex.: Mercado, Salário..."
               value={form.description}
               onChange={(e) => handleChange('description', e.target.value)}
+              autoFocus
             />
           </div>
 

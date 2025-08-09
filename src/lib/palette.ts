@@ -2,21 +2,21 @@
 // Cores fixas por categoria + helpers
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  'Alimentação': '#22c55e',   // emerald-500
-  'Transporte':  '#f97316',   // orange-500
-  'Moradia':     '#0ea5e9',   // sky-500
-  'Educação':    '#6366f1',   // indigo-500
-  'Saúde':       '#ef4444',   // red-500
-  'Lazer':       '#eab308',   // yellow-500
-  'Salário':     '#16a34a',   // green-600
-  'Freelance':   '#10b981',   // emerald-500
-  'Investimentos': '#a855f7', // purple-500
+  'Alimentação':   '#34d399', // emerald-400
+  'Transporte':    '#fb923c', // orange-400
+  'Moradia':       '#38bdf8', // sky-400
+  'Educação':      '#818cf8', // indigo-400
+  'Saúde':         '#f87171', // red-400
+  'Lazer':         '#facc15', // yellow-400
+  'Salário':       '#4ade80', // green-400
+  'Freelance':     '#34d399', // emerald-400
+  'Investimentos': '#c084fc', // purple-400
   'Outros':      '#94a3b8',   // slate-400
 };
 
 export const SERIES_COLORS = {
-  income:  '#3b82f6', // blue-500
-  expense: '#ef4444', // red-500
+  income:  '#60a5fa', // blue-400
+  expense: '#f87171', // red-400
 };
 
 export function colorForCategory(name: string): string {

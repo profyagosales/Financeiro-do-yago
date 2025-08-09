@@ -33,7 +33,7 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
-    --radius: 1rem;
+    --radius: 0.75rem;
 
     --chart-1: 172 67% 45%;
     --chart-2: 223 76% 63%;
@@ -88,7 +88,7 @@
     --chart-tooltip-fg: 210 40% 98%;
   }
 
-  * { @apply border-border; }
+  * { @apply border-border; border-width:1px; }
   html, body, #root { height: 100%; }
   html { font-family: var(--font-sans); }
   body { @apply bg-background text-foreground antialiased; }
@@ -158,6 +158,10 @@ body::after {
 
 /* Ajuste fino para sidebar */
 :root { --sidebar-border: 1px; }
+
+@media (max-width: 390px) {
+  button { min-height: 3rem; }
+}
 
 /* === Charts (Recharts) theming — usa tokens acima === */
 .recharts-cartesian-grid line { stroke: hsl(var(--chart-grid)); }
