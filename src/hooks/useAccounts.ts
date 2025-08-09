@@ -1,6 +1,15 @@
-import { useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { useEffect, useState, useCallback } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import { Account, AccountSchema } from '@/types/finance';
+
+export type Account = {
+  id: string;
+  name: string;
+  type: "conta" | "carteira" | "poupanca";
+  institution: string | null;
+  balance: number;
+};
+
 
 export function useAccounts() {
   const [data, setData] = useState<Account[]>([]);
@@ -9,9 +18,10 @@ export function useAccounts() {
   const list = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
-      .from('accounts')
-      .select('*')
-      .order('name', { ascending: true });
+      .from("accounts")
+      .select("id,name,type,institution,balance")
+      .order("name", { ascending: true });
+
     if (error) throw error;
     setData(data as Account[]);
     setLoading(false);
@@ -52,5 +62,18 @@ export function useAccounts() {
     setData((d) => d.filter((a) => a.id !== id));
   };
 
-  return { data, loading, list, add, update, remove };
+  const update = async (id: string, patch: Partial<Account>) => {
+    const { error } = await supabase.from("accounts").update(patch).eq("id", id);
+    if (error) throw error;
+    await list();
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("accounts").delete().eq("id", id);
+    if (error) throw error;
+    await list();
+  };
+
+  return { data, loading, list, create, update, remove };
 }
+
