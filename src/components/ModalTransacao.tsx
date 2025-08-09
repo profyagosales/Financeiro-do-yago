@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
+import { supabase } from '@/lib/supabaseClient';
 
 // \-\-\- Types -----------------------------------------------------------------
 export type BaseData = {
@@ -47,6 +48,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     attachment_file: null,
   });
   const [loading, setLoading] = useState(false);
+  const [extracting, setExtracting] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -61,7 +63,8 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     }
   }, [initialData, open]);
 
-  const handleChange = (key: keyof BaseData, v: any) => setForm(prev => ({ ...prev, [key]: v }));
+  const handleChange = <K extends keyof BaseData>(key: K, v: BaseData[K]) =>
+    setForm((prev) => ({ ...prev, [key]: v }));
 
   const handleSubmit = async () => {
     if (!form.description || !form.date || !form.category || !form.type) return;
@@ -79,6 +82,32 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
       onClose();
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExtract = async () => {
+    if (!form.attachment_file) return;
+    setExtracting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('not logged in');
+      const ext = form.attachment_file.name.split('.').pop();
+      const filePath = `${user.id}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('receipts').upload(filePath, form.attachment_file);
+      if (uploadError) throw uploadError;
+      const { data, error } = await supabase.functions.invoke('parse_receipt', {
+        body: { path: filePath },
+      });
+      if (error) throw error;
+      if (data?.description) handleChange('description', data.description);
+      if (data?.value) handleChange('value', Number(data.value));
+      if (data?.date) handleChange('date', data.date);
+      if (data?.payment_method) handleChange('payment_method', data.payment_method);
+      if (data?.category) handleChange('category', data.category);
+    } catch (e) {
+      console.error('extract error', e);
+    } finally {
+      setExtracting(false);
     }
   };
 
@@ -216,6 +245,11 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
               onChange={(e) => handleChange('attachment_file', e.target.files?.[0] || null)}
             />
             <span className="text-xs text-slate-500">(Opcional; upload/extração OCR entram no próximo passo.)</span>
+            {form.attachment_file && (
+              <Button type="button" variant="secondary" onClick={handleExtract} disabled={extracting}>
+                {extracting ? 'Extraindo…' : 'Extrair dados'}
+              </Button>
+            )}
           </div>
         </div>
 
