@@ -3,12 +3,18 @@ import { supabase } from '@/lib/supabaseClient';
 import { Category, CategorySchema } from '@/types/finance';
 
 export function useCategories() {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [data, setData] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
   const list = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .order("name", { ascending: true });
+    if (error) throw error;
+    setCategories(data as Category[]);
       .from('categories')
       .select('*')
       .order('name', { ascending: true });
@@ -18,6 +24,8 @@ export function useCategories() {
   }, []);
 
   useEffect(() => {
+    list();
+  }, [list]);
     void list();
   }, [list]);
 
@@ -54,6 +62,27 @@ export function useCategories() {
     if (error) throw error;
     setData((d) => d.filter((c) => c.id !== id));
   };
+
+  const update = async (id: string, changes: Partial<Category>) => {
+    const { error } = await supabase
+      .from("categories")
+      .update(changes)
+      .eq("id", id);
+    if (error) throw error;
+    await list();
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase
+      .from("categories")
+      .delete()
+      .eq("id", id);
+    if (error) throw error;
+    await list();
+  };
+
+  return { categories, loading, list, create, update, remove };
+}
 
   return { data, loading, list, add, update, remove };
 }

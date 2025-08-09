@@ -11,7 +11,7 @@ export default function CategoryPicker({
   onChange: (id: string | null) => void;
   placeholder?: string;
 }) {
-  const { flat, loading } = useCategories();
+  const { categories, loading } = useCategories();
 
   const options = useMemo(() => {
     const map = new Map(flat.map((c) => [c.id, c]));
@@ -35,6 +35,7 @@ export default function CategoryPicker({
         disabled={loading}
       >
         <option value="">{placeholder}</option>
+        {categories.map((c) => (
         {options.map((c) => (
           <option key={c.id} value={c.id}>
             {c.label}
