@@ -76,8 +76,8 @@ export function useCreditCards() {
   const list = useCallback(async (): Promise<CreditCard[]> => {
     setLoading(true);
     setError(null);
-    const { data: rows, error } = await supabase
-      .from<CreditCard>("credit_cards")
+      const { data: rows, error } = await supabase
+        .from("credit_cards")
       .select("*")
       .order("name", { ascending: true });
     if (error) {
@@ -97,8 +97,8 @@ export function useCreditCards() {
   const create = useCallback(
     async (payload: Omit<CreditCard, "id" | "created_at">): Promise<CreditCard> => {
       const base = sanitize(payload);
-      const { data: row, error } = await supabase
-        .from<CreditCard>("credit_cards")
+        const { data: row, error } = await supabase
+          .from("credit_cards")
         .insert(base)
         .select("*")
         .single();
@@ -112,8 +112,8 @@ export function useCreditCards() {
   const update = useCallback(
     async (id: string, patch: Partial<Omit<CreditCard, "id">>): Promise<void> => {
       const upd = sanitize(patch);
-      const { error } = await supabase
-        .from<CreditCard>("credit_cards")
+        const { error } = await supabase
+          .from("credit_cards")
         .update(upd)
         .eq("id", id);
       if (error) throw error;

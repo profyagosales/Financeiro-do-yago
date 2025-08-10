@@ -27,8 +27,8 @@ export function useAccounts() {
   const list = useCallback(async (): Promise<Account[]> => {
     setLoading(true);
     setError(null);
-    const { data: rows, error } = await supabase
-      .from<Account>("accounts")
+      const { data: rows, error } = await supabase
+        .from("accounts")
       .select("*")
       .order("name", { ascending: true });
     if (error) {
@@ -49,8 +49,8 @@ export function useAccounts() {
   const create = useCallback(
     async (payload: Omit<Account, "id" | "created_at">): Promise<Account> => {
       const base = sanitize(payload);
-      const { data: row, error } = await supabase
-        .from<Account>("accounts")
+        const { data: row, error } = await supabase
+          .from("accounts")
         .insert(base)
         .select("*")
         .single();
@@ -64,8 +64,8 @@ export function useAccounts() {
   const update = useCallback(
     async (id: string, patch: Partial<Omit<Account, "id">>): Promise<void> => {
       const upd = sanitize(patch);
-      const { error } = await supabase
-        .from<Account>("accounts")
+        const { error } = await supabase
+          .from("accounts")
         .update(upd)
         .eq("id", id);
       if (error) throw error;

@@ -2,16 +2,9 @@
 import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { mapCategoryColor } from '@/lib/palette';
+import type { UITransaction } from '@/components/TransactionsTable';
 
-type Tx = {
-  value: number;
-  type: 'income' | 'expense';
-  category?: string | null;
-};
-
-interface Props {
-  transacoes: Tx[];
-}
+type Props = { transacoes: UITransaction[]; mes?: string };
 
 export default function CategoryDonut({ transacoes }: Props) {
   // soma por categoria (apenas despesas)

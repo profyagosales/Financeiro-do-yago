@@ -25,7 +25,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 import { useCategories } from '@/hooks/useCategories';
-import SourcePicker from '@/components/SourcePicker';
+import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
 
 dayjs.locale('pt-br');
 
@@ -73,22 +73,22 @@ export default function FinancasMensal() {
   const initAnoParam = searchParams.get('ano');
   const initialMes =
     initMesParam ?? (initAnoParam ? `${initAnoParam}-${currentMes.slice(5, 7)}` : currentMes);
-  const initialCategoria = searchParams.get('cat') ?? 'Todas';
+  const initialCategoria = searchParams.get('cat');
   const initialBusca = searchParams.get('q') ?? '';
-  const initialFonte = (() => {
+  const initialFonte: SourceValue = (() => {
     const f = searchParams.get('fonte');
     if (f) {
       const [kind, id] = f.split(':');
       if ((kind === 'account' || kind === 'card') && id) {
-        return { kind, id } as { kind: 'account' | 'card'; id: string | null };
+        return { kind, id } as SourceValue;
       }
     }
-    return { kind: 'account', id: null } as { kind: 'account' | 'card'; id: string | null };
+    return { kind: 'account', id: null };
   })();
 
   const [mesAtual, setMesAtual] = useState(initialMes);
-  const [categoriaId, setCategoriaId] = useState<string | 'Todas'>(initialCategoria as any);
-  const [fonte, setFonte] = useState<{ kind: 'account' | 'card'; id: string | null }>(initialFonte);
+  const [categoriaId, setCategoriaId] = useState<'Todas' | string>(initialCategoria ?? 'Todas');
+  const [fonte, setFonte] = useState<SourceValue>(initialFonte);
   const [busca, setBusca] = useState(initialBusca);
 
   useEffect(() => {

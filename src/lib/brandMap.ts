@@ -1,14 +1,12 @@
 // src/lib/brandMap.ts
 import {
   SiNubank,
-  SiSantander,
   SiMastercard,
   SiVisa,
   SiBinance,
   SiApple,
   SiGoogle,
   SiAmazon,
-  SiMicrosoft,
   SiNetflix,
   SiUber,
   SiSpotify,
@@ -16,28 +14,24 @@ import {
 
 export type BrandKey =
   | "nubank"
-  | "santander"
   | "mastercard"
   | "visa"
   | "binance"
   | "apple"
   | "google"
   | "amazon"
-  | "microsoft"
   | "netflix"
   | "uber"
   | "spotify";
 
 export const BRAND_ICON: Record<BrandKey, any> = {
   nubank: SiNubank,
-  santander: SiSantander,
   mastercard: SiMastercard,
   visa: SiVisa,
   binance: SiBinance,
   apple: SiApple,
   google: SiGoogle,
   amazon: SiAmazon,
-  microsoft: SiMicrosoft,
   netflix: SiNetflix,
   uber: SiUber,
   spotify: SiSpotify,
@@ -46,14 +40,12 @@ export const BRAND_ICON: Record<BrandKey, any> = {
 // Paleta sugerida por marca (opcional)
 export const BRAND_COLOR: Partial<Record<BrandKey, string>> = {
   nubank: "#820AD1",
-  santander: "#EC0000",
   mastercard: "#EB001B",
   visa: "#1A1F71",
   binance: "#F3BA2F",
   apple: "#111111",
   google: "#4285F4",
   amazon: "#FF9900",
-  microsoft: "#737373",
   netflix: "#E50914",
   uber: "#000000",
   spotify: "#1DB954",
@@ -76,7 +68,6 @@ export function guessBrandKey(input?: string): BrandKey | null {
 
   const tests: Array<[BrandKey, RegExp]> = [
     ["nubank", /\bnu\b|\bnubank\b/],
-    ["santander", /\bsantander\b/],
     ["visa", /\bvisa\b/],
     ["mastercard", /\bmaster\b|\bmastercard\b/],
     ["binance", /\bbinance\b/],
@@ -86,7 +77,6 @@ export function guessBrandKey(input?: string): BrandKey | null {
     ["apple", /\bapple\b|\biphone\b|\bmac\b/],
     ["google", /\bgoogle\b|\byoutube\b|\bplay store\b/],
     ["amazon", /\bamazon\b|\bprime\b/],
-    ["microsoft", /\bmicrosoft\b|\bxbox\b|office 365|onedrive/],
   ];
 
   for (const [key, rx] of tests) {

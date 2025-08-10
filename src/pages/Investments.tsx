@@ -6,7 +6,6 @@ import { PageHeader } from "@/components/PageHeader";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
@@ -42,7 +41,7 @@ const ptMonth = (y: number, m: number) =>
 
 /* ---------------- componente ---------------- */
 export default function InvestmentsResumo() {
-  const { user } = useAuth();
+  const { user } = useAuth() as { user: { id: string } | null };
   const [items, setItems] = useState<Investment[]>([]);
   const [loading, setLoading] = useState(true);
 

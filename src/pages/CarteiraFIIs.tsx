@@ -175,13 +175,13 @@ export default function CarteiraFIIs() {
         onSubmit={onCreate}
       />
 
-      <ModalInvest
-        open={!!editing}
-        onClose={() => setEditing(null)}
-        initial={editing as any}
-        defaultType="FIIs"
-        onSubmit={(payload) => editing && onUpdate(editing.id, payload)}
-      />
+        <ModalInvest
+          open={!!editing}
+          onClose={() => setEditing(null)}
+          initial={editing as any}
+          defaultType="FIIs"
+          onSubmit={(payload) => { if (editing) return onUpdate(editing.id, payload); }}
+        />
     </>
   );
 }

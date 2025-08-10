@@ -36,7 +36,7 @@ const BRL = (v: number | null | undefined) =>
   (v ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 export default function CarteiraTipo({ tipo }: Props) {
-  const { user } = useAuth();
+  const { user } = useAuth() as { user: { id: string } | null };
   const [items, setItems] = useState<Investment[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");

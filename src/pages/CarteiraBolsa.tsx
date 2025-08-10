@@ -175,13 +175,13 @@ export default function CarteiraBolsa() {
         onSubmit={onCreate}
       />
 
-      <ModalInvest
-        open={!!editing}
-        onClose={() => setEditing(null)}
-        initial={editing as any}
-        defaultType="Ações"
-        onSubmit={(payload) => editing && onUpdate(editing.id, payload)}
-      />
+        <ModalInvest
+          open={!!editing}
+          onClose={() => setEditing(null)}
+          initial={editing as any}
+          defaultType="Ações"
+          onSubmit={(payload) => { if (editing) return onUpdate(editing.id, payload); }}
+        />
     </>
   );
 }

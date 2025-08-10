@@ -34,7 +34,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -139,7 +139,7 @@ const priorityDot = (n?: number | null) => {
 
 /* ========================== Página Metas ========================= */
 export default function Metas() {
-  const { user } = useAuth();
+  const { user } = useAuth() as { user: { id: string } | null };
   const [loading, setLoading] = useState(true);
   const [goals, setGoals] = useState<GoalRow[]>([]);
   const [tab, setTab] = useState<"ativas" | "atrasadas" | "concluidas" | "todas">("ativas");

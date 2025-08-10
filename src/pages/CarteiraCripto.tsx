@@ -175,13 +175,13 @@ export default function CarteiraCripto() {
         onSubmit={onCreate}
       />
 
-      <ModalInvest
-        open={!!editing}
-        onClose={() => setEditing(null)}
-        initial={editing as any}
-        defaultType="Cripto"
-        onSubmit={(payload) => editing && onUpdate(editing.id, payload)}
-      />
+        <ModalInvest
+          open={!!editing}
+          onClose={() => setEditing(null)}
+          initial={editing as any}
+          defaultType="Cripto"
+          onSubmit={(payload) => { if (editing) return onUpdate(editing.id, payload); }}
+        />
     </>
   );
 }
