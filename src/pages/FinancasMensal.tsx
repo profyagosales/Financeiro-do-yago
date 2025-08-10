@@ -1,20 +1,19 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 
 import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
-import { ModalTransacao } from '@/components/ModalTransacao';
-import { useAuth } from '@/contexts/AuthContext';
+import { ModalTransacao, type BaseData } from '@/components/ModalTransacao';
 
 import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Coins, TrendingUp, TrendingDown, Clock, Search, Wallet, CreditCard, Plus, Download, CalendarRange } from 'lucide-react';
 import { toast } from 'sonner';
-import TransactionsTable from '@/components/TransactionsTable';
+import TransactionsTable, { type UITransaction } from '@/components/TransactionsTable';
 
 import DailyBars from '@/components/charts/DailyBars';
-import { CategoryDonut } from '@/components/charts/CategoryDonut';
+import CategoryDonut from '@/components/charts/CategoryDonut';
 
 // shadcn/ui
 import { Button } from '@/components/ui/button';
@@ -33,7 +32,7 @@ const norm = (s: string) => (s || '')
   .toLowerCase();
 
 // CSV helper local (exporta apenas filtradas)
-function toCSV(rows: any[]) {
+function toCSV(rows: UITransaction[]) {
   const header = [
     'id','date','description','value','type','category','source_kind','source_id','installment_no','installment_total'
   ].join(',');
@@ -72,32 +71,19 @@ export default function FinancasMensal() {
   const month = Number(mesAtual.slice(5,7));
 
   // ===== dados via hook Supabase =====
-  const { data, loading, error, addSmart, update, remove, kpis } = useTransactions(year, month);
+  const { data, loading, error, addSmart, update, remove } = useTransactions(year, month);
 
   // ===== categorias (mapear id -> nome) =====
   const { flat: categorias, byId: categoriasById } = useCategories();
 
-  const categoriasOptions = useMemo(() => {
+  type CategoriaOption = { id: string; name: string };
+  const categoriasOptions: CategoriaOption[] = useMemo(() => {
     const base = categorias.map(c => ({ id: c.id, name: c.name }));
-    return [{ id: 'Todas', name: 'Todas' } as any, ...base];
+    return [{ id: 'Todas', name: 'Todas' }, ...base];
   }, [categorias]);
 
   // ===== aplicar filtros + converter para UI (type/value) =====
-  type UIItem = {
-    id: number;
-    date: string;
-    description: string;
-    value: number; // positivo
-    type: 'income' | 'expense';
-    category?: string | null;
-    category_id?: string | null;
-    source_kind?: 'account' | 'card' | null;
-    source_id?: string | null;
-    installment_no?: number | null;
-    installment_total?: number | null;
-  };
-
-  const uiTransacoes: UIItem[] = useMemo(() => {
+  const uiTransacoes: UITransaction[] = useMemo(() => {
     return data.map(t => {
       const type = t.amount >= 0 ? 'income' : 'expense';
       const value = Math.abs(t.amount);
@@ -134,23 +120,28 @@ export default function FinancasMensal() {
     return out;
   }, [uiTransacoes, categoriaId, fonte, busca]);
 
-  // KPIs (do hook já vêm prontos)
-  const receitas = kpis.entradas;
-  const despesasBrutas = kpis.saidas;
-  const total = kpis.saldo;
+  // KPIs baseados nas transações filtradas
+  const receitas = useMemo(
+    () => transacoesFiltradas.filter(t => t.type === 'income').reduce((s, t) => s + t.value, 0),
+    [transacoesFiltradas]
+  );
+  const despesasBrutas = useMemo(
+    () => transacoesFiltradas.filter(t => t.type === 'expense').reduce((s, t) => s + t.value, 0),
+    [transacoesFiltradas]
+  );
+  const total = useMemo(() => receitas - despesasBrutas, [receitas, despesasBrutas]);
 
   const aPagarHoje = useMemo(() => {
     const hoje = dayjs().format('YYYY-MM-DD');
-    return uiTransacoes
+    return transacoesFiltradas
       .filter(t => t.type === 'expense' && t.date === hoje)
       .reduce((s, t) => s + t.value, 0);
-  }, [uiTransacoes]);
+  }, [transacoesFiltradas]);
 
   // ===== Handlers modal =====
   const abrirNovo = () => { setEditando(null); setModalAberto(true); };
-  const abrirEditar = (t: Transaction) => { setEditando(t); setModalAberto(true); };
 
-  const salvar = async (dataForm: TransactionInput) => {
+  const salvar = async (dataForm: BaseData) => {
     try {
       if (editando) {
         // Atualização simples (sem reescalar parcelas):
@@ -165,18 +156,22 @@ export default function FinancasMensal() {
         } as Partial<Transaction>);
         toast.success('Transação atualizada!');
       } else {
-        await addSmart(dataForm);
+        await addSmart(dataForm as unknown as TransactionInput);
         toast.success('Transação adicionada!');
       }
       setModalAberto(false);
-    } catch (err: any) {
-      console.error(err); toast.error(err?.message || 'Erro ao salvar');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(err); toast.error(message || 'Erro ao salvar');
     }
   };
 
   const excluir = async (id: number) => {
     try { await remove(id); toast.success('Transação excluída!'); }
-    catch (err: any) { console.error(err); toast.error(err?.message || 'Erro ao excluir'); }
+    catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(err); toast.error(message || 'Erro ao excluir');
+    }
   };
 
   // Atalho de teclado: pressionar "N" abre o modal de nova transação (ignora quando digitando em inputs)
@@ -196,7 +191,6 @@ export default function FinancasMensal() {
   }, [modalAberto]);
 
   // ======= Action Bar (Export) =======
-  const fileRef = useRef<HTMLInputElement | null>(null);
   const idsFiltradas = useMemo(() => transacoesFiltradas.map(t => t.id), [transacoesFiltradas]);
 
   const handleExport = () => {
@@ -239,7 +233,7 @@ export default function FinancasMensal() {
           {/* Categoria */}
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Categoria</span>
-            <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v as any)}>
+            <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v as string | 'Todas')}>
               <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
@@ -254,7 +248,7 @@ export default function FinancasMensal() {
           {/* Fonte */}
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Fonte</span>
-            <Select value={fonte} onValueChange={(v) => setFonte(v as any)}>
+            <Select value={fonte} onValueChange={(v) => setFonte(v as 'Todas' | 'Conta' | 'Cartão')}>
               <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
@@ -300,55 +294,72 @@ export default function FinancasMensal() {
       </section>
 
       {/* KPIs */}
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MotionCard>
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-emerald-600 text-white"><Coins size={18} /></div>
-            <div className="flex flex-col">
-              <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo do mês</span>
-              <AnimatedNumber value={total} />
-            </div>
-          </div>
-        </MotionCard>
+      <TooltipProvider delayDuration={200}>
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <MotionCard>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-emerald-600 text-white"><Coins size={18} /></div>
+                  <div className="flex flex-col">
+                    <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo do mês</span>
+                    <AnimatedNumber value={total} />
+                  </div>
+                </div>
+              </MotionCard>
+            </TooltipTrigger>
+            <TooltipContent>Saldo = Entradas - Saídas</TooltipContent>
+          </Tooltip>
 
-        <MotionCard>
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-blue-600 text-white"><TrendingUp size={18} /></div>
-            <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-300">Entradas</span>
-              <AnimatedNumber value={receitas} />
-            </div>
-          </div>
-        </MotionCard>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <MotionCard>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-blue-600 text-white"><TrendingUp size={18} /></div>
+                  <div className="flex flex-col">
+                    <span className="text-sm text-slate-500 dark:text-slate-300">Entradas</span>
+                    <AnimatedNumber value={receitas} />
+                  </div>
+                </div>
+              </MotionCard>
+            </TooltipTrigger>
+            <TooltipContent>Entradas = soma das receitas</TooltipContent>
+          </Tooltip>
 
-        <MotionCard>
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-rose-500 text-white"><TrendingDown size={18} /></div>
-            <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-300">Saídas</span>
-              <AnimatedNumber value={despesasBrutas} />
-            </div>
-          </div>
-        </MotionCard>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <MotionCard>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-rose-500 text-white"><TrendingDown size={18} /></div>
+                  <div className="flex flex-col">
+                    <span className="text-sm text-slate-500 dark:text-slate-300">Saídas</span>
+                    <AnimatedNumber value={despesasBrutas} />
+                  </div>
+                </div>
+              </MotionCard>
+            </TooltipTrigger>
+            <TooltipContent>Saídas = soma das despesas</TooltipContent>
+          </Tooltip>
 
-        <MotionCard>
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-amber-500 text-white"><Clock size={18} /></div>
-            <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-300">A pagar hoje</span>
-              <AnimatedNumber value={aPagarHoje} />
+          <MotionCard>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-amber-500 text-white"><Clock size={18} /></div>
+              <div className="flex flex-col">
+                <span className="text-sm text-slate-500 dark:text-slate-300">A pagar hoje</span>
+                <AnimatedNumber value={aPagarHoje} />
+              </div>
             </div>
-          </div>
-        </MotionCard>
-      </section>
+          </MotionCard>
+        </section>
+      </TooltipProvider>
 
       {/* Gráficos */}
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <DailyBars transacoes={transacoesFiltradas as any} mes={mesAtual} />
+          <DailyBars transacoes={transacoesFiltradas} mes={mesAtual} />
         </div>
         <div className="lg:col-span-1">
-          <CategoryDonut transacoes={transacoesFiltradas as any} />
+          <CategoryDonut transacoes={transacoesFiltradas} />
         </div>
       </section>
 
@@ -358,9 +369,9 @@ export default function FinancasMensal() {
 
       {/* TABELA */}
       <TransactionsTable
-        transacoes={transacoesFiltradas as any}
-        onEdit={(row: any) => {
-          // Converter UIItem -> TransactionInput parcial para edição
+        transacoes={transacoesFiltradas}
+        onEdit={(row: UITransaction) => {
+          // Converter UITransaction -> TransactionInput parcial para edição
           setEditando(data.find(d => d.id === row.id) || null);
           setModalAberto(true);
         }}
@@ -390,7 +401,7 @@ export default function FinancasMensal() {
       <ModalTransacao
         open={modalAberto}
         onClose={() => setModalAberto(false)}
-        initialData={editando ? {
+        initialData={editando ? ({
           date: editando.date,
           description: editando.description,
           value: Math.abs(editando.amount),
@@ -399,7 +410,7 @@ export default function FinancasMensal() {
           source_kind: editando.card_id ? 'card' : (editando.account_id ? 'account' : undefined),
           source_id: editando.card_id ?? editando.account_id ?? undefined,
           installments: editando.installment_total ?? undefined,
-        } : undefined}
+        } as BaseData) : undefined}
         onSubmit={salvar}
       />
 

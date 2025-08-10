@@ -19,10 +19,12 @@ export const SERIES_COLORS = {
   expense: '#ef4444', // red-500
 };
 
-export function colorForCategory(name: string): string {
-  if (!name) return '#94a3b8';
-  const fixed = CATEGORY_COLORS[name];
-  return fixed ?? hashToColor(name);
+// Map category name or id to a deterministic color
+export function mapCategoryColor(input: string | number): string {
+  const key = String(input);
+  if (!key) return '#94a3b8';
+  const fixed = CATEGORY_COLORS[key];
+  return fixed ?? hashToColor(key);
 }
 
 function hashToColor(input: string) {

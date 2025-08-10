@@ -1,22 +1,31 @@
 // src/components/charts/CategoryDonut.tsx
+import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { colorForCategory } from '@/lib/palette';
+import { mapCategoryColor } from '@/lib/palette';
 
 type Tx = {
-  id: number; date: string; description: string; value: number;
-  type: 'income' | 'expense'; category: string;
+  value: number;
+  type: 'income' | 'expense';
+  category?: string | null;
 };
 
-function CategoryDonut({ transacoes }: { transacoes: Tx[] }) {
-  // soma por categoria (apenas despesas)
-  const byCat = transacoes
-    .filter(t => t.type === 'expense')
-    .reduce<Record<string, number>>((acc, t) => {
-      acc[t.category] = (acc[t.category] ?? 0) + t.value;
-      return acc;
-    }, {});
+interface Props {
+  transacoes: Tx[];
+}
 
-  const data = Object.entries(byCat).map(([name, value]) => ({ name, value }));
+export default function CategoryDonut({ transacoes }: Props) {
+  // soma por categoria (apenas despesas)
+  const data = useMemo(() => {
+    const byCat = transacoes
+      .filter(t => t.type === 'expense')
+      .reduce<Record<string, number>>((acc, t) => {
+        const key = t.category || 'Sem categoria';
+        acc[key] = (acc[key] ?? 0) + t.value;
+        return acc;
+      }, {});
+
+    return Object.entries(byCat).map(([name, value]) => ({ name, value }));
+  }, [transacoes]);
 
   if (!data.length) {
     return (
@@ -31,13 +40,25 @@ function CategoryDonut({ transacoes }: { transacoes: Tx[] }) {
       <h3 className="font-medium mb-3">Despesas por categoria</h3>
       <div className="h-[320px]">
         <ResponsiveContainer>
-          <PieChart>
-            <Pie data={data} dataKey="value" nameKey="name" innerRadius={70} outerRadius={100} paddingAngle={2}>
-              {data.map((entry) => (
-                <Cell key={entry.name} fill={colorForCategory(entry.name)} />
-              ))}
-            </Pie>
-            <Tooltip formatter={(v: any) => `R$ ${Number(v).toFixed(2)}`} />
+          <PieChart margin={{ top: 20, bottom: 20 }}>
+            <Pie
+              data={data}
+              dataKey="value"
+              nameKey="name"
+              innerRadius={70}
+              outerRadius={100}
+              paddingAngle={2}
+              label={({ percent = 0 }) => `${(percent * 100).toFixed(0)}%`}
+              labelLine={false}
+              >
+                {data.map((entry) => (
+                  <Cell key={entry.name} fill={mapCategoryColor(entry.name)} />
+                ))}
+              </Pie>
+            <Tooltip
+              formatter={(v: number) => `R$ ${v.toFixed(2)}`}
+              labelFormatter={(name: string) => name}
+            />
             <Legend />
           </PieChart>
         </ResponsiveContainer>
@@ -45,5 +66,3 @@ function CategoryDonut({ transacoes }: { transacoes: Tx[] }) {
     </div>
   );
 }
-
-export { CategoryDonut };
