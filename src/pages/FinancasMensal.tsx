@@ -1,17 +1,17 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 
 import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
 import { ModalTransacao } from '@/components/ModalTransacao';
-import { useAuth } from '@/contexts/AuthContext';
 
 import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { Coins, TrendingUp, TrendingDown, Clock, Search, Wallet, CreditCard, Plus, Download, CalendarRange } from 'lucide-react';
+import { Coins, TrendingUp, TrendingDown, Clock, Search, Plus, Download, CalendarRange, Copy } from 'lucide-react';
 import { toast } from 'sonner';
-import TransactionsTable from '@/components/TransactionsTable';
+import TransactionsTable, { type UITransaction } from '@/components/TransactionsTable';
 
 import DailyBars from '@/components/charts/DailyBars';
 import { CategoryDonut } from '@/components/charts/CategoryDonut';
@@ -24,6 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 import { useCategories } from '@/hooks/useCategories';
+import SourcePicker from '@/components/SourcePicker';
 
 dayjs.locale('pt-br');
 
@@ -33,9 +34,9 @@ const norm = (s: string) => (s || '')
   .toLowerCase();
 
 // CSV helper local (exporta apenas filtradas)
-function toCSV(rows: any[]) {
+function toCSV(rows: UITransaction[]) {
   const header = [
-    'id','date','description','value','type','category','source_kind','source_id','installment_no','installment_total'
+    'id', 'date', 'description', 'value', 'type', 'category', 'source_kind', 'source_id', 'installment_no', 'installment_total'
   ].join(',');
   const lines = rows.map((r) => [
     r.id,
@@ -53,17 +54,53 @@ function toCSV(rows: any[]) {
 }
 
 export default function FinancasMensal() {
-  // ===== filtros locais =====
-  const [mesAtual, setMesAtual] = useState(() => dayjs().format('YYYY-MM'));
-  const [categoriaId, setCategoriaId] = useState<string | 'Todas'>('Todas');
-  const [fonte, setFonte] = useState<'Todas' | 'Conta' | 'Cartão'>('Todas');
-  const [busca, setBusca] = useState('');
+  
+  // ===== filtros locais sincronizados com URL =====
+const [searchParams, setSearchParams] = useSearchParams();
+const now = dayjs();
+const currentMes = now.format('YYYY-MM');
+const initMesParam = searchParams.get('mes');
+const initAnoParam = searchParams.get('ano');
+const initialMes = initMesParam ?? (initAnoParam ? `${initAnoParam}-${currentMes.slice(5,7)}` : currentMes);
+const initialCategoria = searchParams.get('cat') ?? 'Todas';
+const initialBusca = searchParams.get('q') ?? '';
+const initialFonte = (() => {
+  const f = searchParams.get('fonte');
+  if (f) {
+    const [kind, id] = f.split(':');
+    if ((kind === 'account' || kind === 'card') && id) {
+      return { kind, id } as { kind: 'account' | 'card'; id: string | null };
+    }
+  }
+  return { kind: 'account', id: null } as { kind: 'account' | 'card'; id: string | null };
+})();
 
+const [mesAtual, setMesAtual] = useState(initialMes);
+const [categoriaId, setCategoriaId] = useState<string | 'Todas'>(initialCategoria as any);
+const [fonte, setFonte] = useState<{ kind: 'account' | 'card'; id: string | null }>(initialFonte);
+const [busca, setBusca] = useState(initialBusca);
+
+useEffect(() => {
+  const params = new URLSearchParams(searchParams);
+  params.set('mes', mesAtual);
+  params.set('ano', mesAtual.slice(0, 4));
+  if (categoriaId && categoriaId !== 'Todas') params.set('cat', categoriaId); else params.delete('cat');
+  if (fonte.id) params.set('fonte', `${fonte.kind}:${fonte.id}`); else params.delete('fonte');
+  if (busca) params.set('q', busca); else params.delete('q');
+  setSearchParams(params, { replace: true });
+}, [mesAtual, categoriaId, fonte, busca, setSearchParams]);
+
+const limparFiltros = () => {
+  setCategoriaId('Todas');
+  setFonte({ kind: 'account', id: null });
+  setBusca('');
+};
+  
   // ===== modal (criar/editar) =====
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Transaction | null>(null);
 
-  // ===== dialog duplicar (apenas UI por enquanto) =====
+  // ===== dialog duplicar =====
   const [dupOpen, setDupOpen] = useState(false);
   const [mesDestino, setMesDestino] = useState(() => dayjs().format('YYYY-MM'));
 
@@ -72,32 +109,19 @@ export default function FinancasMensal() {
   const month = Number(mesAtual.slice(5,7));
 
   // ===== dados via hook Supabase =====
-  const { data, loading, error, addSmart, update, remove, kpis } = useTransactions(year, month);
+  const { data, loading, error, addSmart, update, remove, kpis, duplicateMany, list } = useTransactions(year, month);
 
   // ===== categorias (mapear id -> nome) =====
   const { flat: categorias, byId: categoriasById } = useCategories();
 
-  const categoriasOptions = useMemo(() => {
+  type CategoriaOption = { id: string; name: string };
+  const categoriasOptions: CategoriaOption[] = useMemo(() => {
     const base = categorias.map(c => ({ id: c.id, name: c.name }));
-    return [{ id: 'Todas', name: 'Todas' } as any, ...base];
+    return [{ id: 'Todas', name: 'Todas' }, ...base];
   }, [categorias]);
 
   // ===== aplicar filtros + converter para UI (type/value) =====
-  type UIItem = {
-    id: number;
-    date: string;
-    description: string;
-    value: number; // positivo
-    type: 'income' | 'expense';
-    category?: string | null;
-    category_id?: string | null;
-    source_kind?: 'account' | 'card' | null;
-    source_id?: string | null;
-    installment_no?: number | null;
-    installment_total?: number | null;
-  };
-
-  const uiTransacoes: UIItem[] = useMemo(() => {
+  const uiTransacoes: UITransaction[] = useMemo(() => {
     return data.map(t => {
       const type = t.amount >= 0 ? 'income' : 'expense';
       const value = Math.abs(t.amount);
@@ -123,9 +147,8 @@ export default function FinancasMensal() {
   const transacoesFiltradas = useMemo(() => {
     let out = uiTransacoes;
     if (categoriaId !== 'Todas') out = out.filter(t => t.category_id === categoriaId);
-    if (fonte !== 'Todas') {
-      if (fonte === 'Conta') out = out.filter(t => t.source_kind === 'account');
-      if (fonte === 'Cartão') out = out.filter(t => t.source_kind === 'card');
+    if (fonte.id) {
+      out = out.filter(t => t.source_kind === fonte.kind && t.source_id === fonte.id);
     }
     if (busca) {
       const q = norm(busca);
@@ -148,7 +171,6 @@ export default function FinancasMensal() {
 
   // ===== Handlers modal =====
   const abrirNovo = () => { setEditando(null); setModalAberto(true); };
-  const abrirEditar = (t: Transaction) => { setEditando(t); setModalAberto(true); };
 
   const salvar = async (dataForm: TransactionInput) => {
     try {
@@ -169,14 +191,20 @@ export default function FinancasMensal() {
         toast.success('Transação adicionada!');
       }
       setModalAberto(false);
-    } catch (err: any) {
-      console.error(err); toast.error(err?.message || 'Erro ao salvar');
+    } catch (err: unknown) {
+      console.error(err);
+      const message = err instanceof Error ? err.message : 'Erro ao salvar';
+      toast.error(message);
     }
   };
 
   const excluir = async (id: number) => {
     try { await remove(id); toast.success('Transação excluída!'); }
-    catch (err: any) { console.error(err); toast.error(err?.message || 'Erro ao excluir'); }
+    catch (err: unknown) {
+      console.error(err);
+      const message = err instanceof Error ? err.message : 'Erro ao excluir';
+      toast.error(message);
+    }
   };
 
   // Atalho de teclado: pressionar "N" abre o modal de nova transação (ignora quando digitando em inputs)
@@ -196,8 +224,9 @@ export default function FinancasMensal() {
   }, [modalAberto]);
 
   // ======= Action Bar (Export) =======
-  const fileRef = useRef<HTMLInputElement | null>(null);
   const idsFiltradas = useMemo(() => transacoesFiltradas.map(t => t.id), [transacoesFiltradas]);
+  const [idsSelecionadas, setIdsSelecionadas] = useState<number[]>([]);
+  const idsParaDuplicar = idsSelecionadas.length ? idsSelecionadas : idsFiltradas;
 
   const handleExport = () => {
     if (!transacoesFiltradas.length) { toast.info('Nada para exportar'); return; }
@@ -211,11 +240,40 @@ export default function FinancasMensal() {
     URL.revokeObjectURL(url);
   };
 
+  const abrirDuplicar = () => {
+    if (!idsParaDuplicar.length) { toast.info('Nada para duplicar'); return; }
+    setDupOpen(true);
+  };
+
+  const confirmarDuplicar = async () => {
+    const [anoStr, mesStr] = mesDestino.split('-');
+    const targetAno = Number(anoStr);
+    const targetMes = Number(mesStr);
+    if (!targetAno || !targetMes || targetMes < 1 || targetMes > 12 || targetAno < 1970 || targetAno > 9999) {
+      toast.error('Mês destino inválido');
+      return;
+    }
+    if (!idsParaDuplicar.length) {
+      toast.info('Nada para duplicar');
+      return;
+    }
+    try {
+      await duplicateMany(idsParaDuplicar, targetAno, targetMes);
+      toast.success('Duplicado com sucesso!');
+      setDupOpen(false);
+      if (targetAno === year && targetMes === month) await list();
+    } catch (err: unknown) {
+      console.error(err);
+      const message = err instanceof Error ? err.message : 'Falha ao duplicar';
+      toast.error(message);
+    }
+  };
+
   return (
     <div className="space-y-6 pb-24">
       <PageHeader title="Finanças — Mensal" subtitle="Cadastre e acompanhe lançamentos do mês">
         {/* Filtros dentro do header */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
           {/* Mês (YYYY-MM) */}
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Mês</span>
@@ -239,7 +297,7 @@ export default function FinancasMensal() {
           {/* Categoria */}
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Categoria</span>
-            <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v as any)}>
+          <Select value={categoriaId} onValueChange={setCategoriaId}>
               <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
@@ -254,16 +312,13 @@ export default function FinancasMensal() {
           {/* Fonte */}
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Fonte</span>
-            <Select value={fonte} onValueChange={(v) => setFonte(v as any)}>
-              <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
-                <SelectValue placeholder="Todas" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="Todas"><span className="inline-flex items-center gap-2"><Wallet size={14}/> Todas</span></SelectItem>
-                <SelectItem value="Conta"><span className="inline-flex items-center gap-2"><Wallet size={14}/> Conta</span></SelectItem>
-                <SelectItem value="Cartão"><span className="inline-flex items-center gap-2"><CreditCard size={14}/> Cartão</span></SelectItem>
-              </SelectContent>
-            </Select>
+            <SourcePicker
+              value={fonte}
+              onChange={setFonte}
+              placeholder="Todas"
+              className="w-full"
+              showCardHints={false}
+            />
           </div>
 
           {/* Busca */}
@@ -279,7 +334,9 @@ export default function FinancasMensal() {
               />
             </div>
           </div>
-
+          <div className="sm:col-span-2">
+            <Button variant="outline" onClick={limparFiltros} className="w-full">Limpar filtros</Button>
+          </div>
         </div>
       </PageHeader>
 
@@ -295,6 +352,10 @@ export default function FinancasMensal() {
           {/* Export */}
           <Button variant="outline" onClick={handleExport} className="inline-flex items-center gap-2">
             <Download className="h-4 w-4"/> Exportar CSV
+          </Button>
+          {/* Duplicar */}
+          <Button variant="outline" onClick={abrirDuplicar} className="inline-flex items-center gap-2">
+            <Copy className="h-4 w-4"/> Duplicar
           </Button>
         </div>
       </section>
@@ -345,10 +406,10 @@ export default function FinancasMensal() {
       {/* Gráficos */}
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <DailyBars transacoes={transacoesFiltradas as any} mes={mesAtual} />
+          <DailyBars transacoes={transacoesFiltradas} mes={mesAtual} />
         </div>
         <div className="lg:col-span-1">
-          <CategoryDonut transacoes={transacoesFiltradas as any} />
+          <CategoryDonut transacoes={transacoesFiltradas.filter((t): t is UITransaction & { category: string } => !!t.category)} />
         </div>
       </section>
 
@@ -358,13 +419,14 @@ export default function FinancasMensal() {
 
       {/* TABELA */}
       <TransactionsTable
-        transacoes={transacoesFiltradas as any}
-        onEdit={(row: any) => {
-          // Converter UIItem -> TransactionInput parcial para edição
+        transacoes={transacoesFiltradas}
+        onEdit={(row) => {
+          // Converter UITransaction -> TransactionInput parcial para edição
           setEditando(data.find(d => d.id === row.id) || null);
           setModalAberto(true);
         }}
         onDelete={(id: number) => excluir(id)}
+        onSelectionChange={setIdsSelecionadas}
       />
 
       {/* botão flutuante */}
@@ -395,6 +457,7 @@ export default function FinancasMensal() {
           description: editando.description,
           value: Math.abs(editando.amount),
           type: editando.amount >= 0 ? 'income' : 'expense',
+          category: editando.category_id ? (categoriasById.get(editando.category_id)?.name ?? 'Outros') : 'Outros',
           category_id: editando.category_id ?? null,
           source_kind: editando.card_id ? 'card' : (editando.account_id ? 'account' : undefined),
           source_id: editando.card_id ?? editando.account_id ?? undefined,
@@ -403,15 +466,15 @@ export default function FinancasMensal() {
         onSubmit={salvar}
       />
 
-      {/* Dialog Duplicar p/ mês (UI futura) */}
+      {/* Dialog Duplicar p/ mês */}
       <Dialog open={dupOpen} onOpenChange={setDupOpen}>
         <DialogContent className="sm:max-w-md bg-white/80 dark:bg-zinc-950/80 backdrop-blur rounded-2xl border border-white/30 dark:border-white/10 shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-base sm:text-lg">Duplicar lançamentos filtrados</DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">Duplicar lançamentos</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3">
             <div className="text-sm text-slate-600 dark:text-slate-300">
-              {idsFiltradas.length} itens serão copiados para o mês selecionado (função será habilitada em seguida).
+              {idsParaDuplicar.length} itens serão copiados para o mês selecionado.
             </div>
             <div>
               <span className="mb-1 block text-xs text-emerald-900/70 dark:text-emerald-100/80">Mês destino</span>
@@ -430,7 +493,7 @@ export default function FinancasMensal() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setDupOpen(false)}>Fechar</Button>
-            <Button onClick={() => toast.info('Duplicação em breve')}>Duplicar</Button>
+            <Button onClick={confirmarDuplicar}>Duplicar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
