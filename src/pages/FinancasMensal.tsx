@@ -1,17 +1,16 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 
 import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
 import { ModalTransacao } from '@/components/ModalTransacao';
-import { useAuth } from '@/contexts/AuthContext';
 
 import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Coins, TrendingUp, TrendingDown, Clock, Search, Wallet, CreditCard, Plus, Download, CalendarRange, Copy } from 'lucide-react';
 import { toast } from 'sonner';
-import TransactionsTable from '@/components/TransactionsTable';
+import TransactionsTable, { type UITransaction } from '@/components/TransactionsTable';
 
 import DailyBars from '@/components/charts/DailyBars';
 import { CategoryDonut } from '@/components/charts/CategoryDonut';
@@ -33,9 +32,9 @@ const norm = (s: string) => (s || '')
   .toLowerCase();
 
 // CSV helper local (exporta apenas filtradas)
-function toCSV(rows: any[]) {
+function toCSV(rows: UITransaction[]) {
   const header = [
-    'id','date','description','value','type','category','source_kind','source_id','installment_no','installment_total'
+    'id', 'date', 'description', 'value', 'type', 'category', 'source_kind', 'source_id', 'installment_no', 'installment_total'
   ].join(',');
   const lines = rows.map((r) => [
     r.id,
@@ -55,7 +54,7 @@ function toCSV(rows: any[]) {
 export default function FinancasMensal() {
   // ===== filtros locais =====
   const [mesAtual, setMesAtual] = useState(() => dayjs().format('YYYY-MM'));
-  const [categoriaId, setCategoriaId] = useState<string | 'Todas'>('Todas');
+  const [categoriaId, setCategoriaId] = useState<string>('Todas');
   const [fonte, setFonte] = useState<'Todas' | 'Conta' | 'Cartão'>('Todas');
   const [busca, setBusca] = useState('');
 
@@ -77,27 +76,14 @@ export default function FinancasMensal() {
   // ===== categorias (mapear id -> nome) =====
   const { flat: categorias, byId: categoriasById } = useCategories();
 
-  const categoriasOptions = useMemo(() => {
+  type CategoriaOption = { id: string; name: string };
+  const categoriasOptions: CategoriaOption[] = useMemo(() => {
     const base = categorias.map(c => ({ id: c.id, name: c.name }));
-    return [{ id: 'Todas', name: 'Todas' } as any, ...base];
+    return [{ id: 'Todas', name: 'Todas' }, ...base];
   }, [categorias]);
 
   // ===== aplicar filtros + converter para UI (type/value) =====
-  type UIItem = {
-    id: number;
-    date: string;
-    description: string;
-    value: number; // positivo
-    type: 'income' | 'expense';
-    category?: string | null;
-    category_id?: string | null;
-    source_kind?: 'account' | 'card' | null;
-    source_id?: string | null;
-    installment_no?: number | null;
-    installment_total?: number | null;
-  };
-
-  const uiTransacoes: UIItem[] = useMemo(() => {
+  const uiTransacoes: UITransaction[] = useMemo(() => {
     return data.map(t => {
       const type = t.amount >= 0 ? 'income' : 'expense';
       const value = Math.abs(t.amount);
@@ -148,7 +134,6 @@ export default function FinancasMensal() {
 
   // ===== Handlers modal =====
   const abrirNovo = () => { setEditando(null); setModalAberto(true); };
-  const abrirEditar = (t: Transaction) => { setEditando(t); setModalAberto(true); };
 
   const salvar = async (dataForm: TransactionInput) => {
     try {
@@ -169,14 +154,20 @@ export default function FinancasMensal() {
         toast.success('Transação adicionada!');
       }
       setModalAberto(false);
-    } catch (err: any) {
-      console.error(err); toast.error(err?.message || 'Erro ao salvar');
+    } catch (err: unknown) {
+      console.error(err);
+      const message = err instanceof Error ? err.message : 'Erro ao salvar';
+      toast.error(message);
     }
   };
 
   const excluir = async (id: number) => {
     try { await remove(id); toast.success('Transação excluída!'); }
-    catch (err: any) { console.error(err); toast.error(err?.message || 'Erro ao excluir'); }
+    catch (err: unknown) {
+      console.error(err);
+      const message = err instanceof Error ? err.message : 'Erro ao excluir';
+      toast.error(message);
+    }
   };
 
   // Atalho de teclado: pressionar "N" abre o modal de nova transação (ignora quando digitando em inputs)
@@ -196,7 +187,6 @@ export default function FinancasMensal() {
   }, [modalAberto]);
 
   // ======= Action Bar (Export) =======
-  const fileRef = useRef<HTMLInputElement | null>(null);
   const idsFiltradas = useMemo(() => transacoesFiltradas.map(t => t.id), [transacoesFiltradas]);
   const [idsSelecionadas, setIdsSelecionadas] = useState<number[]>([]);
   const idsParaDuplicar = idsSelecionadas.length ? idsSelecionadas : idsFiltradas;
@@ -235,8 +225,10 @@ export default function FinancasMensal() {
       toast.success('Duplicado com sucesso!');
       setDupOpen(false);
       if (targetAno === year && targetMes === month) await list();
-    } catch (err: any) {
-      console.error(err); toast.error(err?.message || 'Falha ao duplicar');
+    } catch (err: unknown) {
+      console.error(err);
+      const message = err instanceof Error ? err.message : 'Falha ao duplicar';
+      toast.error(message);
     }
   };
 
@@ -268,7 +260,7 @@ export default function FinancasMensal() {
           {/* Categoria */}
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Categoria</span>
-            <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v as any)}>
+          <Select value={categoriaId} onValueChange={setCategoriaId}>
               <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
@@ -283,7 +275,7 @@ export default function FinancasMensal() {
           {/* Fonte */}
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Fonte</span>
-            <Select value={fonte} onValueChange={(v) => setFonte(v as any)}>
+          <Select value={fonte} onValueChange={(v) => setFonte(v as 'Todas' | 'Conta' | 'Cartão')}>
               <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
@@ -378,10 +370,10 @@ export default function FinancasMensal() {
       {/* Gráficos */}
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <DailyBars transacoes={transacoesFiltradas as any} mes={mesAtual} />
+          <DailyBars transacoes={transacoesFiltradas} mes={mesAtual} />
         </div>
         <div className="lg:col-span-1">
-          <CategoryDonut transacoes={transacoesFiltradas as any} />
+          <CategoryDonut transacoes={transacoesFiltradas.filter((t): t is UITransaction & { category: string } => !!t.category)} />
         </div>
       </section>
 
@@ -391,9 +383,9 @@ export default function FinancasMensal() {
 
       {/* TABELA */}
       <TransactionsTable
-        transacoes={transacoesFiltradas as any}
-        onEdit={(row: any) => {
-          // Converter UIItem -> TransactionInput parcial para edição
+        transacoes={transacoesFiltradas}
+        onEdit={(row) => {
+          // Converter UITransaction -> TransactionInput parcial para edição
           setEditando(data.find(d => d.id === row.id) || null);
           setModalAberto(true);
         }}
