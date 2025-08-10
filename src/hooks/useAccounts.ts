@@ -1,15 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { Account, AccountSchema } from '@/types/finance';
+import { Account } from "@/types/finance";
 
-export type Account = {
-  id: string;
-  name: string;
-  type: "conta" | "carteira" | "poupanca";
-  institution: string | null;
-  balance: number;
-};
-
+export type { Account };
 
 export function useAccounts() {
   const [data, setData] = useState<Account[]>([]);
@@ -21,35 +14,28 @@ export function useAccounts() {
       .from("accounts")
       .select("id,name,type,institution,balance")
       .order("name", { ascending: true });
-
     if (error) throw error;
     setData(data as Account[]);
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    void list();
-  }, [list]);
+  useEffect(() => { void list(); }, [list]);
 
-  const add = async (payload: Omit<Account, 'id' | 'user_id'>) => {
-    const parsed = AccountSchema.omit({ id: true, user_id: true }).parse(payload);
+  const create = async (payload: Omit<Account, "id" | "user_id">) => {
     const { data, error } = await supabase
-      .from('accounts')
-      .insert(parsed)
+      .from("accounts")
+      .insert(payload)
       .select()
       .single();
     if (error) throw error;
     setData((d) => [...d, data as Account]);
   };
 
-  const update = async (id: string, patch: Partial<Omit<Account, 'id' | 'user_id'>>) => {
-    const parsed = AccountSchema.omit({ id: true, user_id: true })
-      .partial()
-      .parse(patch);
+  const update = async (id: string, changes: Partial<Account>) => {
     const { data, error } = await supabase
-      .from('accounts')
-      .update(parsed)
-      .eq('id', id)
+      .from("accounts")
+      .update(changes)
+      .eq("id", id)
       .select()
       .single();
     if (error) throw error;
@@ -57,21 +43,9 @@ export function useAccounts() {
   };
 
   const remove = async (id: string) => {
-    const { error } = await supabase.from('accounts').delete().eq('id', id);
-    if (error) throw error;
-    setData((d) => d.filter((a) => a.id !== id));
-  };
-
-  const update = async (id: string, patch: Partial<Account>) => {
-    const { error } = await supabase.from("accounts").update(patch).eq("id", id);
-    if (error) throw error;
-    await list();
-  };
-
-  const remove = async (id: string) => {
     const { error } = await supabase.from("accounts").delete().eq("id", id);
     if (error) throw error;
-    await list();
+    setData((d) => d.filter((a) => a.id !== id));
   };
 
   return { data, loading, list, create, update, remove };

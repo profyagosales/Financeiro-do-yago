@@ -1,28 +1,3 @@
-import { useState, useMemo, useEffect } from 'react';
-import dayjs from 'dayjs';
-import 'dayjs/locale/pt-br';
-
-import { useTransactions } from '../hooks/useTransactions';
-import type { Transaction } from '../hooks/useTransactions';
-import { ModalTransacao } from '../components/ModalTransacao';
-import { useAuth } from '../contexts/AuthContext';
-
-import { PageHeader } from '@/components/PageHeader';
-import { MotionCard } from '@/components/ui/MotionCard';
-import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { Coins, TrendingUp, TrendingDown, Clock } from 'lucide-react';
-import { toast } from 'sonner';
-import TransactionsTable from '@/components/TransactionsTable';
-import { useUpcomingBills } from '@/hooks/useBills';
-
-import DailyBars from '@/components/charts/DailyBars';
-import CategoryDonut from '@/components/charts/CategoryDonut';
-import FilterBar from '@/components/FilterBar';
-import { Skeleton } from '@/components/ui/Skeleton';
-import { usePeriod } from '@/state/periodFilter';
-
-// shadcn/ui
-import { Button } from '@/components/ui/button';
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
@@ -58,47 +33,19 @@ import { toast } from "sonner";
 dayjs.locale("pt-br");
 
 export default function FinancasMensal() {
-  /* filtros */
-  const [categoria, setCategoria] = useState('Todas');
-  const { month, year, setMode } = usePeriod();
-  useEffect(() => { setMode('monthly'); }, [setMode]);
-  const mesAtual = `${year}-${String(month).padStart(2, '0')}`;
+  const { month, year, setMonth, setYear } = usePeriod();
 
-  /* modal (criar/editar) */
-  const [modalAberto, setModalAberto] = useState(false);
-  const [editando, setEditando] = useState<Transaction | null>(null);
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [source, setSource] = useState<{ kind: "all" | "account" | "card"; id: string | null }>({
+    kind: "all",
+    id: null,
+  });
+  const [query, setQuery] = useState("");
 
-  /* dados via hook Supabase */
-  const {
-    data: transacoes,
-    loading,
-    error,
-    add,
-    update,
-    remove,
-  } = useTransactions(mesAtual, categoria);
-
-  /* sair */
-  const { signOut } = useAuth();
-
-  /* listas únicas para selects */
-  const categoriasUnicas = useMemo(() => {
-    const set = new Set(transacoes.map(t => t.category));
-    set.add('Todas');
-    return Array.from(set).sort();
-  }, [transacoes]);
-
-  /* KPIs */
-  const receitas = useMemo(
-    () => transacoes.filter(t => t.type === 'income').reduce((s, t) => s + t.value, 0),
-    [transacoes]
-  );
-  const despesasBrutas = useMemo(
-    () => transacoes.filter(t => t.type === 'expense').reduce((s, t) => s + t.value, 0),
-    [transacoes]
-  );
-  const total = useMemo(() => receitas - despesasBrutas, [receitas, despesasBrutas]);
-
+  const { data, add, update, remove, bulkCreate, kpis } = useTransactions(year, month);
+  const { flat: categories } = useCategories();
+  const { data: accounts } = useAccounts();
+  const { data: cards } = useCreditCards();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
@@ -148,11 +95,6 @@ export default function FinancasMensal() {
     });
   }, [data, query, categoryDesc, source]);
 
-  const { data: contasAVencer, loading: loadingBills } = useUpcomingBills();
-
-  /* handlers modal */
-  const abrirNovo = () => { setEditando(null); setModalAberto(true); };
-  const abrirEditar = (t: Transaction) => { setEditando(t); setModalAberto(true); };
   const totalFiltrado = useMemo(() => filtered.reduce((s, t) => s + t.amount, 0), [filtered]);
 
   const [selected, setSelected] = useState<number[]>([]);
@@ -187,25 +129,6 @@ export default function FinancasMensal() {
       parent_installment_id: null,
     };
     try {
-      if (editando) { await update(editando.id, data); toast.success('Transação atualizada!'); }
-      else { await add(data); toast.success('Transação adicionada!'); }
-      setModalAberto(false);
-    } catch (err) {
-      console.error(err);
-      const msg = err instanceof Error ? err.message : 'Erro ao salvar';
-      toast.error(msg);
-    }
-  };
-
-  const excluir = async (id: number) => {
-    try {
-      await remove(id);
-      toast.success('Transação excluída!');
-    } catch (err) {
-      console.error(err);
-      const msg = err instanceof Error ? err.message : 'Erro ao excluir';
-      toast.error(msg);
-    }
       if (editing) await update(editing.id, payload);
       else await add(payload);
       toast.success("Transação salva!");
@@ -293,7 +216,6 @@ export default function FinancasMensal() {
 
   return (
     <div className="space-y-6">
-
       <PageHeader title="Finanças — Mensal" />
 
       {/* Filtros */}
@@ -355,79 +277,6 @@ export default function FinancasMensal() {
         </div>
       </div>
 
-      {loading ? (
-        <>
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-24 w-full rounded-2xl" />
-            ))}
-          </section>
-          <section className="grid gap-4 lg:grid-cols-3">
-            <Skeleton className="h-64 w-full lg:col-span-2 rounded-2xl" />
-            <Skeleton className="h-64 w-full rounded-2xl" />
-          </section>
-          <Skeleton className="h-48 w-full rounded-xl" />
-        </>
-      ) : (
-        <>
-          {/* KPIs */}
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <MotionCard>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-emerald-600 text-white"><Coins size={18} /></div>
-                <div className="flex flex-col">
-                  <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo atual</span>
-                  <AnimatedNumber value={total} />
-                </div>
-              </div>
-            </MotionCard>
-
-            <MotionCard>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-blue-600 text-white"><TrendingUp size={18} /></div>
-                <div className="flex flex-col">
-                  <span className="text-sm text-slate-500 dark:text-slate-300">Receitas</span>
-                  <AnimatedNumber value={receitas} />
-                </div>
-              </div>
-            </MotionCard>
-
-            <MotionCard>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-rose-500 text-white"><TrendingDown size={18} /></div>
-                <div className="flex flex-col">
-                  <span className="text-sm text-slate-500 dark:text-slate-300">Despesas</span>
-                  <AnimatedNumber value={-despesasBrutas} />
-                </div>
-              </div>
-            </MotionCard>
-
-            <MotionCard>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-amber-500 text-white"><Clock size={18} /></div>
-                <div className="flex flex-col">
-                  <span className="text-sm text-slate-500 dark:text-slate-300">A pagar hoje</span>
-                  <AnimatedNumber value={-aPagarHoje} />
-                </div>
-              </div>
-            </MotionCard>
-          </section>
-
-          {/* Gráficos */}
-          <section className="grid gap-4 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-              <DailyBars transacoes={transacoes} mes={mesAtual} />
-            </div>
-            <div className="lg:col-span-1">
-              <CategoryDonut transacoes={transacoes} />
-            </div>
-          </section>
-
-          {/* TABELA PRO */}
-          <TransactionsTable transacoes={transacoes} onEdit={abrirEditar} onDelete={excluir} />
-        </>
-      )}
-
       {/* KPIs */}
       <section className="grid gap-4 sm:grid-cols-3">
         <div className="p-4 rounded-lg bg-white shadow">
@@ -454,30 +303,6 @@ export default function FinancasMensal() {
         </div>
       </section>
 
-      {/* Contas a vencer */}
-      <section>
-        <h2 className="text-lg font-semibold mb-2">Contas a vencer</h2>
-        {loadingBills ? (
-          <p>Carregando...</p>
-        ) : (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-700">
-            {contasAVencer.map((c) => (
-              <li key={c.id} className="flex items-center justify-between py-2">
-                <span>{c.description}</span>
-                <span>{dayjs(c.due_date).format('DD/MM')} - {c.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-              </li>
-            ))}
-            {contasAVencer.length === 0 && (
-              <li className="py-4 text-sm text-slate-500">Nenhuma conta nos próximos dias.</li>
-            )}
-          </ul>
-        )}
-      </section>
-
-      {/* mensagens de estado */}
-      {loading && <p>Carregando…</p>}
-      {error && <p className="text-red-600">{error}</p>}
-     
       {/* Tabela */}
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
@@ -488,11 +313,6 @@ export default function FinancasMensal() {
             className="w-full sm:max-w-xs"
           />
 
-      {/* botão flutuante */}
-      <Button
-        onClick={abrirNovo}
-        aria-label="Nova transação"
-        className="fixed z-50 bottom-4 right-4 w-16 h-16 rounded-full text-4xl shadow-lg sm:bottom-8 sm:right-8"
           {selected.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-sm">{selected.length} selecionada(s)</span>

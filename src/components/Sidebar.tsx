@@ -4,9 +4,7 @@ import * as RTooltip from "@radix-ui/react-tooltip";
 import {
   LayoutDashboard, Wallet, CalendarRange, PiggyBank, Landmark, Building2,
   CandlestickChart, Coins, Target, Plane, Gift, ShoppingCart, Settings,
-  FolderTree,
-  ChevronDown, ChevronsLeft, ChevronsRight,
-  Bell, ChevronDown, ChevronsLeft, ChevronsRight,
+  FolderTree, ChevronDown, ChevronsLeft, ChevronsRight, Bell,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
