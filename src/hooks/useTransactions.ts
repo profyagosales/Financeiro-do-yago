@@ -33,7 +33,7 @@ export type TransactionInput = {
 };
 
 // ===== Helpers de data (seguro em UTC) =====================================
-function coercePeriod(year?: any, month?: any) {
+function coercePeriod(year?: unknown, month?: unknown) {
   const now = new Date();
   let y = Number(year);
   let m = Number(month);
@@ -45,7 +45,7 @@ function isoDateUTC(y: number, mZeroBased: number, day: number) {
   const d = new Date(Date.UTC(y, mZeroBased, day));
   return d.toISOString().slice(0, 10);
 }
-function monthBoundsISO(year?: any, month?: any) {
+function monthBoundsISO(year?: unknown, month?: unknown) {
   const { y, m } = coercePeriod(year, month);
   const start = isoDateUTC(y, m - 1, 1);
   const end = isoDateUTC(y, m, 0); // dia 0 do mês seguinte = último dia do mês
@@ -63,7 +63,7 @@ function daysInMonth(y: number, m1to12: number) {
 }
 function mapDateToYearMonth(iso: string, targetY: number, targetM1to12: number) {
   // Mantém o dia, mas recorta se o mês alvo tiver menos dias
-  const [Y, M, D] = iso.split("-").map((n) => Number(n));
+  const [, , D] = iso.split("-").map((n) => Number(n));
   const maxD = daysInMonth(targetY, targetM1to12);
   const d = Math.min(D || 1, maxD);
   return isoDateUTC(targetY, targetM1to12 - 1, d);
@@ -76,17 +76,109 @@ function toCSV(rows: Transaction[]) {
   const head = [
     "id","date","description","amount","category_id","account_id","card_id","installment_no","installment_total","parent_installment_id",
   ];
-  const esc = (v: any) => {
+  const esc = (v: unknown) => {
     if (v === null || v === undefined) return "";
     const s = String(v);
     return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
   };
-  const body = rows.map(r => head.map(k => esc((r as any)[k])).join(","));
+  const body = rows.map(r => head.map(k => esc((r as Record<string, unknown>)[k])).join(","));
   return head.join(",") + "\n" + body.join("\n");
+}
+export type GetYearSummaryOptions = {
+  categoryId?: string | null;
+  source?: { kind: "account" | "card"; id: string | null } | null;
+};
+
+export type YearSummary = {
+  months: { month: number; income: number; expense: number; balance: number }[];
+  byCategory: { category_id: string | null; total: number }[];
+  totals: { income: number; expense: number; balance: number };
+};
+
+/**
+ * Retorna agregações anuais de transações agrupadas por mês e categoria.
+ * - `income` e `expense` são valores positivos.
+ * - `balance` = income - expense.
+ */
+export async function getYearSummary(
+  year: number,
+  opts: GetYearSummaryOptions = {},
+): Promise<YearSummary> {
+  const y = Number(year);
+  const start = isoDateUTC(y, 0, 1);
+  const end = isoDateUTC(y, 11, 31);
+
+  const { categoryId, source } = opts;
+  let query = supabase
+    .from("transactions")
+    .select("date, amount, category_id, account_id, card_id")
+    .gte("date", start)
+    .lte("date", end);
+
+  if (categoryId !== undefined) {
+    query = categoryId === null
+      ? query.is("category_id", null)
+      : query.eq("category_id", categoryId);
+  }
+
+  if (source) {
+    if (source.kind === "account") {
+      query = source.id === null
+        ? query.is("account_id", null)
+        : query.eq("account_id", source.id);
+    } else {
+      query = source.id === null
+        ? query.is("card_id", null)
+        : query.eq("card_id", source.id);
+    }
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  const months = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    income: 0,
+    expense: 0,
+    balance: 0,
+  }));
+  const byCategoryMap = new Map<string | null, number>();
+  let incomeTotal = 0;
+  let expenseTotal = 0;
+
+  (data || []).forEach((t) => {
+    const m = Number((t.date as string).slice(5, 7));
+    const amount = Number(t.amount || 0);
+    const cat = (t.category_id as string | null) ?? null;
+    if (amount >= 0) {
+      months[m - 1].income += amount;
+      incomeTotal += amount;
+    } else {
+      const v = Math.abs(amount);
+      months[m - 1].expense += v;
+      expenseTotal += v;
+      byCategoryMap.set(cat, (byCategoryMap.get(cat) ?? 0) + v);
+    }
+  });
+
+  months.forEach((m) => {
+    m.balance = m.income - m.expense;
+  });
+
+  const byCategory = Array.from(byCategoryMap.entries()).map(([category_id, total]) => ({
+    category_id,
+    total,
+  }));
+
+  return {
+    months,
+    byCategory,
+    totals: { income: incomeTotal, expense: expenseTotal, balance: incomeTotal - expenseTotal },
+  };
 }
 
 // ===== Hook principal =======================================================
-export function useTransactions(year?: any, month?: any) {
+export function useTransactions(year?: unknown, month?: unknown) {
   const [data, setData] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -107,9 +199,9 @@ export function useTransactions(year?: any, month?: any) {
         .order("id", { ascending: true });
       if (error) throw error;
       setData((data || []) as Transaction[]);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("[useTransactions] list error:", e);
-      setError(e?.message || "Erro ao carregar transações");
+      setError(e instanceof Error ? e.message : "Erro ao carregar transações");
       setData([]);
     } finally {
       setLoading(false);
@@ -120,14 +212,18 @@ export function useTransactions(year?: any, month?: any) {
 
   // ----- CRUD de baixo nível (compat) --------------------------------------
   const create = useCallback(async (t: Omit<Transaction, "id">) => {
-    const { error } = await supabase.from("transactions").insert(t as any);
+    const { error } = await supabase
+      .from("transactions")
+      .insert(t as unknown as Transaction);
     if (error) throw error;
     await list();
   }, [list]);
 
   const bulkCreate = useCallback(async (rows: Omit<Transaction, "id">[]) => {
     if (!rows?.length) return;
-    const { error } = await supabase.from("transactions").insert(rows as any);
+    const { error } = await supabase
+      .from("transactions")
+      .insert(rows as unknown as Transaction[]);
     if (error) throw error;
     await list();
   }, [list]);
