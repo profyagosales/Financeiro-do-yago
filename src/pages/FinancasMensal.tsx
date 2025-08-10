@@ -1,91 +1,173 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 
-import { useTransactions } from '../hooks/useTransactions';
-import type { Transaction } from '../hooks/useTransactions';
-import { ModalTransacao } from '../components/ModalTransacao';
-import { useAuth } from '../contexts/AuthContext';
+import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
+import { ModalTransacao } from '@/components/ModalTransacao';
+import { useAuth } from '@/contexts/AuthContext';
 
-import { PageHeader } from '@/components/PageHeader';
+import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { Coins, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { Coins, TrendingUp, TrendingDown, Clock, Search, Wallet, CreditCard, Plus, Download, CalendarRange } from 'lucide-react';
 import { toast } from 'sonner';
 import TransactionsTable from '@/components/TransactionsTable';
 
 import DailyBars from '@/components/charts/DailyBars';
-import CategoryDonut from '@/components/charts/CategoryDonut';
+import { CategoryDonut } from '@/components/charts/CategoryDonut';
 
 // shadcn/ui
 import { Button } from '@/components/ui/button';
-import {
-  Select, SelectTrigger, SelectContent, SelectItem, SelectValue,
-} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+
+import { useCategories } from '@/hooks/useCategories';
 
 dayjs.locale('pt-br');
 
-export default function FinancasMensal() {
-  /* filtros */
-  const [mesAtual, setMesAtual] = useState(() => dayjs().format('YYYY-MM'));
-  const [categoria, setCategoria] = useState('Todas');
+// utils simples p/ busca sem acento
+const norm = (s: string) => (s || '')
+  .normalize('NFD').replace(/\p{Diacritic}/gu, '')
+  .toLowerCase();
 
-  /* modal (criar/editar) */
+// CSV helper local (exporta apenas filtradas)
+function toCSV(rows: any[]) {
+  const header = [
+    'id','date','description','value','type','category','source_kind','source_id','installment_no','installment_total'
+  ].join(',');
+  const lines = rows.map((r) => [
+    r.id,
+    r.date,
+    JSON.stringify(r.description ?? ''),
+    r.value,
+    r.type,
+    JSON.stringify(r.category ?? ''),
+    r.source_kind ?? '',
+    JSON.stringify(r.source_id ?? ''),
+    r.installment_no ?? '',
+    r.installment_total ?? '',
+  ].join(','));
+  return [header, ...lines].join('\n');
+}
+
+export default function FinancasMensal() {
+  // ===== filtros locais =====
+  const [mesAtual, setMesAtual] = useState(() => dayjs().format('YYYY-MM'));
+  const [categoriaId, setCategoriaId] = useState<string | 'Todas'>('Todas');
+  const [fonte, setFonte] = useState<'Todas' | 'Conta' | 'Cartão'>('Todas');
+  const [busca, setBusca] = useState('');
+
+  // ===== modal (criar/editar) =====
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Transaction | null>(null);
 
-  /* dados via hook Supabase */
-  const {
-    data: transacoes,
-    loading,
-    error,
-    add,
-    update,
-    remove,
-  } = useTransactions(mesAtual, categoria);
+  // ===== dialog duplicar (apenas UI por enquanto) =====
+  const [dupOpen, setDupOpen] = useState(false);
+  const [mesDestino, setMesDestino] = useState(() => dayjs().format('YYYY-MM'));
 
-  /* sair */
-  const { signOut } = useAuth();
+  // ===== derivar período para hook =====
+  const year = Number(mesAtual.slice(0,4));
+  const month = Number(mesAtual.slice(5,7));
 
-  /* listas únicas para selects */
-  const mesesUnicos = useMemo(() => {
-    const set = new Set(transacoes.map(t => t.date.slice(0, 7)));
-    set.add(mesAtual);
-    return Array.from(set).sort().reverse();
-  }, [transacoes, mesAtual]);
+  // ===== dados via hook Supabase =====
+  const { data, loading, error, addSmart, update, remove, kpis } = useTransactions(year, month);
 
-  const categoriasUnicas = useMemo(() => {
-    const set = new Set(transacoes.map(t => t.category));
-    set.add('Todas');
-    return Array.from(set).sort();
-  }, [transacoes]);
+  // ===== categorias (mapear id -> nome) =====
+  const { flat: categorias, byId: categoriasById } = useCategories();
 
-  /* KPIs */
-  const receitas = useMemo(
-    () => transacoes.filter(t => t.type === 'income').reduce((s, t) => s + t.value, 0),
-    [transacoes]
-  );
-  const despesasBrutas = useMemo(
-    () => transacoes.filter(t => t.type === 'expense').reduce((s, t) => s + t.value, 0),
-    [transacoes]
-  );
-  const total = useMemo(() => receitas - despesasBrutas, [receitas, despesasBrutas]);
+  const categoriasOptions = useMemo(() => {
+    const base = categorias.map(c => ({ id: c.id, name: c.name }));
+    return [{ id: 'Todas', name: 'Todas' } as any, ...base];
+  }, [categorias]);
+
+  // ===== aplicar filtros + converter para UI (type/value) =====
+  type UIItem = {
+    id: number;
+    date: string;
+    description: string;
+    value: number; // positivo
+    type: 'income' | 'expense';
+    category?: string | null;
+    category_id?: string | null;
+    source_kind?: 'account' | 'card' | null;
+    source_id?: string | null;
+    installment_no?: number | null;
+    installment_total?: number | null;
+  };
+
+  const uiTransacoes: UIItem[] = useMemo(() => {
+    return data.map(t => {
+      const type = t.amount >= 0 ? 'income' : 'expense';
+      const value = Math.abs(t.amount);
+      const category = t.category_id ? categoriasById.get(t.category_id)?.name ?? null : null;
+      const source_kind: 'account' | 'card' | null = t.card_id ? 'card' : (t.account_id ? 'account' : null);
+      const source_id = t.card_id ?? t.account_id ?? null;
+      return {
+        id: t.id,
+        date: t.date,
+        description: t.description,
+        value,
+        type,
+        category,
+        category_id: t.category_id ?? null,
+        source_kind,
+        source_id,
+        installment_no: t.installment_no ?? null,
+        installment_total: t.installment_total ?? null,
+      };
+    });
+  }, [data, categoriasById]);
+
+  const transacoesFiltradas = useMemo(() => {
+    let out = uiTransacoes;
+    if (categoriaId !== 'Todas') out = out.filter(t => t.category_id === categoriaId);
+    if (fonte !== 'Todas') {
+      if (fonte === 'Conta') out = out.filter(t => t.source_kind === 'account');
+      if (fonte === 'Cartão') out = out.filter(t => t.source_kind === 'card');
+    }
+    if (busca) {
+      const q = norm(busca);
+      out = out.filter(t => norm(t.description).includes(q));
+    }
+    return out;
+  }, [uiTransacoes, categoriaId, fonte, busca]);
+
+  // KPIs (do hook já vêm prontos)
+  const receitas = kpis.entradas;
+  const despesasBrutas = kpis.saidas;
+  const total = kpis.saldo;
 
   const aPagarHoje = useMemo(() => {
     const hoje = dayjs().format('YYYY-MM-DD');
-    return transacoes
+    return uiTransacoes
       .filter(t => t.type === 'expense' && t.date === hoje)
       .reduce((s, t) => s + t.value, 0);
-  }, [transacoes]);
+  }, [uiTransacoes]);
 
-  /* handlers modal */
+  // ===== Handlers modal =====
   const abrirNovo = () => { setEditando(null); setModalAberto(true); };
   const abrirEditar = (t: Transaction) => { setEditando(t); setModalAberto(true); };
 
-  const salvar = async (data: Omit<Transaction, 'id' | 'user_id'>) => {
+  const salvar = async (dataForm: TransactionInput) => {
     try {
-      if (editando) { await update(editando.id, data); toast.success('Transação atualizada!'); }
-      else { await add(data); toast.success('Transação adicionada!'); }
+      if (editando) {
+        // Atualização simples (sem reescalar parcelas):
+        const amount = dataForm.type === 'expense' ? -Math.abs(dataForm.value) : Math.abs(dataForm.value);
+        await update(editando.id, {
+          date: dataForm.date,
+          description: dataForm.description,
+          amount,
+          category_id: dataForm.category_id ?? null,
+          account_id: dataForm.source_kind === 'account' ? (dataForm.source_id ?? null) : null,
+          card_id: dataForm.source_kind === 'card' ? (dataForm.source_id ?? null) : null,
+        } as Partial<Transaction>);
+        toast.success('Transação atualizada!');
+      } else {
+        await addSmart(dataForm);
+        toast.success('Transação adicionada!');
+      }
       setModalAberto(false);
     } catch (err: any) {
       console.error(err); toast.error(err?.message || 'Erro ao salvar');
@@ -97,49 +179,125 @@ export default function FinancasMensal() {
     catch (err: any) { console.error(err); toast.error(err?.message || 'Erro ao excluir'); }
   };
 
+  // Atalho de teclado: pressionar "N" abre o modal de nova transação (ignora quando digitando em inputs)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (
+        !modalAberto &&
+        e.key?.toLowerCase() === 'n' &&
+        !(e.target as HTMLElement)?.closest('input, textarea, [contenteditable="true"], select')
+      ) {
+        e.preventDefault();
+        abrirNovo();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [modalAberto]);
+
+  // ======= Action Bar (Export) =======
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const idsFiltradas = useMemo(() => transacoesFiltradas.map(t => t.id), [transacoesFiltradas]);
+
+  const handleExport = () => {
+    if (!transacoesFiltradas.length) { toast.info('Nada para exportar'); return; }
+    const csv = toCSV(transacoesFiltradas);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `financas-${mesAtual}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Finanças Mensal"
-        subtitle="Acompanhe resultados, categorias e vencimentos"
-      >
-        {/* Ações/filtros dentro do header */}
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="min-w-[220px]">
+    <div className="space-y-6 pb-24">
+      <PageHeader title="Finanças — Mensal" subtitle="Cadastre e acompanhe lançamentos do mês">
+        {/* Filtros dentro do header */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+          {/* Mês (YYYY-MM) */}
+          <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Mês</span>
             <Select value={mesAtual} onValueChange={setMesAtual}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
                 <SelectValue placeholder="Selecione o mês" />
               </SelectTrigger>
-              <SelectContent>
-                {mesesUnicos.map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {dayjs(m + '-01').format('MMMM/YYYY')}
-                  </SelectItem>
-                ))}
+              <SelectContent className="rounded-xl">
+                {/* últimos 18 meses */}
+                {Array.from({ length: 18 }).map((_, i) => {
+                  const d = dayjs().subtract(i, 'month');
+                  const v = d.format('YYYY-MM');
+                  return (
+                    <SelectItem key={v} value={v}>{d.format('MMMM/YYYY')}</SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
 
-          <div className="min-w-[220px]">
+          {/* Categoria */}
+          <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Categoria</span>
-            <Select value={categoria} onValueChange={setCategoria}>
-              <SelectTrigger className="w-full">
+            <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v as any)}>
+              <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
-              <SelectContent>
-                {categoriasUnicas.map((cat) => (
-                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+              <SelectContent className="rounded-xl max-h-72">
+                {categoriasOptions.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          <Button variant="secondary" onClick={signOut}>
-            Sair
-          </Button>
+          {/* Fonte */}
+          <div>
+            <span className="mb-1 block text-xs text-emerald-100/90">Fonte</span>
+            <Select value={fonte} onValueChange={(v) => setFonte(v as any)}>
+              <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+                <SelectValue placeholder="Todas" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="Todas"><span className="inline-flex items-center gap-2"><Wallet size={14}/> Todas</span></SelectItem>
+                <SelectItem value="Conta"><span className="inline-flex items-center gap-2"><Wallet size={14}/> Conta</span></SelectItem>
+                <SelectItem value="Cartão"><span className="inline-flex items-center gap-2"><CreditCard size={14}/> Cartão</span></SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Busca */}
+          <div className="sm:col-span-2">
+            <span className="mb-1 block text-xs text-emerald-100/90">Buscar</span>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-200/70" />
+              <Input
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Descrição, loja, observações…"
+                className="pl-9 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+              />
+            </div>
+          </div>
+
         </div>
       </PageHeader>
+
+      {/* ======= ACTION BAR ======= */}
+      <section className="card-surface p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-3 justify-between">
+        <div className="text-xs sm:text-sm text-emerald-900/80 dark:text-emerald-100/80">
+          {transacoesFiltradas.length} lançamentos filtrados
+        </div>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <Button onClick={abrirNovo} className="inline-flex items-center gap-2">
+            <Plus className="h-4 w-4" /> Nova transação
+          </Button>
+          {/* Export */}
+          <Button variant="outline" onClick={handleExport} className="inline-flex items-center gap-2">
+            <Download className="h-4 w-4"/> Exportar CSV
+          </Button>
+        </div>
+      </section>
 
       {/* KPIs */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -147,7 +305,7 @@ export default function FinancasMensal() {
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-full bg-emerald-600 text-white"><Coins size={18} /></div>
             <div className="flex flex-col">
-              <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo atual</span>
+              <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo do mês</span>
               <AnimatedNumber value={total} />
             </div>
           </div>
@@ -157,7 +315,7 @@ export default function FinancasMensal() {
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-full bg-blue-600 text-white"><TrendingUp size={18} /></div>
             <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-300">Receitas</span>
+              <span className="text-sm text-slate-500 dark:text-slate-300">Entradas</span>
               <AnimatedNumber value={receitas} />
             </div>
           </div>
@@ -167,8 +325,8 @@ export default function FinancasMensal() {
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-full bg-rose-500 text-white"><TrendingDown size={18} /></div>
             <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-300">Despesas</span>
-              <AnimatedNumber value={-despesasBrutas} />
+              <span className="text-sm text-slate-500 dark:text-slate-300">Saídas</span>
+              <AnimatedNumber value={despesasBrutas} />
             </div>
           </div>
         </MotionCard>
@@ -178,7 +336,7 @@ export default function FinancasMensal() {
             <div className="p-2 rounded-full bg-amber-500 text-white"><Clock size={18} /></div>
             <div className="flex flex-col">
               <span className="text-sm text-slate-500 dark:text-slate-300">A pagar hoje</span>
-              <AnimatedNumber value={-aPagarHoje} />
+              <AnimatedNumber value={aPagarHoje} />
             </div>
           </div>
         </MotionCard>
@@ -187,10 +345,10 @@ export default function FinancasMensal() {
       {/* Gráficos */}
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <DailyBars transacoes={transacoes} mes={mesAtual} />
+          <DailyBars transacoes={transacoesFiltradas as any} mes={mesAtual} />
         </div>
         <div className="lg:col-span-1">
-          <CategoryDonut transacoes={transacoes} />
+          <CategoryDonut transacoes={transacoesFiltradas as any} />
         </div>
       </section>
 
@@ -198,33 +356,84 @@ export default function FinancasMensal() {
       {loading && <p>Carregando…</p>}
       {error && <p className="text-red-600">{error}</p>}
 
-      {/* TABELA PRO */}
-      <TransactionsTable transacoes={transacoes} onEdit={abrirEditar} onDelete={excluir} />
+      {/* TABELA */}
+      <TransactionsTable
+        transacoes={transacoesFiltradas as any}
+        onEdit={(row: any) => {
+          // Converter UIItem -> TransactionInput parcial para edição
+          setEditando(data.find(d => d.id === row.id) || null);
+          setModalAberto(true);
+        }}
+        onDelete={(id: number) => excluir(id)}
+      />
 
       {/* botão flutuante */}
-      <Button
-        onClick={abrirNovo}
-        className="fixed bottom-8 right-8 w-14 h-14 rounded-full text-3xl shadow-lg"
-      >
-        +
-      </Button>
+      <TooltipProvider delayDuration={200} disableHoverableContent>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={abrirNovo}
+              className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 w-14 h-14 rounded-full shadow-xl"
+              aria-label="Nova transação"
+              title="Nova transação"
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Nova transação (atalho: N)
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {/* modal criar/editar */}
       <ModalTransacao
         open={modalAberto}
         onClose={() => setModalAberto(false)}
-        initialData={
-          editando && {
-            date: editando.date,
-            description: editando.description,
-            value: editando.value,
-            type: editando.type,
-            category: editando.category,
-            payment_method: editando.payment_method,
-          }
-        }
+        initialData={editando ? {
+          date: editando.date,
+          description: editando.description,
+          value: Math.abs(editando.amount),
+          type: editando.amount >= 0 ? 'income' : 'expense',
+          category_id: editando.category_id ?? null,
+          source_kind: editando.card_id ? 'card' : (editando.account_id ? 'account' : undefined),
+          source_id: editando.card_id ?? editando.account_id ?? undefined,
+          installments: editando.installment_total ?? undefined,
+        } : undefined}
         onSubmit={salvar}
       />
+
+      {/* Dialog Duplicar p/ mês (UI futura) */}
+      <Dialog open={dupOpen} onOpenChange={setDupOpen}>
+        <DialogContent className="sm:max-w-md bg-white/80 dark:bg-zinc-950/80 backdrop-blur rounded-2xl border border-white/30 dark:border-white/10 shadow-xl">
+          <DialogHeader>
+            <DialogTitle className="text-base sm:text-lg">Duplicar lançamentos filtrados</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <div className="text-sm text-slate-600 dark:text-slate-300">
+              {idsFiltradas.length} itens serão copiados para o mês selecionado (função será habilitada em seguida).
+            </div>
+            <div>
+              <span className="mb-1 block text-xs text-emerald-900/70 dark:text-emerald-100/80">Mês destino</span>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+                  <CalendarRange className="h-4 w-4 text-emerald-600"/>
+                </span>
+                <Input
+                  type="month"
+                  value={mesDestino}
+                  onChange={(e) => setMesDestino(e.target.value)}
+                  className="rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDupOpen(false)}>Fechar</Button>
+            <Button onClick={() => toast.info('Duplicação em breve')}>Duplicar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

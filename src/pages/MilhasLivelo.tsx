@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 
-import { PageHeader } from '@/components/PageHeader';
+import PageHeader from '@/components/PageHeader';
 import { BrandBadge } from '@/components/BrandBadge';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';

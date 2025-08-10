@@ -7,7 +7,7 @@ type Tx = {
   type: 'income' | 'expense'; category: string;
 };
 
-export default function CategoryDonut({ transacoes }: { transacoes: Tx[] }) {
+function CategoryDonut({ transacoes }: { transacoes: Tx[] }) {
   // soma por categoria (apenas despesas)
   const byCat = transacoes
     .filter(t => t.type === 'expense')
@@ -45,3 +45,5 @@ export default function CategoryDonut({ transacoes }: { transacoes: Tx[] }) {
     </div>
   );
 }
+
+export { CategoryDonut };

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 
-import { PageHeader } from "@/components/PageHeader";
+import PageHeader from "@/components/PageHeader";
 
 import {
   Card,

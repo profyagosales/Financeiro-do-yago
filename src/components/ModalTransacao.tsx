@@ -1,21 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
+import CategoryPicker from '@/components/CategoryPicker';
+import SourcePicker from '@/components/SourcePicker';
+import ModalConta from '@/components/ModalConta';
+import ModalCartao from '@/components/ModalCartao';
+import { useCategories } from '@/hooks/useCategories';
+import { useAccounts } from '@/hooks/useAccounts';
+import { useCreditCards } from '@/hooks/useCreditCards';
+import { toast } from 'sonner';
+import MoneyInput from '@/components/MoneyInput';
 
-// \-\-\- Types -----------------------------------------------------------------
+// --- Types -----------------------------------------------------------------
 export type BaseData = {
   date: string;            // YYYY-MM-DD
   description: string;
   value: number;           // sempre positivo; tipo define sinal
   type: 'income' | 'expense';
-  category: string;        // (por enquanto texto; depois trocamos por category_id)
+  category: string;        // nome amigável (compat)
+  category_id?: string | null; // id da categoria (quando houver)
   payment_method?: string; // Pix/Cartão/Dinheiro/Boleto/Transferência/Outro
   // Extensões (opcionais, para o futuro sem quebrar quem usa hoje)
   source_kind?: 'account' | 'card';
-  source_label?: string | null;  // nome da conta/cartão (placeholder até ligarmos ao banco)
+  source_id?: string | null;     // novo: id da conta/cartão
+  source_label?: string | null;  // nome exibido (compat)
   installments?: number | null;  // número de parcelas, se cartão
   notes?: string | null;
   // Anexo (nota/recibo)
@@ -29,24 +40,40 @@ export type Props = {
   onSubmit: (data: BaseData) => Promise<void> | void;
 };
 
-const CATEGORIAS = ['Alimentação','Transporte','Moradia','Educação','Saúde','Lazer','Salário','Freelance','Investimentos','Outros'];
 const METODOS = ['Pix','Cartão','Dinheiro','Boleto','Transferência','Outro'];
 
 export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) {
+  const { flat, byId, create, list } = useCategories();
+  const { data: accounts, findById: findAccount } = useAccounts();
+  const { data: cards, byId: cardsById } = useCreditCards();
+
   const [form, setForm] = useState<BaseData>({
     date: new Date().toISOString().slice(0,10),
     description: '',
     value: 0,
     type: 'expense',
     category: 'Outros',
+    category_id: null,
     payment_method: 'Outro',
     source_kind: 'account',
+    source_id: null,
     source_label: null,
     installments: null,
     notes: null,
     attachment_file: null,
   });
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ [k: string]: string | null }>({});
+
+  // Dialog de criação rápida de categoria
+  const [newCatOpen, setNewCatOpen] = useState(false);
+  const [newCatName, setNewCatName] = useState('');
+
+  // Modais de criação rápida de fontes
+  const [openConta, setOpenConta] = useState(false);
+  const [openCartao, setOpenCartao] = useState(false);
+
+  const suggestedParentId = useMemo(() => form.category_id ?? null, [form.category_id]);
 
   useEffect(() => {
     if (initialData) {
@@ -61,28 +88,106 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     }
   }, [initialData, open]);
 
+  // Atalhos: Enter (salva) e Esc (fecha) quando o diálogo está aberto
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      const inInput = !!(e.target as HTMLElement)?.closest('input, textarea, [contenteditable="true"], select');
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'Enter' && !inInput) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, form, handleSubmit]);
+
   const handleChange = (key: keyof BaseData, v: any) => setForm(prev => ({ ...prev, [key]: v }));
 
-  const handleSubmit = async () => {
-    if (!form.description || !form.date || !form.category || !form.type) return;
+  function validate(): boolean {
+    const next: { [k: string]: string | null } = {};
+    // data
+    if (!form.date || Number.isNaN(Date.parse(form.date))) next.date = 'Informe uma data válida (YYYY-MM-DD).';
+    // descrição
+    if (!form.description || !form.description.trim()) next.description = 'Descreva o lançamento.';
+    // valor
     const n = Number(form.value);
-    if (Number.isNaN(n) || n <= 0) return;
+    if (!(n > 0)) next.value = 'Valor deve ser maior que 0.';
+    // fonte
+    if (form.source_kind && !form.source_id) next.source = 'Selecione a conta ou o cartão.';
+    // parcelas (apenas se cartão + despesa)
+    if (form.type === 'expense' && form.source_kind === 'card' && form.installments !== null && form.installments !== undefined) {
+      if (!Number.isInteger(form.installments) || (form.installments as number) < 1) {
+        next.installments = 'Parcelas deve ser inteiro ≥ 1.';
+      }
+    }
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
+
+  const handleSubmit = async () => {
+    if (!validate()) {
+      // Mostra um resumo no toast, além dos hints nos campos
+      const primeiroErro = Object.values(errors).find(Boolean);
+      if (primeiroErro) toast.error(primeiroErro as string);
+      return;
+    }
 
     setLoading(true);
     try {
-      // envia apenas dados serializáveis; arquivo será tratado fora (futuro)
       const payload: BaseData = {
         ...form,
-        value: n,
+        value: Number(form.value),
       };
       await onSubmit(payload);
+      toast.success(initialData ? 'Transação atualizada!' : 'Transação criada!');
       onClose();
+    } catch (e: any) {
+      toast.error(e?.message || 'Erro ao salvar');
     } finally {
       setLoading(false);
     }
   };
 
-  const showInstallments = form.type === 'expense' && (form.payment_method || '').toLowerCase().startsWith('cart');
+  const showInstallments = form.type === 'expense' && form.source_kind === 'card';
+
+  // Quando usuário escolhe uma categoria no picker (id), refletimos nome e id no form
+  const onCategoryPicked = (id: string | null) => {
+    if (!id) {
+      setForm(prev => ({ ...prev, category_id: null, category: 'Outros' }));
+      return;
+    }
+    const cat = byId.get(id);
+    setForm(prev => ({ ...prev, category_id: id, category: cat?.name || prev.category }));
+  };
+
+  // Criar categoria rápida
+  const createCategoryQuick = async () => {
+    const name = newCatName.trim();
+    if (!name) { toast.info('Digite um nome para a categoria'); return; }
+    try {
+      await create({ name, kind: form.type, parent_id: suggestedParentId ?? null });
+      await list();
+      const created = flat.find(c => c.name === name && c.parent_id === (suggestedParentId ?? null));
+      if (created) {
+        setForm(prev => ({ ...prev, category_id: created.id, category: created.name }));
+      }
+      setNewCatOpen(false);
+      setNewCatName('');
+      toast.success('Categoria criada!');
+    } catch (e: any) {
+      toast.error(e?.message || 'Erro ao criar categoria');
+    }
+  };
+
+  // Quando escolher fonte (conta/cartão)
+  const onSourcePicked = (s: { kind: 'account' | 'card'; id: string | null }) => {
+    let label: string | null = null;
+    if (s.kind === 'account' && s.id) label = findAccount(s.id)?.name || null;
+    if (s.kind === 'card' && s.id) label = cardsById.get(s.id)?.name || null;
+    setForm(prev => ({ ...prev, source_kind: s.kind, source_id: s.id ?? null, source_label: label }));
+  };
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -96,6 +201,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
           <div className="grid gap-1">
             <Label>Data</Label>
             <Input type="date" value={form.date} onChange={(e) => handleChange('date', e.target.value)} />
+            {errors.date && <span className="text-xs text-red-500">{errors.date}</span>}
           </div>
 
           <div className="grid gap-1">
@@ -105,17 +211,16 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
               value={form.description}
               onChange={(e) => handleChange('description', e.target.value)}
             />
+            {errors.description && <span className="text-xs text-red-500">{errors.description}</span>}
           </div>
 
           <div className="grid gap-1">
             <Label>Valor (R$)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              inputMode="decimal"
-              value={form.value}
-              onChange={(e) => handleChange('value', Number(e.target.value))}
+            <MoneyInput
+              value={Number(form.value) || 0}
+              onChange={(n) => handleChange('value', n)}
             />
+            {errors.value && <span className="text-xs text-red-500">{errors.value}</span>}
             <span className="text-xs text-slate-500">Sempre informe valor positivo — o tipo abaixo define se é receita ou despesa.</span>
           </div>
 
@@ -134,12 +239,13 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
 
             <div className="grid gap-1">
               <Label>Categoria</Label>
-              <Select value={form.category} onValueChange={(v) => handleChange('category', v)}>
-                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                <SelectContent>
-                  {CATEGORIAS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <CategoryPicker
+                value={form.category_id ?? null}
+                onChange={onCategoryPicked}
+                kind={form.type}
+                allowCreate
+                onRequestCreate={() => setNewCatOpen(true)}
+              />
             </div>
           </div>
 
@@ -157,29 +263,15 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
 
             <div className="grid gap-1">
               <Label>Fonte de pagamento</Label>
-              <div className="inline-flex overflow-hidden rounded-xl border border-white/30">
-                <button
-                  type="button"
-                  className={`px-3 py-2 text-sm ${form.source_kind === 'account' ? 'bg-emerald-600 text-white' : 'text-slate-700 dark:text-slate-200'}`}
-                  onClick={() => handleChange('source_kind', 'account')}
-                >Conta</button>
-                <button
-                  type="button"
-                  className={`px-3 py-2 text-sm ${form.source_kind === 'card' ? 'bg-emerald-600 text-white' : 'text-slate-700 dark:text-slate-200'}`}
-                  onClick={() => handleChange('source_kind', 'card')}
-                >Cartão</button>
-              </div>
+              <SourcePicker
+                value={{ kind: form.source_kind ?? 'account', id: form.source_id ?? null }}
+                onChange={onSourcePicked}
+                allowCreate
+                onRequestNewAccount={() => setOpenConta(true)}
+                onRequestNewCard={() => setOpenCartao(true)}
+              />
+              {errors.source && <span className="text-xs text-red-500">{errors.source}</span>}
             </div>
-          </div>
-
-          <div className="grid gap-1">
-            <Label>{form.source_kind === 'card' ? 'Cartão (nome/identificação)' : 'Conta (nome/identificação)'}</Label>
-            <Input
-              placeholder={form.source_kind === 'card' ? 'Ex.: Nubank Visa final 1234' : 'Ex.: Itaú Conta Corrente'}
-              value={form.source_label || ''}
-              onChange={(e) => handleChange('source_label', e.target.value)}
-            />
-            <span className="text-xs text-slate-500">(Rascunho temporário — depois ligaremos à lista real de contas/cartões.)</span>
           </div>
 
           {/* Parcelas (se cartão e despesa) */}
@@ -194,6 +286,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
                   value={form.installments || 1}
                   onChange={(e) => handleChange('installments', Math.max(1, Number(e.target.value || 1)))}
                 />
+                {errors.installments && <span className="text-xs text-red-500">{errors.installments}</span>}
               </div>
               <div className="grid gap-1">
                 <Label>Observações</Label>
@@ -226,6 +319,52 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      {/* Dialog: Nova categoria rápida */}
+      <Dialog open={newCatOpen} onOpenChange={setNewCatOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Nova categoria ({form.type === 'income' ? 'Receita' : 'Despesa'})</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <div className="grid gap-1">
+              <Label>Nome</Label>
+              <Input value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Ex.: Streaming" />
+            </div>
+            {suggestedParentId && (
+              <div className="text-xs text-slate-500">
+                Será criada como <b>subcategoria</b> de <b>{byId.get(suggestedParentId)?.name}</b>.
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setNewCatOpen(false)}>Cancelar</Button>
+            <Button onClick={createCategoryQuick}>Criar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialogs: Nova Conta / Novo Cartão */}
+      <ModalConta
+        open={openConta}
+        onClose={() => setOpenConta(false)}
+        onCreated={(id) => {
+          setOpenConta(false);
+          const acc = accounts.find(a => a.id === id) || null;
+          setForm(prev => ({ ...prev, source_kind: 'account', source_id: id, source_label: acc?.name || null }));
+        }}
+      />
+      <ModalCartao
+        open={openCartao}
+        onClose={() => setOpenCartao(false)}
+        onCreated={(id) => {
+          setOpenCartao(false);
+          const cc = cardsById.get(id) || null;
+          setForm(prev => ({ ...prev, source_kind: 'card', source_id: id, source_label: cc?.name || null }));
+        }}
+      />
     </Dialog>
   );
 }
+
+export default ModalTransacao;

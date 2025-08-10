@@ -8,7 +8,7 @@ type PageHeaderProps = {
   actions?: ReactNode;
 };
 
-export function PageHeader({ title, subtitle, icon, actions }: PageHeaderProps) {
+const PageHeader = ({ title, subtitle, icon, actions }: PageHeaderProps) => {
   return (
     <div className="mb-6 rounded-xl bg-gradient-to-r from-emerald-900 to-teal-700 text-white">
       <div className="container mx-auto px-4 py-5 flex items-center justify-between gap-4">
@@ -26,3 +26,5 @@ export function PageHeader({ title, subtitle, icon, actions }: PageHeaderProps) 
     </div>
   );
 }
+
+export default PageHeader;
