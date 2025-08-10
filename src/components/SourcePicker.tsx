@@ -1,52 +1,57 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCreditCards, cycleFor as cardCycleFor } from "@/hooks/useCreditCards";
 import { Wallet, CreditCard, Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
-type Source =
-  | { kind: "account"; id: string | null }
-  | { kind: "card"; id: string | null };
+import type { Account } from "@/hooks/useAccounts";
+import type { CreditCard } from "@/hooks/useCreditCards";
+
+type SourceRef =
+  | { kind: "account"; id: string; entity?: Account }
+  | { kind: "card"; id: string; entity?: CreditCard };
 
 export default function SourcePicker({
   value,
   onChange,
   placeholder = "Selecione a fonte",
   allowCreate = false,
-  onRequestNewAccount,
-  onRequestNewCard,
   showCardHints = true,
   className = "",
 }: {
-  value: Source;
-  onChange: (s: Source) => void;
+  value: SourceRef | null;
+  onChange: (s: SourceRef | null) => void;
   placeholder?: string;
-  allowCreate?: boolean; // mostra itens "+ Nova conta…"/"+ Novo cartão…"
-  onRequestNewAccount?: () => void;
-  onRequestNewCard?: () => void;
-  showCardHints?: boolean; // exibe dica de fechamento/vencimento quando cartão selecionado
+  allowCreate?: boolean;
+  showCardHints?: boolean;
   className?: string;
 }) {
-  const { data: accounts } = useAccounts();
-  const { data: cards, byId: cardsById } = useCreditCards();
+  const { data: accounts, create: createAccount } = useAccounts();
+  const { data: cards, byId: cardsById, create: createCard } = useCreditCards();
 
-  const kind = value?.kind ?? "account";
+  const [accOpen, setAccOpen] = useState(false);
+  const [accName, setAccName] = useState("");
+  const [accBank, setAccBank] = useState("");
+  const [cardOpen, setCardOpen] = useState(false);
+  const [cardName, setCardName] = useState("");
+  const [cardBrand, setCardBrand] = useState("");
+  const [savingAcc, setSavingAcc] = useState(false);
+  const [savingCard, setSavingCard] = useState(false);
+
+  const [kind, setKind] = useState<"account" | "card">(value?.kind ?? "account");
   const selectedId = value?.id ?? null;
+
+  useEffect(() => {
+    if (value) setKind(value.kind);
+  }, [value?.kind]);
 
   const brl = (n?: number | null) =>
     typeof n === "number" ? n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "";
-
-  const selectedLabel = useMemo(() => {
-    if (!selectedId) return "";
-    if (kind === "account") {
-      const acc = accounts.find((a) => a.id === selectedId);
-      return acc ? acc.name : "";
-    } else {
-      const cc = cards.find((c) => c.id === selectedId);
-      return cc ? cc.name : "";
-    }
-  }, [selectedId, kind, accounts, cards]);
 
   const cardHint = useMemo(() => {
     if (!showCardHints || kind !== "card" || !selectedId) return null;
@@ -65,7 +70,10 @@ export default function SourcePicker({
         <button
           type="button"
           className={`px-3 py-2 text-sm transition-colors ${kind === "account" ? "bg-emerald-600 text-white" : "text-zinc-700 dark:text-zinc-200"}`}
-          onClick={() => onChange({ kind: "account", id: null })}
+          onClick={() => {
+            setKind("account");
+            onChange(null);
+          }}
           title="Usar conta como fonte"
         >
           <span className="inline-flex items-center gap-1"><Wallet className="h-4 w-4"/> Conta</span>
@@ -73,7 +81,10 @@ export default function SourcePicker({
         <button
           type="button"
           className={`px-3 py-2 text-sm transition-colors ${kind === "card" ? "bg-emerald-600 text-white" : "text-zinc-700 dark:text-zinc-200"}`}
-          onClick={() => onChange({ kind: "card", id: null })}
+          onClick={() => {
+            setKind("card");
+            onChange(null);
+          }}
           title="Usar cartão como fonte"
         >
           <span className="inline-flex items-center gap-1"><CreditCard className="h-4 w-4"/> Cartão</span>
@@ -82,7 +93,16 @@ export default function SourcePicker({
 
       {/* Picker por tipo */}
       {kind === "account" ? (
-        <Select value={selectedId ?? undefined} onValueChange={(v) => onChange({ kind: "account", id: v || null })}>
+        <Select
+          value={selectedId ?? undefined}
+          onValueChange={(v) =>
+            onChange(
+              v
+                ? { kind: "account", id: v, entity: accounts.find((a) => a.id === v) }
+                : null
+            )
+          }
+        >
           <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
@@ -98,16 +118,20 @@ export default function SourcePicker({
                 </span>
               </SelectItem>
             ))}
-            {allowCreate && (
-              <SelectItem value="__new_account__" onClick={(e) => { e.preventDefault(); onRequestNewAccount?.(); }}>
-                <span className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-300"><Plus className="h-4 w-4"/> Nova conta…</span>
-              </SelectItem>
-            )}
           </SelectContent>
         </Select>
       ) : (
         <>
-          <Select value={selectedId ?? undefined} onValueChange={(v) => onChange({ kind: "card", id: v || null })}>
+          <Select
+            value={selectedId ?? undefined}
+            onValueChange={(v) =>
+              onChange(
+                v
+                  ? { kind: "card", id: v, entity: cards.find((c) => c.id === v) }
+                  : null
+              )
+            }
+          >
             <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
@@ -123,11 +147,6 @@ export default function SourcePicker({
                   </span>
                 </SelectItem>
               ))}
-              {allowCreate && (
-                <SelectItem value="__new_card__" onClick={(e) => { e.preventDefault(); onRequestNewCard?.(); }}>
-                  <span className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-300"><Plus className="h-4 w-4"/> Novo cartão…</span>
-                </SelectItem>
-              )}
             </SelectContent>
           </Select>
           {cardHint && (
@@ -137,6 +156,118 @@ export default function SourcePicker({
           )}
         </>
       )}
+      {allowCreate && (
+        <div className="flex gap-2 pt-1">
+          <Button type="button" variant="outline" size="sm" onClick={() => setAccOpen(true)} className="flex-1">
+            <Plus className="h-4 w-4 mr-1" /> Conta
+          </Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => setCardOpen(true)} className="flex-1">
+            <Plus className="h-4 w-4 mr-1" /> Cartão
+          </Button>
+        </div>
+      )}
+
+      {/* Modal nova conta */}
+      <Dialog open={accOpen} onOpenChange={setAccOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Nova Conta</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="grid gap-1">
+              <Label>Nome</Label>
+              <Input value={accName} onChange={(e) => setAccName(e.target.value)} />
+            </div>
+            <div className="grid gap-1">
+              <Label>Banco (opcional)</Label>
+              <Input value={accBank} onChange={(e) => setAccBank(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setAccOpen(false)} disabled={savingAcc}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                const nm = accName.trim();
+                if (!nm) {
+                  toast.error("Informe o nome da conta");
+                  return;
+                }
+                setSavingAcc(true);
+                try {
+                  const acc = await createAccount({ name: nm, institution: accBank.trim() || null });
+                  onChange({ kind: "account", id: acc.id, entity: acc });
+                  setKind("account");
+                  toast.success("Conta criada!");
+                  setAccOpen(false);
+                  setAccName("");
+                  setAccBank("");
+                } catch (e: unknown) {
+                  const err = e as Error;
+                  toast.error(err.message || "Erro ao criar conta");
+                } finally {
+                  setSavingAcc(false);
+                }
+              }}
+              disabled={savingAcc}
+            >
+              {savingAcc ? "Salvando…" : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal novo cartão */}
+      <Dialog open={cardOpen} onOpenChange={setCardOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Novo Cartão</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="grid gap-1">
+              <Label>Nome</Label>
+              <Input value={cardName} onChange={(e) => setCardName(e.target.value)} />
+            </div>
+            <div className="grid gap-1">
+              <Label>Bandeira (opcional)</Label>
+              <Input value={cardBrand} onChange={(e) => setCardBrand(e.target.value)} placeholder="Visa, Mastercard..." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCardOpen(false)} disabled={savingCard}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                const nm = cardName.trim();
+                if (!nm) {
+                  toast.error("Informe o nome do cartão");
+                  return;
+                }
+                setSavingCard(true);
+                try {
+                  const c = await createCard({ name: nm, brand: cardBrand.trim() || null });
+                  onChange({ kind: "card", id: c.id, entity: c });
+                  setKind("card");
+                  toast.success("Cartão criado!");
+                  setCardOpen(false);
+                  setCardName("");
+                  setCardBrand("");
+                } catch (e: unknown) {
+                  const err = e as Error;
+                  toast.error(err.message || "Erro ao criar cartão");
+                } finally {
+                  setSavingCard(false);
+                }
+              }}
+              disabled={savingCard}
+            >
+              {savingCard ? "Salvando…" : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

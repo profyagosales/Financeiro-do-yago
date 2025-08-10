@@ -6,9 +6,10 @@ type PageHeaderProps = {
   subtitle?: string;
   icon?: ReactNode;
   actions?: ReactNode;
+  children?: ReactNode;
 };
 
-const PageHeader = ({ title, subtitle, icon, actions }: PageHeaderProps) => {
+const PageHeader = ({ title, subtitle, icon, actions, children }: PageHeaderProps) => {
   return (
     <div className="mb-6 rounded-xl bg-gradient-to-r from-emerald-900 to-teal-700 text-white">
       <div className="container mx-auto px-4 py-5 flex items-center justify-between gap-4">
@@ -23,8 +24,11 @@ const PageHeader = ({ title, subtitle, icon, actions }: PageHeaderProps) => {
         </div>
         {actions ? <div className="shrink-0">{actions}</div> : null}
       </div>
+      {children ? (
+        <div className="container mx-auto px-4 pb-4">{children}</div>
+      ) : null}
     </div>
   );
-}
+};
 
 export default PageHeader;
