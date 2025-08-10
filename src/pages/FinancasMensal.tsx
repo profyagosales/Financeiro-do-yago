@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { Coins, TrendingUp, TrendingDown, Clock, Search, Wallet, CreditCard, Plus, Download, CalendarRange } from 'lucide-react';
+import { Coins, TrendingUp, TrendingDown, Clock, Search, Wallet, CreditCard, Plus, Download, CalendarRange, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import TransactionsTable from '@/components/TransactionsTable';
 
@@ -63,7 +63,7 @@ export default function FinancasMensal() {
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Transaction | null>(null);
 
-  // ===== dialog duplicar (apenas UI por enquanto) =====
+  // ===== dialog duplicar =====
   const [dupOpen, setDupOpen] = useState(false);
   const [mesDestino, setMesDestino] = useState(() => dayjs().format('YYYY-MM'));
 
@@ -72,7 +72,7 @@ export default function FinancasMensal() {
   const month = Number(mesAtual.slice(5,7));
 
   // ===== dados via hook Supabase =====
-  const { data, loading, error, addSmart, update, remove, kpis } = useTransactions(year, month);
+  const { data, loading, error, addSmart, update, remove, kpis, duplicateMany, list } = useTransactions(year, month);
 
   // ===== categorias (mapear id -> nome) =====
   const { flat: categorias, byId: categoriasById } = useCategories();
@@ -198,6 +198,8 @@ export default function FinancasMensal() {
   // ======= Action Bar (Export) =======
   const fileRef = useRef<HTMLInputElement | null>(null);
   const idsFiltradas = useMemo(() => transacoesFiltradas.map(t => t.id), [transacoesFiltradas]);
+  const [idsSelecionadas, setIdsSelecionadas] = useState<number[]>([]);
+  const idsParaDuplicar = idsSelecionadas.length ? idsSelecionadas : idsFiltradas;
 
   const handleExport = () => {
     if (!transacoesFiltradas.length) { toast.info('Nada para exportar'); return; }
@@ -209,6 +211,33 @@ export default function FinancasMensal() {
     a.download = `financas-${mesAtual}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const abrirDuplicar = () => {
+    if (!idsParaDuplicar.length) { toast.info('Nada para duplicar'); return; }
+    setDupOpen(true);
+  };
+
+  const confirmarDuplicar = async () => {
+    const [anoStr, mesStr] = mesDestino.split('-');
+    const targetAno = Number(anoStr);
+    const targetMes = Number(mesStr);
+    if (!targetAno || !targetMes || targetMes < 1 || targetMes > 12 || targetAno < 1970 || targetAno > 9999) {
+      toast.error('Mês destino inválido');
+      return;
+    }
+    if (!idsParaDuplicar.length) {
+      toast.info('Nada para duplicar');
+      return;
+    }
+    try {
+      await duplicateMany(idsParaDuplicar, targetAno, targetMes);
+      toast.success('Duplicado com sucesso!');
+      setDupOpen(false);
+      if (targetAno === year && targetMes === month) await list();
+    } catch (err: any) {
+      console.error(err); toast.error(err?.message || 'Falha ao duplicar');
+    }
   };
 
   return (
@@ -296,6 +325,10 @@ export default function FinancasMensal() {
           <Button variant="outline" onClick={handleExport} className="inline-flex items-center gap-2">
             <Download className="h-4 w-4"/> Exportar CSV
           </Button>
+          {/* Duplicar */}
+          <Button variant="outline" onClick={abrirDuplicar} className="inline-flex items-center gap-2">
+            <Copy className="h-4 w-4"/> Duplicar
+          </Button>
         </div>
       </section>
 
@@ -365,6 +398,7 @@ export default function FinancasMensal() {
           setModalAberto(true);
         }}
         onDelete={(id: number) => excluir(id)}
+        onSelectionChange={setIdsSelecionadas}
       />
 
       {/* botão flutuante */}
@@ -403,15 +437,15 @@ export default function FinancasMensal() {
         onSubmit={salvar}
       />
 
-      {/* Dialog Duplicar p/ mês (UI futura) */}
+      {/* Dialog Duplicar p/ mês */}
       <Dialog open={dupOpen} onOpenChange={setDupOpen}>
         <DialogContent className="sm:max-w-md bg-white/80 dark:bg-zinc-950/80 backdrop-blur rounded-2xl border border-white/30 dark:border-white/10 shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-base sm:text-lg">Duplicar lançamentos filtrados</DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">Duplicar lançamentos</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3">
             <div className="text-sm text-slate-600 dark:text-slate-300">
-              {idsFiltradas.length} itens serão copiados para o mês selecionado (função será habilitada em seguida).
+              {idsParaDuplicar.length} itens serão copiados para o mês selecionado.
             </div>
             <div>
               <span className="mb-1 block text-xs text-emerald-900/70 dark:text-emerald-100/80">Mês destino</span>
@@ -430,7 +464,7 @@ export default function FinancasMensal() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setDupOpen(false)}>Fechar</Button>
-            <Button onClick={() => toast.info('Duplicação em breve')}>Duplicar</Button>
+            <Button onClick={confirmarDuplicar}>Duplicar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
