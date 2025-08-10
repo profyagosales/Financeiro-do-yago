@@ -62,8 +62,6 @@ function normalizeType(t?: InvestmentType | null): TypePt | "Outros" {
     "renda fixa": "Renda fixa",
     "fiis": "FIIs",
     "ações": "Ações",
-    "acoes": "Ações",
-    "cripto": "Cripto",
   };
   const key = String(t).toLowerCase();
   return map[key] ?? ("Outros" as const);

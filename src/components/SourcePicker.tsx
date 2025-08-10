@@ -9,12 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-import type { Account } from "@/hooks/useAccounts";
-import type { CreditCard } from "@/hooks/useCreditCards";
+import type { CreditCard as CreditCardRow } from "@/hooks/useCreditCards";
 
-type SourceRef =
-  | { kind: "account"; id: string; entity?: Account }
-  | { kind: "card"; id: string; entity?: CreditCard };
+export type SourceValue = { kind: "account" | "card"; id: string | null };
 
 export default function SourcePicker({
   value,
@@ -24,8 +21,8 @@ export default function SourcePicker({
   showCardHints = true,
   className = "",
 }: {
-  value: SourceRef | null;
-  onChange: (s: SourceRef | null) => void;
+  value: SourceValue;
+  onChange: (s: SourceValue) => void;
   placeholder?: string;
   allowCreate?: boolean;
   showCardHints?: boolean;
@@ -43,19 +40,19 @@ export default function SourcePicker({
   const [savingAcc, setSavingAcc] = useState(false);
   const [savingCard, setSavingCard] = useState(false);
 
-  const [kind, setKind] = useState<"account" | "card">(value?.kind ?? "account");
-  const selectedId = value?.id ?? null;
+  const [kind, setKind] = useState<SourceValue["kind"]>(value.kind);
+  const selectedId = value.id;
 
   useEffect(() => {
-    if (value) setKind(value.kind);
-  }, [value?.kind]);
+    setKind(value.kind);
+  }, [value.kind]);
 
   const brl = (n?: number | null) =>
     typeof n === "number" ? n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "";
 
   const cardHint = useMemo(() => {
     if (!showCardHints || kind !== "card" || !selectedId) return null;
-    const cc = cardsById.get(selectedId);
+    const cc: CreditCardRow | undefined = cardsById.get(selectedId);
     if (!cc) return null;
     const cyc = cardCycleFor(cc);
     if (!cyc) return null;
@@ -72,7 +69,7 @@ export default function SourcePicker({
           className={`px-3 py-2 text-sm transition-colors ${kind === "account" ? "bg-emerald-600 text-white" : "text-zinc-700 dark:text-zinc-200"}`}
           onClick={() => {
             setKind("account");
-            onChange(null);
+            onChange({ kind: "account", id: null });
           }}
           title="Usar conta como fonte"
         >
@@ -83,7 +80,7 @@ export default function SourcePicker({
           className={`px-3 py-2 text-sm transition-colors ${kind === "card" ? "bg-emerald-600 text-white" : "text-zinc-700 dark:text-zinc-200"}`}
           onClick={() => {
             setKind("card");
-            onChange(null);
+            onChange({ kind: "card", id: null });
           }}
           title="Usar cartão como fonte"
         >
@@ -95,13 +92,7 @@ export default function SourcePicker({
       {kind === "account" ? (
         <Select
           value={selectedId ?? undefined}
-          onValueChange={(v) =>
-            onChange(
-              v
-                ? { kind: "account", id: v, entity: accounts.find((a) => a.id === v) }
-                : null
-            )
-          }
+          onValueChange={(v) => onChange({ kind: "account", id: v })}
         >
           <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
             <SelectValue placeholder={placeholder} />
@@ -124,13 +115,7 @@ export default function SourcePicker({
         <>
           <Select
             value={selectedId ?? undefined}
-            onValueChange={(v) =>
-              onChange(
-                v
-                  ? { kind: "card", id: v, entity: cards.find((c) => c.id === v) }
-                  : null
-              )
-            }
+            onValueChange={(v) => onChange({ kind: "card", id: v })}
           >
             <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
               <SelectValue placeholder={placeholder} />
@@ -197,7 +182,7 @@ export default function SourcePicker({
                 setSavingAcc(true);
                 try {
                   const acc = await createAccount({ name: nm, institution: accBank.trim() || null });
-                  onChange({ kind: "account", id: acc.id, entity: acc });
+                  onChange({ kind: "account", id: acc.id });
                   setKind("account");
                   toast.success("Conta criada!");
                   setAccOpen(false);
@@ -248,7 +233,7 @@ export default function SourcePicker({
                 setSavingCard(true);
                 try {
                   const c = await createCard({ name: nm, brand: cardBrand.trim() || null });
-                  onChange({ kind: "card", id: c.id, entity: c });
+                  onChange({ kind: "card", id: c.id });
                   setKind("card");
                   toast.success("Cartão criado!");
                   setCardOpen(false);

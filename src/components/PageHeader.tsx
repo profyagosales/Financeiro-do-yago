@@ -1,15 +1,11 @@
 // src/components/PageHeader.tsx
 import { ReactNode } from "react";
 
-type Breadcrumb = { label: string; href?: string };
+export type Breadcrumb = { label: string; href?: string };
 
-type PageHeaderProps = {
-  title: string;
-  subtitle?: string;
-  icon?: ReactNode;
-  actions?: ReactNode;
-  breadcrumbs?: Breadcrumb[];
-  children?: ReactNode;
+export type PageHeaderProps = {
+  title: string; subtitle?: string; icon?: ReactNode;
+  actions?: ReactNode; breadcrumbs?: Breadcrumb[]; children?: ReactNode;
 };
 
 const PageHeader = ({
@@ -59,3 +55,4 @@ const PageHeader = ({
 };
 
 export default PageHeader;
+export { PageHeader };

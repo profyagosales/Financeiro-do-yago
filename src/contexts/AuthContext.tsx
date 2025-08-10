@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 interface Ctx {
@@ -34,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   };
 
-  const signOut = () => supabase.auth.signOut();
+  const signOut = async () => { await supabase.auth.signOut(); };
 
   return (
     <AuthCtx.Provider value={{ user, loading, signIn, signOut }}>

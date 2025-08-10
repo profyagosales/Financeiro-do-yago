@@ -5,9 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import CategoryPicker from '@/components/CategoryPicker';
-import SourcePicker from '@/components/SourcePicker';
-import ModalConta from '@/components/ModalConta';
-import ModalCartao from '@/components/ModalCartao';
+import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
 import { useCategories } from '@/hooks/useCategories';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useCreditCards } from '@/hooks/useCreditCards';
@@ -68,10 +66,6 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
   // Dialog de criação rápida de categoria
   const [newCatOpen, setNewCatOpen] = useState(false);
   const [newCatName, setNewCatName] = useState('');
-
-  // Modais de criação rápida de fontes
-  const [openConta, setOpenConta] = useState(false);
-  const [openCartao, setOpenCartao] = useState(false);
 
   const suggestedParentId = useMemo(() => form.category_id ?? null, [form.category_id]);
 
@@ -182,7 +176,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
   };
 
   // Quando escolher fonte (conta/cartão)
-  const onSourcePicked = (s: { kind: 'account' | 'card'; id: string | null }) => {
+  const onSourcePicked = (s: SourceValue) => {
     let label: string | null = null;
     if (s.kind === 'account' && s.id) label = findAccount(s.id)?.name || null;
     if (s.kind === 'card' && s.id) label = cardsById.get(s.id)?.name || null;
@@ -267,8 +261,6 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
                 value={{ kind: form.source_kind ?? 'account', id: form.source_id ?? null }}
                 onChange={onSourcePicked}
                 allowCreate
-                onRequestNewAccount={() => setOpenConta(true)}
-                onRequestNewCard={() => setOpenCartao(true)}
               />
               {errors.source && <span className="text-xs text-red-500">{errors.source}</span>}
             </div>
@@ -344,25 +336,6 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
         </DialogContent>
       </Dialog>
 
-      {/* Dialogs: Nova Conta / Novo Cartão */}
-      <ModalConta
-        open={openConta}
-        onClose={() => setOpenConta(false)}
-        onCreated={(id) => {
-          setOpenConta(false);
-          const acc = accounts.find(a => a.id === id) || null;
-          setForm(prev => ({ ...prev, source_kind: 'account', source_id: id, source_label: acc?.name || null }));
-        }}
-      />
-      <ModalCartao
-        open={openCartao}
-        onClose={() => setOpenCartao(false)}
-        onCreated={(id) => {
-          setOpenCartao(false);
-          const cc = cardsById.get(id) || null;
-          setForm(prev => ({ ...prev, source_kind: 'card', source_id: id, source_label: cc?.name || null }));
-        }}
-      />
     </Dialog>
   );
 }

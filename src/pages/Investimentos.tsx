@@ -11,7 +11,6 @@ import { useInvestments } from "@/hooks/useInvestments";
 import {
   PieChart as PieIcon,
   LineChart as LineIcon,
-  PiggyBank,
   Landmark,
   Building2,
   CandlestickChart,

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { colorForCategory } from "@/lib/palette";
+import { mapCategoryColor } from "@/lib/palette";
 
 export type Category = {
   id: string;
@@ -59,7 +59,7 @@ export function useCategories() {
       const toInsert = {
         name: input.name.trim(),
         parent_id: input.parent_id ?? null,
-        color: input.color ?? colorForCategory(input.name),
+        color: input.color ?? mapCategoryColor(input.name),
       };
       const { data, error } = await supabase
         .from("categories")

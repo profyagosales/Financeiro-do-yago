@@ -176,13 +176,13 @@ export default function CarteiraRendaFixa() {
         onSubmit={onCreate}
       />
 
-      <ModalInvest
-        open={!!editing}
-        onClose={() => setEditing(null)}
-        initial={editing as any}
-        defaultType="Renda fixa"
-        onSubmit={(payload) => editing && onUpdate(editing.id, payload)}
-      />
+        <ModalInvest
+          open={!!editing}
+          onClose={() => setEditing(null)}
+          initial={editing as any}
+          defaultType="Renda fixa"
+          onSubmit={(payload) => { if (editing) return onUpdate(editing.id, payload); }}
+        />
     </>
   );
 }

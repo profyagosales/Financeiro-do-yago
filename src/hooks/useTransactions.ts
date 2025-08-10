@@ -178,7 +178,7 @@ export async function getYearSummary(
 }
 
 // ===== Hook principal =======================================================
-export function useTransactions(year?: unknown, month?: unknown) {
+export function useTransactions(year?: any, month?: any) {
   const [data, setData] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
