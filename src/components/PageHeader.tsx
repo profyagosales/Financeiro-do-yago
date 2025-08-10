@@ -12,7 +12,14 @@ type PageHeaderProps = {
   children?: ReactNode;
 };
 
-const PageHeader = ({ title, subtitle, icon, actions, breadcrumbs, children }: PageHeaderProps) => {
+const PageHeader = ({
+  title,
+  subtitle,
+  icon,
+  actions,
+  breadcrumbs,
+  children,
+}: PageHeaderProps) => {
   return (
     <div className="mb-6 rounded-xl bg-gradient-to-r from-emerald-900 to-teal-700 text-white">
       <div className="container mx-auto px-4 py-5 flex items-center justify-between gap-4">
@@ -23,24 +30,29 @@ const PageHeader = ({ title, subtitle, icon, actions, breadcrumbs, children }: P
             {subtitle ? (
               <p className="text-white/80 text-sm leading-relaxed truncate">{subtitle}</p>
             ) : null}
-            {breadcrumbs && (
+
+            {breadcrumbs && breadcrumbs.length > 0 ? (
               <div className="mt-1 flex flex-wrap items-center gap-1 text-xs text-white/80">
                 {breadcrumbs.map((b, i) => (
-                  <span key={i} className="inline-flex items-center gap-1">
+                  <span key={`${b.label}-${i}`} className="inline-flex items-center gap-1">
                     {i > 0 && <span>/</span>}
                     {b.href ? (
-                      <a href={b.href} className="underline">{b.label}</a>
+                      <a href={b.href} className="underline">
+                        {b.label}
+                      </a>
                     ) : (
                       <span>{b.label}</span>
                     )}
                   </span>
                 ))}
               </div>
-            )}
+            ) : null}
           </div>
         </div>
+
         {actions ? <div className="shrink-0">{actions}</div> : null}
       </div>
+
       {children ? <div className="container mx-auto px-4 pb-4">{children}</div> : null}
     </div>
   );

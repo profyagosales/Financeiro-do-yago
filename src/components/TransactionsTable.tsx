@@ -12,8 +12,17 @@ import dayjs from 'dayjs';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
+import { useAccounts } from '@/hooks/useAccounts';
+import { useCreditCards } from '@/hooks/useCreditCards';
+import type { Account } from '@/hooks/useAccounts';
+import type { CreditCard } from '@/hooks/useCreditCards';
+import { Badge } from '@/components/ui/badge';
 
 // Tipo de linha exibida na tabela (shape de UI vindo de FinancasMensal)
+type SourceRef =
+  | { kind: 'account'; id: string; entity?: Account }
+  | { kind: 'card'; id: string; entity?: CreditCard };
+
 export type UITransaction = {
   id: number;
   date: string; // YYYY-MM-DD
@@ -22,8 +31,11 @@ export type UITransaction = {
   type: 'income' | 'expense';
   category?: string | null;
   category_id?: string | null;
+  source?: SourceRef | null;
   source_kind?: 'account' | 'card' | null;
   source_id?: string | null;
+  account_id?: string | null;
+  card_id?: string | null;
   installment_no?: number | null;
   installment_total?: number | null;
   // campos alternativos que podem aparecer em alguns fluxos (mantidos como opcionais)
@@ -84,6 +96,11 @@ export default function TransactionsTable({
   const [dupOpen, setDupOpen] = useState(false);
   const [mesDestino, setMesDestino] = useState(() => dayjs().format('YYYY-MM'));
 
+  const { data: accounts } = useAccounts();
+  const accountsById = useMemo(() => new Map(accounts.map(a => [a.id, a])), [accounts]);
+  const { data: cards } = useCreditCards();
+  const cardsById = useMemo(() => new Map(cards.map(c => [c.id, c])), [cards]);
+
   useEffect(() => {
     onSelectionChange?.(Array.from(selected));
   }, [selected, onSelectionChange]);
@@ -110,9 +127,19 @@ export default function TransactionsTable({
     arr.sort((a, b) => {
       let vA: string | number = '';
       let vB: string | number = '';
-      if (sortKey === 'value') { vA = a.value; vB = b.value; }
-      else if (sortKey === 'date') { vA = +new Date(a.date); vB = +new Date(b.date); }
-      else { vA = (a as any)[sortKey]?.toString().toLowerCase(); vB = (b as any)[sortKey]?.toString().toLowerCase(); }
+      if (sortKey === 'value') {
+        vA = a.value;
+        vB = b.value;
+      } else if (sortKey === 'date') {
+        vA = +new Date(a.date);
+        vB = +new Date(b.date);
+      } else if (sortKey === 'description') {
+        vA = (a.description || '').toLowerCase();
+        vB = (b.description || '').toLowerCase();
+      } else if (sortKey === 'category') {
+        vA = (a.category || '').toLowerCase();
+        vB = (b.category || '').toLowerCase();
+      }
       const res = vA < vB ? -1 : vA > vB ? 1 : 0;
       return sortDir === 'asc' ? res : -res;
     });
@@ -145,7 +172,7 @@ export default function TransactionsTable({
       return next;
     });
   };
-  const allIdsOnPage = rows.map(r => r.id as number).filter(Boolean);
+  const allIdsOnPage = rows.map(r => r.id).filter(Boolean);
   const allSelectedOnPage = allIdsOnPage.length > 0 && allIdsOnPage.every(id => selected.has(id));
   const toggleAllPage = () => {
     setSelected(prev => {
@@ -158,7 +185,7 @@ export default function TransactionsTable({
       return next;
     });
   };
-  const selectAllFiltered = () => setSelected(new Set(ordered.map(r => r.id as number).filter(Boolean)));
+  const selectAllFiltered = () => setSelected(new Set(ordered.map(r => r.id).filter(Boolean)));
   const clearSelection = () => setSelected(new Set());
 
   const handleBulkDelete = async () => {
@@ -174,7 +201,7 @@ export default function TransactionsTable({
 
   // ======= Import / Export / Duplicar =======
   const toCSVSelected = (ids: number[]) => {
-    const sel = ordered.filter(r => ids.includes(r.id as number));
+    const sel = ordered.filter(r => ids.includes(r.id));
     if (!sel.length) return '';
     const header = ['id','date','description','value','type','category','source_kind','source_id','installment_no','installment_total'].join(',');
     const lines = sel.map((r) => [
@@ -186,8 +213,8 @@ export default function TransactionsTable({
       JSON.stringify(r.category ?? ''),
       r.source_kind ?? '',
       JSON.stringify(r.source_id ?? ''),
-      (r.installment_no ?? r.installment_number ?? '') as any,
-      (r.installment_total ?? r.installments_total ?? '') as any,
+      String(r.installment_no ?? r.installment_number ?? ''),
+      String(r.installment_total ?? r.installments_total ?? ''),
     ].join(','));
     return [header, ...lines].join('\n');
   };
@@ -214,8 +241,9 @@ export default function TransactionsTable({
       if (!onImportCSV) { toast.info('Import não está habilitado nesta tabela.'); return; }
       await onImportCSV(txt);
       toast.success('Importado com sucesso!');
-    } catch (err: any) {
-      console.error(err); toast.error(err?.message || 'Falha ao importar CSV');
+    } catch (err: unknown) {
+      const e = err as Error;
+      console.error(e); toast.error(e.message || 'Falha ao importar CSV');
     } finally {
       e.target.value = '';
     }
@@ -234,8 +262,9 @@ export default function TransactionsTable({
       await onDuplicateMany(ids, mesDestino);
       toast.success('Duplicado com sucesso!');
       setDupOpen(false);
-    } catch (err: any) {
-      console.error(err); toast.error(err?.message || 'Falha ao duplicar');
+    } catch (err: unknown) {
+      const e = err as Error;
+      console.error(e); toast.error(e.message || 'Falha ao duplicar');
     }
   };
 
@@ -318,32 +347,82 @@ export default function TransactionsTable({
                 const isExpense = t.type === 'expense';
                 const valorReal = isExpense ? -Math.abs(t.value) : Math.abs(t.value);
                 const negativo = valorReal < 0;
-                const fonteTipo = (t.source_kind || t.source_type || '').toString().toLowerCase();
-                const fonteNome = t.source_name || t.account_name || t.card_name || (fonteTipo === 'card' ? 'Cartão' : fonteTipo === 'account' ? 'Conta' : '—');
-                const n = (t.installment_no ?? t.installment_number ?? 1) as number;
-                const N = (t.installment_total ?? t.installments_total ?? 1) as number;
+                const resolveSource = (): SourceRef | null => {
+                  if (t.source) return t.source;
+                  if (t.source_kind && t.source_id) {
+                    return { kind: t.source_kind as 'account' | 'card', id: t.source_id };
+                  }
+                  if (t.account_id) return { kind: 'account', id: t.account_id };
+                  if (t.card_id) return { kind: 'card', id: t.card_id };
+                  return null;
+                };
+                const ref = resolveSource();
+                const n = Number(t.installment_no ?? t.installment_number ?? 1);
+                const N = Number(t.installment_total ?? t.installments_total ?? 1);
                 return (
                   <TableRow key={t.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/60">
                     <TableCell>
                       <input
                         type="checkbox"
                         className="h-4 w-4 accent-emerald-600"
-                        checked={selected.has(t.id as number)}
-                        onChange={() => toggleRow(t.id as number)}
+                        checked={selected.has(t.id)}
+                        onChange={() => toggleRow(t.id)}
                       />
                     </TableCell>
                     <TableCell className="whitespace-nowrap">{dayjs(t.date).format('DD/MM/YYYY')}</TableCell>
                     <TableCell className="max-w-[360px] truncate" title={t.description}>{t.description}</TableCell>
                     <TableCell className="whitespace-nowrap">{t.category ?? '—'}</TableCell>
                     <TableCell>
-                      <div className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-200">
-                        {fonteTipo.includes('card') ? (
-                          <CreditCard size={14} />
-                        ) : (
-                          <Wallet size={14} />
-                        )}
-                        <span className="truncate max-w-[180px]" title={fonteNome}>{fonteNome}</span>
-                      </div>
+                      {(() => {
+                        if (ref?.kind === 'account') {
+                          const acc = accountsById.get(ref.id);
+                          const name = acc?.name || t.account_name || t.source_name || 'Conta';
+                          const short = name.length > 12 ? name.slice(0, 12) + '…' : name;
+                          return (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="secondary" className="gap-1">
+                                  <Wallet size={12} />
+                                  <span className="max-w-[80px] truncate">{short}</span>
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>{name}</TooltipContent>
+                            </Tooltip>
+                          );
+                        }
+                        if (ref?.kind === 'card') {
+                          const card = cardsById.get(ref.id);
+                          const name = card?.name || t.card_name || t.source_name || 'Cartão';
+                          const short = name.length > 12 ? name.slice(0, 12) + '…' : name;
+                          const brand = card?.brand || card?.bank;
+                          return (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="secondary" className="gap-1">
+                                  <CreditCard size={12} />
+                                  <span className="max-w-[80px] truncate">{short}</span>
+                                  {brand && <span className="text-[10px] uppercase opacity-70">{brand}</span>}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>{name}</TooltipContent>
+                            </Tooltip>
+                          );
+                        }
+                        const nome = t.source_name || '—';
+                        const short = nome.length > 12 ? nome.slice(0, 12) + '…' : nome;
+                        const isCard = (t.source_kind || t.source_type || '').toLowerCase().includes('card') || !!t.card_id;
+                        return (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge variant="secondary" className="gap-1">
+                                {isCard ? <CreditCard size={12} /> : <Wallet size={12} />}
+                                <span className="max-w-[80px] truncate">{short}</span>
+                              </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>{nome}</TooltipContent>
+                          </Tooltip>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="tabular-nums text-slate-600 dark:text-slate-300">
                       {N > 1 ? `${n}/${N}` : '—'}
@@ -363,7 +442,7 @@ export default function TransactionsTable({
                         </Tooltip>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="destructive" size="sm" onClick={() => onDelete(t.id as number)} aria-label="Excluir">
+                            <Button variant="destructive" size="sm" onClick={() => onDelete(t.id)} aria-label="Excluir">
                               <Trash2 size={16} />
                             </Button>
                           </TooltipTrigger>
