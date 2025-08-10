@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 
@@ -8,7 +9,7 @@ import { ModalTransacao } from '@/components/ModalTransacao';
 import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { Coins, TrendingUp, TrendingDown, Clock, Search, Wallet, CreditCard, Plus, Download, CalendarRange, Copy } from 'lucide-react';
+import { Coins, TrendingUp, TrendingDown, Clock, Search, Plus, Download, CalendarRange, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import TransactionsTable, { type UITransaction } from '@/components/TransactionsTable';
 
@@ -23,6 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 import { useCategories } from '@/hooks/useCategories';
+import SourcePicker from '@/components/SourcePicker';
 
 dayjs.locale('pt-br');
 
@@ -52,12 +54,48 @@ function toCSV(rows: UITransaction[]) {
 }
 
 export default function FinancasMensal() {
-  // ===== filtros locais =====
-  const [mesAtual, setMesAtual] = useState(() => dayjs().format('YYYY-MM'));
-  const [categoriaId, setCategoriaId] = useState<string>('Todas');
-  const [fonte, setFonte] = useState<'Todas' | 'Conta' | 'Cartão'>('Todas');
-  const [busca, setBusca] = useState('');
+  
+  // ===== filtros locais sincronizados com URL =====
+const [searchParams, setSearchParams] = useSearchParams();
+const now = dayjs();
+const currentMes = now.format('YYYY-MM');
+const initMesParam = searchParams.get('mes');
+const initAnoParam = searchParams.get('ano');
+const initialMes = initMesParam ?? (initAnoParam ? `${initAnoParam}-${currentMes.slice(5,7)}` : currentMes);
+const initialCategoria = searchParams.get('cat') ?? 'Todas';
+const initialBusca = searchParams.get('q') ?? '';
+const initialFonte = (() => {
+  const f = searchParams.get('fonte');
+  if (f) {
+    const [kind, id] = f.split(':');
+    if ((kind === 'account' || kind === 'card') && id) {
+      return { kind, id } as { kind: 'account' | 'card'; id: string | null };
+    }
+  }
+  return { kind: 'account', id: null } as { kind: 'account' | 'card'; id: string | null };
+})();
 
+const [mesAtual, setMesAtual] = useState(initialMes);
+const [categoriaId, setCategoriaId] = useState<string | 'Todas'>(initialCategoria as any);
+const [fonte, setFonte] = useState<{ kind: 'account' | 'card'; id: string | null }>(initialFonte);
+const [busca, setBusca] = useState(initialBusca);
+
+useEffect(() => {
+  const params = new URLSearchParams(searchParams);
+  params.set('mes', mesAtual);
+  params.set('ano', mesAtual.slice(0, 4));
+  if (categoriaId && categoriaId !== 'Todas') params.set('cat', categoriaId); else params.delete('cat');
+  if (fonte.id) params.set('fonte', `${fonte.kind}:${fonte.id}`); else params.delete('fonte');
+  if (busca) params.set('q', busca); else params.delete('q');
+  setSearchParams(params, { replace: true });
+}, [mesAtual, categoriaId, fonte, busca, setSearchParams]);
+
+const limparFiltros = () => {
+  setCategoriaId('Todas');
+  setFonte({ kind: 'account', id: null });
+  setBusca('');
+};
+  
   // ===== modal (criar/editar) =====
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Transaction | null>(null);
@@ -109,9 +147,8 @@ export default function FinancasMensal() {
   const transacoesFiltradas = useMemo(() => {
     let out = uiTransacoes;
     if (categoriaId !== 'Todas') out = out.filter(t => t.category_id === categoriaId);
-    if (fonte !== 'Todas') {
-      if (fonte === 'Conta') out = out.filter(t => t.source_kind === 'account');
-      if (fonte === 'Cartão') out = out.filter(t => t.source_kind === 'card');
+    if (fonte.id) {
+      out = out.filter(t => t.source_kind === fonte.kind && t.source_id === fonte.id);
     }
     if (busca) {
       const q = norm(busca);
@@ -236,7 +273,7 @@ export default function FinancasMensal() {
     <div className="space-y-6 pb-24">
       <PageHeader title="Finanças — Mensal" subtitle="Cadastre e acompanhe lançamentos do mês">
         {/* Filtros dentro do header */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
           {/* Mês (YYYY-MM) */}
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Mês</span>
@@ -275,16 +312,13 @@ export default function FinancasMensal() {
           {/* Fonte */}
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Fonte</span>
-          <Select value={fonte} onValueChange={(v) => setFonte(v as 'Todas' | 'Conta' | 'Cartão')}>
-              <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
-                <SelectValue placeholder="Todas" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="Todas"><span className="inline-flex items-center gap-2"><Wallet size={14}/> Todas</span></SelectItem>
-                <SelectItem value="Conta"><span className="inline-flex items-center gap-2"><Wallet size={14}/> Conta</span></SelectItem>
-                <SelectItem value="Cartão"><span className="inline-flex items-center gap-2"><CreditCard size={14}/> Cartão</span></SelectItem>
-              </SelectContent>
-            </Select>
+            <SourcePicker
+              value={fonte}
+              onChange={setFonte}
+              placeholder="Todas"
+              className="w-full"
+              showCardHints={false}
+            />
           </div>
 
           {/* Busca */}
@@ -300,7 +334,9 @@ export default function FinancasMensal() {
               />
             </div>
           </div>
-
+          <div className="sm:col-span-2">
+            <Button variant="outline" onClick={limparFiltros} className="w-full">Limpar filtros</Button>
+          </div>
         </div>
       </PageHeader>
 
@@ -421,6 +457,7 @@ export default function FinancasMensal() {
           description: editando.description,
           value: Math.abs(editando.amount),
           type: editando.amount >= 0 ? 'income' : 'expense',
+          category: editando.category_id ? (categoriasById.get(editando.category_id)?.name ?? 'Outros') : 'Outros',
           category_id: editando.category_id ?? null,
           source_kind: editando.card_id ? 'card' : (editando.account_id ? 'account' : undefined),
           source_id: editando.card_id ?? editando.account_id ?? undefined,
