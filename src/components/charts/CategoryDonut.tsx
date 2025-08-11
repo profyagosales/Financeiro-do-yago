@@ -4,11 +4,18 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 import { mapCategoryColor } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
 
-type Props = { transacoes?: UITransaction[]; mes?: string };
+type Props = {
+  transacoes?: UITransaction[];
+  mes?: string;
+  categoriesData?: Array<{ category: string; value: number }>;
+};
 
-export default function CategoryDonut({ transacoes = [] }: Props) {
+export default function CategoryDonut({ transacoes = [], categoriesData }: Props) {
   // soma por categoria (apenas despesas)
   const data = useMemo(() => {
+    if (categoriesData) {
+      return categoriesData.map((c) => ({ name: c.category, value: c.value }));
+    }
     const byCat = transacoes
       .filter((t) => t.type === 'expense')
       .reduce<Record<string, number>>((acc, t) => {
@@ -18,7 +25,7 @@ export default function CategoryDonut({ transacoes = [] }: Props) {
       }, {});
 
     return Object.entries(byCat).map(([name, value]) => ({ name, value }));
-  }, [transacoes]);
+  }, [categoriesData, transacoes]);
 
   if (!data.length) {
     return (
@@ -49,7 +56,12 @@ export default function CategoryDonut({ transacoes = [] }: Props) {
                 ))}
               </Pie>
             <Tooltip
-              formatter={(v: number) => `R$ ${v.toFixed(2)}`}
+              formatter={(v: number) =>
+                (Number(v) || 0).toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                })
+              }
               labelFormatter={(name: string) => name}
             />
             <Legend />
