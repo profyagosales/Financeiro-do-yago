@@ -175,6 +175,7 @@ export function Sidebar() {
                         ].join(" ")}
                         aria-expanded={isOpen}
                         title={collapsed ? item.label : undefined}
+                        aria-label={collapsed ? item.label : undefined}
                       >
                         <span className="flex items-center gap-3">
                           <Icon className="h-4 w-4 text-slate-400 group-hover:text-white" />
@@ -239,6 +240,7 @@ function NavLeafLink({ leaf, collapsed }: { leaf: NavLeaf; collapsed?: boolean }
     <NavLink
       to={leaf.to}
       title={collapsed ? leaf.label : leaf.title}
+      aria-label={collapsed ? leaf.label : undefined}
       className={({ isActive }) =>
         [
           "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",

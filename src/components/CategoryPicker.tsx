@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useId } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import {
   Select,
@@ -53,6 +53,10 @@ export default function CategoryPicker({
   const [parentId, setParentId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [color, setColor] = useState<string | null>(null);
+
+  const nameId = useId();
+  const colorId = useId();
+  const colorHexId = useId();
 
   function openCreate(pId: string | null) {
     setMode("create");
@@ -160,6 +164,7 @@ export default function CategoryPicker({
           variant="outline"
           size="icon"
           title="Nova categoria"
+          aria-label="Nova categoria"
           onClick={() =>
             onRequestCreate ? onRequestCreate() : openCreate(null)
           }
@@ -175,6 +180,7 @@ export default function CategoryPicker({
             variant="outline"
             size="icon"
             title="Nova subcategoria"
+            aria-label="Nova subcategoria"
             onClick={() => openCreate(value)}
           >
             <Plus className="h-4 w-4" />
@@ -184,6 +190,7 @@ export default function CategoryPicker({
             variant="outline"
             size="icon"
             title="Editar"
+            aria-label="Editar"
             onClick={() => openEdit(value)}
           >
             <Pencil className="h-4 w-4" />
@@ -193,6 +200,7 @@ export default function CategoryPicker({
             variant="outline"
             size="icon"
             title="Excluir"
+            aria-label="Excluir"
             onClick={() => handleDeleteDirect(value)}
           >
             <Trash2 className="h-4 w-4" />
@@ -206,6 +214,7 @@ export default function CategoryPicker({
           variant="outline"
           size="icon"
           title="Limpar seleção"
+          aria-label="Limpar seleção"
           onClick={() => onChange(null)}
         >
           <X className="h-4 w-4" />
@@ -226,23 +235,27 @@ export default function CategoryPicker({
 
           <div className="grid gap-3 py-2">
             <div className="grid gap-1">
-              <Label>Nome</Label>
+              <Label htmlFor={nameId}>Nome</Label>
               <Input
+                id={nameId}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ex.: Streaming"
               />
             </div>
             <div className="grid gap-1">
-              <Label>Cor (opcional)</Label>
+              <Label htmlFor={colorId}>Cor (opcional)</Label>
               <div className="flex items-center gap-3">
                 <input
+                  id={colorId}
                   type="color"
                   value={color ?? "#10B981"}
                   onChange={(e) => setColor(e.target.value)}
                   className="h-9 w-12 rounded"
                 />
                 <Input
+                  id={colorHexId}
+                  aria-label="Código da cor"
                   value={color ?? ""}
                   onChange={(e) => setColor(e.target.value)}
                   placeholder="#RRGGBB"
