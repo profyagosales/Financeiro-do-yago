@@ -13,6 +13,7 @@
     "format": "prettier --write .",
     "prepare": "husky",
     "codemod:imports": "tsx scripts/codemod-rewrite-imports.ts",
+    "release:notes": "tsx scripts/generate-release-notes.ts"
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
     "validate:env": "tsx scripts/validate-env.ts",
