@@ -1,3 +1,8 @@
+/// <reference lib="webworker" />
+
+export {};
+declare const self: ServiceWorkerGlobalScope;
+
 const CACHE_NAME = 'static-cache-v1';
 const ASSETS = [
   '/',
