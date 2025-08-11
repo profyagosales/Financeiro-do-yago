@@ -106,7 +106,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     try {
       const payload: BaseData = {
         ...form,
-        value: Number(form.value),
+        value: Math.abs(Number(form.value)),
       };
       await onSubmit(payload);
       toast.success(initialData ? 'Transação atualizada!' : 'Transação criada!');

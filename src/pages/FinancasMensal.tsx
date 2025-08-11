@@ -324,7 +324,7 @@ export default function FinancasMensal() {
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Mês</span>
             <Select value={mesAtual} onValueChange={setMesAtual}>
-              <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+              <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
                 <SelectValue placeholder="Selecione o mês" />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
@@ -345,7 +345,7 @@ export default function FinancasMensal() {
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Categoria</span>
             <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v as string | 'Todas')}>
-              <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+              <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
               <SelectContent className="rounded-xl max-h-72">
@@ -379,7 +379,7 @@ export default function FinancasMensal() {
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Descrição, loja, observações…"
-                className="pl-9 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+                className="w-full h-10 pl-9 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
               />
             </div>
           </div>

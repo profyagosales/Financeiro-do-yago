@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-import type { CreditCard as TCreditCard } from "@/hooks/useCreditCards";
+import type { CreditCard as CreditCardModel } from "@/hooks/useCreditCards";
 
 export type SourceValue = { kind: "account" | "card"; id: string | null };
 
@@ -52,7 +52,7 @@ export default function SourcePicker({
 
   const cardHint = useMemo(() => {
     if (!showCardHints || kind !== "card" || !selectedId) return null;
-    const cc: TCreditCard | undefined = cardsById.get(selectedId);
+    const cc: CreditCardModel | undefined = cardsById.get(selectedId);
     if (!cc) return null;
     const cyc = cardCycleFor(cc);
     if (!cyc) return null;
@@ -94,7 +94,7 @@ export default function SourcePicker({
           value={selectedId ?? undefined}
           onValueChange={(v) => onChange({ kind: "account", id: v })}
         >
-          <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+          <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent className="rounded-xl max-h-72">
@@ -117,7 +117,7 @@ export default function SourcePicker({
             value={selectedId ?? undefined}
             onValueChange={(v) => onChange({ kind: "card", id: v })}
           >
-            <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+            <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent className="rounded-xl max-h-72">

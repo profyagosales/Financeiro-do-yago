@@ -1,5 +1,5 @@
 // src/components/PageHeader.tsx
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 export type Breadcrumb = { label: string; href?: string };
 
@@ -8,14 +8,8 @@ export type PageHeaderProps = {
   actions?: ReactNode; breadcrumbs?: Breadcrumb[]; children?: ReactNode;
 };
 
-const PageHeader = ({
-  title,
-  subtitle,
-  icon,
-  actions,
-  breadcrumbs,
-  children,
-}: PageHeaderProps) => {
+const PageHeader = (props: PageHeaderProps) => {
+  const { title, subtitle, icon, actions, breadcrumbs, children } = props;
   return (
     <div className="mb-6 rounded-xl bg-gradient-to-r from-emerald-900 to-teal-700 text-white">
       <div className="container mx-auto px-4 py-5 flex items-center justify-between gap-4">
