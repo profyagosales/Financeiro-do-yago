@@ -2,8 +2,7 @@ import { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 
-import PageHeader from '@/components/PageHeader';
-import { BrandBadge } from '@/components/BrandBadge';
+import MilesHeader from '@/components/MilesHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
@@ -64,10 +63,9 @@ export default function MilhasLivelo() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Milhas — Livelo" subtitle="Saldo, expiração e movimentos">
-        <BrandBadge brand="livelo" />
+      <MilesHeader program="livelo" subtitle="Saldo, expiração e movimentos">
         <Button onClick={()=>{ setEdit(null); setOpen(true); }}>Novo movimento</Button>
-      </PageHeader>
+      </MilesHeader>
 
       {/* KPIs */}
       <section className="grid gap-4 sm:grid-cols-4">
