@@ -60,7 +60,7 @@ export function ModalConta({ open, onOpenChange, onCreated }: ModalContaProps) {
       if (id) {
         onCreated(id);
       }
-    } catch (err) {
+    } catch {
       // TODO: tratar erro de API
     } finally {
       setLoading(false);

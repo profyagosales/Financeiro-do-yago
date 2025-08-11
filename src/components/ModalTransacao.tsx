@@ -42,8 +42,8 @@ const METODOS = ['Pix','Cartão','Dinheiro','Boleto','Transferência','Outro'];
 
 export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) {
   const { flat, byId, create, list } = useCategories();
-  const { data: accounts, findById: findAccount } = useAccounts();
-  const { data: cards, byId: cardsById } = useCreditCards();
+  const { findById: findAccount } = useAccounts();
+  const { byId: cardsById } = useCreditCards();
 
   const [form, setForm] = useState<BaseData>({
     date: new Date().toISOString().slice(0,10),

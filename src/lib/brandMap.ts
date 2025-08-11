@@ -1,16 +1,16 @@
 // src/lib/brandMap.ts
+import type { LucideIcon } from "lucide-react";
 import {
-  SiNubank,
-  SiMastercard,
-  SiVisa,
-  SiBinance,
-  SiApple,
-  SiGoogle,
-  SiAmazon,
-  SiNetflix,
-  SiUber,
-  SiSpotify,
-} from "react-icons/si";
+  Landmark,
+  CreditCard,
+  Coins,
+  Apple,
+  Globe,
+  Package,
+  Film,
+  Car,
+  Music,
+} from "lucide-react";
 
 export type BrandKey =
   | "nubank"
@@ -24,17 +24,17 @@ export type BrandKey =
   | "uber"
   | "spotify";
 
-export const BRAND_ICON: Record<BrandKey, any> = {
-  nubank: SiNubank,
-  mastercard: SiMastercard,
-  visa: SiVisa,
-  binance: SiBinance,
-  apple: SiApple,
-  google: SiGoogle,
-  amazon: SiAmazon,
-  netflix: SiNetflix,
-  uber: SiUber,
-  spotify: SiSpotify,
+export const BRAND_ICON: Record<BrandKey, LucideIcon> = {
+  nubank: Landmark, // TODO: brand icon (Nubank)
+  mastercard: CreditCard, // TODO: brand icon (Mastercard)
+  visa: CreditCard, // TODO: brand icon (Visa)
+  binance: Coins, // TODO: brand icon (Binance)
+  apple: Apple,
+  google: Globe, // TODO: brand icon (Google)
+  amazon: Package, // TODO: brand icon (Amazon)
+  netflix: Film, // TODO: brand icon (Netflix)
+  uber: Car, // TODO: brand icon (Uber)
+  spotify: Music, // TODO: brand icon (Spotify)
 };
 
 // Paleta sugerida por marca (opcional)
@@ -84,7 +84,7 @@ export function guessBrandKey(input?: string): BrandKey | null {
   }
 
   // bancos brasileiros comuns via palavras (ajuda p/ cartão/descrição)
-  if (/itau|ita u/.test(t)) return "visa";      // fallback: cartão (não há SiItau no react-icons)
+  if (/itau|ita u/.test(t)) return "visa";      // fallback: cartão (sem ícone específico)
   if (/bradesco/.test(t)) return "visa";
   if (/banco do brasil|bb\b/.test(t)) return "visa";
   if (/caixa econ|cef|caixa\b/.test(t)) return "visa";

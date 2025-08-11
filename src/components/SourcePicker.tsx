@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCreditCards, cycleFor as cardCycleFor } from "@/hooks/useCreditCards";
 import { Wallet, CreditCard, Plus } from "lucide-react";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-import type { CreditCard as CreditCardRow } from "@/hooks/useCreditCards";
+import type { CreditCard as CardModel } from "@/hooks/useCreditCards";
 
 export type SourceValue = { kind: "account" | "card"; id: string | null };
 
@@ -52,7 +52,7 @@ export default function SourcePicker({
 
   const cardHint = useMemo(() => {
     if (!showCardHints || kind !== "card" || !selectedId) return null;
-    const cc: CreditCardRow | undefined = cardsById.get(selectedId);
+    const cc: CardModel | undefined = cardsById.get(selectedId);
     if (!cc) return null;
     const cyc = cardCycleFor(cc);
     if (!cyc) return null;
