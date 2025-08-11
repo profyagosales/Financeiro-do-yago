@@ -15,13 +15,13 @@ import { toast } from 'sonner';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useCreditCards } from '@/hooks/useCreditCards';
 import type { Account } from '@/hooks/useAccounts';
-import type { CreditCard } from '@/hooks/useCreditCards';
+import type { CreditCard as TCreditCard } from '@/hooks/useCreditCards';
 import { Badge } from '@/components/ui/badge';
 
 // Tipo de linha exibida na tabela (shape de UI vindo de FinancasMensal)
 type SourceRef =
   | { kind: 'account'; id: string; entity?: Account }
-  | { kind: 'card'; id: string; entity?: CreditCard };
+  | { kind: 'card'; id: string; entity?: TCreditCard };
 
 export type UITransaction = {
   id: number;
