@@ -47,12 +47,18 @@ export function ModalConta({ open, onOpenChange, onCreated }: ModalContaProps) {
     setErroNome(null);
     setLoading(true);
     try {
-      // O método pode ser create ou add, depende do hook
-      const res = await (create ? create : (async () => { throw new Error("Método create não encontrado"); }))({
-        nome,
-        tipo,
-        instituicao: instituicao || undefined,
-        moeda,
+      const res = await create({
+        name: nome,
+        type:
+          tipo === "Dinheiro"
+            ? "cash"
+            : tipo === "Banco"
+              ? "bank"
+              : tipo === "Carteira Digital"
+                ? "wallet"
+                : "other",
+        institution: instituicao || undefined,
+        currency: moeda,
       });
       // res pode ser id ou objeto com id
       const id = typeof res === "string" ? res : res?.id;

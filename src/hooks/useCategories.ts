@@ -80,7 +80,7 @@ export function useCategories() {
     ): Promise<void> => {
       const upd: Partial<Omit<Category, "id">> = { ...patch };
       if (upd.name && upd.color === undefined) {
-        upd.color = colorForCategory(upd.name);
+        upd.color = mapCategoryColor(upd.name);
       }
       const { error } = await supabase
         .from("categories")
