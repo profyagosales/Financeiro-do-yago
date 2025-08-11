@@ -120,7 +120,6 @@ export default function ModalInvest({ open, onClose, initial, defaultType, onSub
     } else {
       setF((p) => ({ ...p, type: initialType }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initial, open, initialType]);
 
   const set = (k: keyof typeof f, v: any) => setF((p) => ({ ...p, [k]: v }));

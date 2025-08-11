@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -79,12 +79,14 @@ function monthBounds(month?: number, year?: number) {
 
 export function useInvestments(params: UseInvestmentsParams = {}) {
   const { month, year, type = "all", q } = params;
+  const typeStr = (type as string) ?? "";
+  const qStr = q ?? "";
 
   const [rows, setRows] = useState<Investment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function fetchAll() {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -106,9 +108,9 @@ export function useInvestments(params: UseInvestmentsParams = {}) {
       }
 
       // filtro de tipo (aceita snake/PT)
-      if (type && type !== "all") {
+      if (typeStr && typeStr !== "all") {
         // tentamos tanto o valor snake quanto o normalizado
-        const pt = normalizeType(type);
+        const pt = normalizeType(typeStr);
         // Como é texto livre, filtramos pelo texto normalizado (ex.: "Renda fixa")
         query = query.eq("type", pt);
       }
@@ -117,7 +119,7 @@ export function useInvestments(params: UseInvestmentsParams = {}) {
       if (error) throw error;
 
       // busca textual (client-side)
-      const text = (q ?? "").trim().toLowerCase();
+      const text = qStr.trim().toLowerCase();
       const filtered = (data ?? []).filter((r) => {
         if (!text) return true;
         const hay = [
@@ -147,12 +149,11 @@ export function useInvestments(params: UseInvestmentsParams = {}) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [month, year, typeStr, qStr]);
 
   useEffect(() => {
-     
     fetchAll();
-  }, [month, year, (type as string) ?? "", q ?? ""]);
+  }, [fetchAll]);
 
   // ---------- CRUD com fallback para note/notes ----------
   async function insertWithNote(payload: NewInvestment) {

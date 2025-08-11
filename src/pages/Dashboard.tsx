@@ -49,7 +49,7 @@ function CountUp({ value, prefix = "R$ " }: { value: number; prefix?: string }) 
       ctrl.stop();
       unsub();
     };
-  }, [value]);
+  }, [value, mv]);
   return (
     <span>
       {prefix}
@@ -111,7 +111,9 @@ export default function Dashboard() {
       acc += d.in - d.out;
       return { ...d, saldo: acc };
     });
-  }, []);
+  },
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- base is static
+  []);
 
   const sparkIn = base.slice(-8).map((d) => d.in);
   const sparkOut = base.slice(-8).map((d) => d.out);
@@ -122,7 +124,9 @@ export default function Dashboard() {
       inv += Math.max(0, d.in - d.out) * 0.35;
       return inv;
     });
-  }, []);
+  },
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- base is static
+  []);
 
   const carteira = [
     { name: "Renda fixa", value: 14800 },
