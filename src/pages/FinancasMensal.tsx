@@ -26,6 +26,8 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/comp
 
 import { useCategories } from '@/hooks/useCategories';
 import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 dayjs.locale('pt-br');
 
@@ -411,101 +413,125 @@ export default function FinancasMensal() {
       </section>
 
       {/* KPIs */}
-      <TooltipProvider delayDuration={200}>
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <MotionCard>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-emerald-600 text-white">
-                    <Coins size={18} />
+      {loading ? (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 w-full" />
+          ))}
+        </div>
+      ) : (
+        <TooltipProvider delayDuration={200}>
+          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <MotionCard>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-emerald-600 text-white">
+                      <Coins size={18} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo do mês</span>
+                      <AnimatedNumber value={saldo} />
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo do mês</span>
-                    <AnimatedNumber value={saldo} />
-                  </div>
-                </div>
-              </MotionCard>
-            </TooltipTrigger>
-            <TooltipContent>Saldo = Entradas - Saídas</TooltipContent>
-          </Tooltip>
+                </MotionCard>
+              </TooltipTrigger>
+              <TooltipContent>Saldo = Entradas - Saídas</TooltipContent>
+            </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <MotionCard>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-blue-600 text-white">
-                    <TrendingUp size={18} />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <MotionCard>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-blue-600 text-white">
+                      <TrendingUp size={18} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm text-slate-500 dark:text-slate-300">Entradas</span>
+                      <AnimatedNumber value={entradas} />
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm text-slate-500 dark:text-slate-300">Entradas</span>
-                    <AnimatedNumber value={entradas} />
-                  </div>
-                </div>
-              </MotionCard>
-            </TooltipTrigger>
-            <TooltipContent>Entradas = soma das receitas</TooltipContent>
-          </Tooltip>
+                </MotionCard>
+              </TooltipTrigger>
+              <TooltipContent>Entradas = soma das receitas</TooltipContent>
+            </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <MotionCard>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-rose-500 text-white">
-                    <TrendingDown size={18} />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <MotionCard>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-rose-500 text-white">
+                      <TrendingDown size={18} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm text-slate-500 dark:text-slate-300">Saídas</span>
+                      <AnimatedNumber value={saidasAbs} />
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm text-slate-500 dark:text-slate-300">Saídas</span>
-                    <AnimatedNumber value={saidasAbs} />
-                  </div>
-                </div>
-              </MotionCard>
-            </TooltipTrigger>
-            <TooltipContent>Saídas = soma das despesas</TooltipContent>
-          </Tooltip>
+                </MotionCard>
+              </TooltipTrigger>
+              <TooltipContent>Saídas = soma das despesas</TooltipContent>
+            </Tooltip>
 
-          <MotionCard>
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-full bg-amber-500 text-white">
-                <Clock size={18} />
+            <MotionCard>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-full bg-amber-500 text-white">
+                  <Clock size={18} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm text-slate-500 dark:text-slate-300">A pagar hoje</span>
+                  <AnimatedNumber value={aPagarHoje} />
+                </div>
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm text-slate-500 dark:text-slate-300">A pagar hoje</span>
-                <AnimatedNumber value={aPagarHoje} />
-              </div>
-            </div>
-          </MotionCard>
-        </section>
-      </TooltipProvider>
+            </MotionCard>
+          </section>
+        </TooltipProvider>
+      )}
 
       {/* Gráficos */}
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <DailyBars transacoes={transacoesFiltradas} mes={mesAtual} />
+          {loading ? (
+            <Skeleton className="h-72 w-full" />
+          ) : transacoesFiltradas.length === 0 ? (
+            <EmptyState icon={<TrendingUp className="h-6 w-6" />} title="Sem dados" />
+          ) : (
+            <DailyBars transacoes={transacoesFiltradas} mes={mesAtual} />
+          )}
         </div>
         <div className="lg:col-span-1">
-          <CategoryDonut
-            transacoes={transacoesFiltradas.filter(
-              (t): t is UITransaction & { category: string } => !!t.category
-            )}
-          />
+          {loading ? (
+            <Skeleton className="h-72 w-full" />
+          ) : transacoesFiltradas.filter((t): t is UITransaction & { category: string } => !!t.category).length === 0 ? (
+            <EmptyState icon={<TrendingDown className="h-6 w-6" />} title="Sem dados" />
+          ) : (
+            <CategoryDonut
+              transacoes={transacoesFiltradas.filter(
+                (t): t is UITransaction & { category: string } => !!t.category
+              )}
+            />
+          )}
         </div>
       </section>
 
-      {/* mensagens de estado */}
-      {loading && <p>Carregando…</p>}
       {error && <p className="text-red-600">{error}</p>}
 
       {/* TABELA */}
-      <TransactionsTable
-        transacoes={transacoesFiltradas}
-        onEdit={(row) => {
-          setEditando(data.find((d) => d.id === row.id) || null);
-          setModalAberto(true);
-        }}
-        onDelete={(id: number) => excluir(id)}
-        onSelectionChange={setIdsSelecionadas}
-      />
+      {loading ? (
+        <Skeleton className="h-64 w-full" />
+      ) : transacoesFiltradas.length === 0 ? (
+        <EmptyState icon={<Search className="h-6 w-6" />} title="Nenhuma transação" />
+      ) : (
+        <TransactionsTable
+          transacoes={transacoesFiltradas}
+          onEdit={(row) => {
+            setEditando(data.find((d) => d.id === row.id) || null);
+            setModalAberto(true);
+          }}
+          onDelete={(id: number) => excluir(id)}
+          onSelectionChange={setIdsSelecionadas}
+        />
+      )}
 
       {/* botão flutuante (FAB) */}
       <TooltipProvider delayDuration={200} disableHoverableContent>
