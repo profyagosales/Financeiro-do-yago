@@ -41,3 +41,18 @@ export function useBills(year: number, month: number) {
 
   return { data, loading, list, markPaid };
 }
+
+export async function getUpcoming(month: number, year: number) {
+  const monthStart = new Date(year, month - 1, 1).toISOString().slice(0, 10);
+  const monthEnd = new Date(year, month, 0).toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10);
+  const start = today > monthStart ? today : monthStart;
+  const { data, error } = await supabase
+    .from("bills")
+    .select("*")
+    .gte("due_date", start)
+    .lte("due_date", monthEnd)
+    .order("due_date", { ascending: true });
+  if (error) throw error;
+  return data as Bill[];
+}
