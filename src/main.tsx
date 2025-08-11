@@ -19,5 +19,6 @@ createRoot(document.getElementById('root')!).render(
         <Toaster />
       </>
     </AppErrorBoundary>
-  </StrictMode>,
-)
+  </StrictMode>
+);
+

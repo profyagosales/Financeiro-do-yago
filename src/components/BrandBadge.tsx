@@ -1,4 +1,3 @@
-import * as React from "react";
 
 export type MilesBrand = 'livelo' | 'latampass' | 'azul';
 
