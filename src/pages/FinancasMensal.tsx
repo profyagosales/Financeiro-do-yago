@@ -33,6 +33,9 @@ dayjs.locale('pt-br');
 const norm = (s: string) =>
   (s || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
+// força qualquer valor a número válido
+const safe = (n: unknown) => Number(n) || 0;
+
 // CSV helper local (exporta apenas filtradas)
 function toCSV(rows: UITransaction[]) {
   const header = [
@@ -177,22 +180,28 @@ export default function FinancasMensal() {
     return out;
   }, [uiTransacoes, categoriaId, fonte, busca]);
 
-  // KPIs (filtradas)
-  const receitas = useMemo(
-    () => transacoesFiltradas.filter((t) => t.type === 'income').reduce((s, t) => s + t.value, 0),
+  // KPIs (filtradas) — garantir números válidos
+  const entradas = useMemo(
+    () =>
+      transacoesFiltradas
+        .filter((t) => t.type === 'income')
+        .reduce((s, t) => s + safe(t.value), 0),
     [transacoesFiltradas]
   );
-  const despesasBrutas = useMemo(
-    () => transacoesFiltradas.filter((t) => t.type === 'expense').reduce((s, t) => s + t.value, 0),
+  const saidasAbs = useMemo(
+    () =>
+      transacoesFiltradas
+        .filter((t) => t.type === 'expense')
+        .reduce((s, t) => s + safe(t.value), 0),
     [transacoesFiltradas]
   );
-  const total = useMemo(() => receitas - despesasBrutas, [receitas, despesasBrutas]);
+  const saldo = useMemo(() => entradas - saidasAbs, [entradas, saidasAbs]);
 
   const aPagarHoje = useMemo(() => {
     const hoje = dayjs().format('YYYY-MM-DD');
     return transacoesFiltradas
       .filter((t) => t.type === 'expense' && t.date === hoje)
-      .reduce((s, t) => s + t.value, 0);
+      .reduce((s, t) => s + safe(t.value), 0);
   }, [transacoesFiltradas]);
 
   // ===== Handlers modal =====
@@ -413,7 +422,7 @@ export default function FinancasMensal() {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo do mês</span>
-                    <AnimatedNumber value={total} />
+                    <AnimatedNumber value={saldo} />
                   </div>
                 </div>
               </MotionCard>
@@ -430,7 +439,7 @@ export default function FinancasMensal() {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm text-slate-500 dark:text-slate-300">Entradas</span>
-                    <AnimatedNumber value={receitas} />
+                    <AnimatedNumber value={entradas} />
                   </div>
                 </div>
               </MotionCard>
@@ -447,7 +456,7 @@ export default function FinancasMensal() {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm text-slate-500 dark:text-slate-300">Saídas</span>
-                    <AnimatedNumber value={despesasBrutas} />
+                    <AnimatedNumber value={saidasAbs} />
                   </div>
                 </div>
               </MotionCard>
