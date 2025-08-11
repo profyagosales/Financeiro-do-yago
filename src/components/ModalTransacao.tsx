@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -95,11 +95,11 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open, form, handleSubmit]);
+  }, [open, form, handleSubmit, onClose]);
 
   const handleChange = (key: keyof BaseData, v: any) => setForm(prev => ({ ...prev, [key]: v }));
 
-  function validate(): boolean {
+  const validate = useCallback((): boolean => {
     const next: { [k: string]: string | null } = {};
     // data
     if (!form.date || Number.isNaN(Date.parse(form.date))) next.date = 'Informe uma data válida (YYYY-MM-DD).';
@@ -118,9 +118,9 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     }
     setErrors(next);
     return Object.keys(next).length === 0;
-  }
+  }, [form]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!validate()) {
       // Mostra um resumo no toast, além dos hints nos campos
       const primeiroErro = Object.values(errors).find(Boolean);
@@ -142,7 +142,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     } finally {
       setLoading(false);
     }
-  };
+  }, [errors, form, initialData, onClose, onSubmit, validate]);
 
   const showInstallments = form.type === 'expense' && form.source_kind === 'card';
 

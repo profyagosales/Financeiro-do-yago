@@ -35,6 +35,7 @@ export default function CategoryPicker({
   value,
   onChange,
   placeholder = "Selecione a categoria",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- API placeholder
   kind = "all",
   allowClear = true,
   allowCreate = false,
@@ -43,7 +44,7 @@ export default function CategoryPicker({
 }: Props) {
   const { flat, byId, create, update, remove } = useCategories();
 
-  const options = useMemo(() => buildOptions(flat), [flat, kind]);
+  const options = useMemo(() => buildOptions(flat), [flat]);
 
   // ===== Modal state =====
   const [open, setOpen] = useState(false);
