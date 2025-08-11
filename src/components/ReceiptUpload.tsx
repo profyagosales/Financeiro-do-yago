@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { useReceiptOCR, type ReceiptData } from "@/hooks/useReceiptOCR";
 
 type Props = {
@@ -16,7 +16,7 @@ export default function ReceiptUpload({ onExtract }: Props) {
     };
   }, [previewUrl]);
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] ?? null;
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setFile(f);

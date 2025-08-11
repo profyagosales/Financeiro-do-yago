@@ -1,3 +1,4 @@
+import { useId } from 'react'
 
 export type LogoProps = {
   size?: "sm" | "md" | "lg";
@@ -16,7 +17,7 @@ function Logo({
   variant = "mark",
   monochrome = false,
 }: LogoProps) {
-  const id = React.useId();
+  const id = useId();
   const dimension = SIZE_MAP[size];
 
   const gradient = !monochrome ? (
