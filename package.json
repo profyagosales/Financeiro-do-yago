@@ -6,11 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
     "codemod:imports": "tsx scripts/codemod-rewrite-imports.ts",
+    "validate:env": "tsx scripts/validate-env.ts",
+    "gen:mock": "tsx scripts/generate-mock.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.6",
