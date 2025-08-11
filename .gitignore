@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Generated PWA assets
+public/icons/*.png
+public/icons/favicon.ico
