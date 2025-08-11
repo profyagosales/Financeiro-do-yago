@@ -9,5 +9,16 @@ createRoot(document.getElementById('root')!).render(
     <ErrorBoundary>
       <App />
     </ErrorBoundary>
+import AppErrorBoundary from './components/AppErrorBoundary'
+import { Toaster } from './components/ui/Toasts'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <AppErrorBoundary>
+      <>
+        <App />
+        <Toaster />
+      </>
+    </AppErrorBoundary>
   </StrictMode>,
 )

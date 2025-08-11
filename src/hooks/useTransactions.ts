@@ -84,56 +84,37 @@ function toCSV(rows: Transaction[]) {
   const body = rows.map(r => head.map(k => esc((r as Record<string, unknown>)[k])).join(","));
   return head.join(",") + "\n" + body.join("\n");
 }
-export type GetYearSummaryOptions = {
-  categoryId?: string | null;
-  source?: { kind: "account" | "card"; id: string | null } | null;
-};
 
 export type YearSummary = {
-  months: { month: number; income: number; expense: number; balance: number }[];
-  byCategory: { category_id: string | null; total: number }[];
-  totals: { income: number; expense: number; balance: number };
+  year: number;
+  months: Array<{
+    month: number;
+    income: number;
+    expense: number;
+    balance: number;
+    byCategory: Record<string, number>;
+  }>;
+  totalIncome: number;
+  totalExpense: number;
+  totalBalance: number;
 };
 
 /**
  * Retorna agregações anuais de transações agrupadas por mês e categoria.
  * - `income` e `expense` são valores positivos.
  * - `balance` = income - expense.
+ * - `byCategory` contém apenas despesas agrupadas por categoria.
  */
-export async function getYearSummary(
-  year: number,
-  opts: GetYearSummaryOptions = {},
-): Promise<YearSummary> {
+export async function getYearSummary(year: number): Promise<YearSummary> {
   const y = Number(year);
   const start = isoDateUTC(y, 0, 1);
   const end = isoDateUTC(y, 11, 31);
 
-  const { categoryId, source } = opts;
-  let query = supabase
+  const { data, error } = await supabase
     .from("transactions")
-    .select("date, amount, category_id, account_id, card_id")
+    .select("date, amount, category_id")
     .gte("date", start)
     .lte("date", end);
-
-  if (categoryId !== undefined) {
-    query = categoryId === null
-      ? query.is("category_id", null)
-      : query.eq("category_id", categoryId);
-  }
-
-  if (source) {
-    if (source.kind === "account") {
-      query = source.id === null
-        ? query.is("account_id", null)
-        : query.eq("account_id", source.id);
-    } else {
-      query = source.id === null
-        ? query.is("card_id", null)
-        : query.eq("card_id", source.id);
-    }
-  }
-
-  const { data, error } = await query;
   if (error) throw error;
 
   const months = Array.from({ length: 12 }, (_, i) => ({
@@ -141,39 +122,39 @@ export async function getYearSummary(
     income: 0,
     expense: 0,
     balance: 0,
+    byCategory: {} as Record<string, number>,
   }));
-  const byCategoryMap = new Map<string | null, number>();
-  let incomeTotal = 0;
-  let expenseTotal = 0;
+
+  let totalIncome = 0;
+  let totalExpense = 0;
 
   (data || []).forEach((t) => {
-    const m = Number((t.date as string).slice(5, 7));
-    const amount = Number(t.amount || 0);
-    const cat = (t.category_id as string | null) ?? null;
+    const mIdx = Number((t.date as string).slice(5, 7)) - 1;
+    if (mIdx < 0 || mIdx > 11) return;
+    const amount = Number(t.amount) || 0;
     if (amount >= 0) {
-      months[m - 1].income += amount;
-      incomeTotal += amount;
+      months[mIdx].income += amount;
+      totalIncome += amount;
     } else {
       const v = Math.abs(amount);
-      months[m - 1].expense += v;
-      expenseTotal += v;
-      byCategoryMap.set(cat, (byCategoryMap.get(cat) ?? 0) + v);
+      months[mIdx].expense += v;
+      totalExpense += v;
+      const cat = ((t.category_id as string | null) ?? 'null') as string;
+      const catMap = months[mIdx].byCategory;
+      catMap[cat] = (catMap[cat] ?? 0) + v;
     }
   });
 
   months.forEach((m) => {
-    m.balance = m.income - m.expense;
+    m.balance = (Number(m.income) || 0) - (Number(m.expense) || 0);
   });
 
-  const byCategory = Array.from(byCategoryMap.entries()).map(([category_id, total]) => ({
-    category_id,
-    total,
-  }));
-
   return {
+    year: y,
     months,
-    byCategory,
-    totals: { income: incomeTotal, expense: expenseTotal, balance: incomeTotal - expenseTotal },
+    totalIncome,
+    totalExpense,
+    totalBalance: totalIncome - totalExpense,
   };
 }
 

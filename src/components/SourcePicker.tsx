@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useId } from "react";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCreditCards, cycleFor as cardCycleFor } from "@/hooks/useCreditCards";
 import { Wallet, CreditCard, Plus } from "lucide-react";
@@ -39,6 +39,11 @@ export default function SourcePicker({
   const [cardBrand, setCardBrand] = useState("");
   const [savingAcc, setSavingAcc] = useState(false);
   const [savingCard, setSavingCard] = useState(false);
+
+  const accNameId = useId();
+  const accBankId = useId();
+  const cardNameId = useId();
+  const cardBrandId = useId();
 
   const [kind, setKind] = useState<SourceValue["kind"]>(value.kind);
   const selectedId = value.id;
@@ -91,13 +96,14 @@ export default function SourcePicker({
       {/* Picker por tipo */}
       {kind === "account" ? (
         <Select
-          value={selectedId ?? undefined}
-          onValueChange={(v) => onChange({ kind: "account", id: v })}
+          value={selectedId ?? ""}
+          onValueChange={(v) => onChange({ kind: "account", id: v || null })}
         >
           <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent className="rounded-xl max-h-72">
+            <SelectItem value="">Todas</SelectItem>
             {accounts.map((a) => (
               <SelectItem key={a.id} value={a.id}>
                 <span className="inline-flex items-center gap-2">
@@ -114,13 +120,14 @@ export default function SourcePicker({
       ) : (
         <>
           <Select
-            value={selectedId ?? undefined}
-            onValueChange={(v) => onChange({ kind: "card", id: v })}
+            value={selectedId ?? ""}
+            onValueChange={(v) => onChange({ kind: "card", id: v || null })}
           >
             <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent className="rounded-xl max-h-72">
+              <SelectItem value="">Todas</SelectItem>
               {cards.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   <span className="inline-flex items-center gap-2">
@@ -160,12 +167,12 @@ export default function SourcePicker({
           </DialogHeader>
           <div className="grid gap-4 py-2">
             <div className="grid gap-1">
-              <Label>Nome</Label>
-              <Input value={accName} onChange={(e) => setAccName(e.target.value)} />
+              <Label htmlFor={accNameId}>Nome</Label>
+              <Input id={accNameId} value={accName} onChange={(e) => setAccName(e.target.value)} />
             </div>
             <div className="grid gap-1">
-              <Label>Banco (opcional)</Label>
-              <Input value={accBank} onChange={(e) => setAccBank(e.target.value)} />
+              <Label htmlFor={accBankId}>Banco (opcional)</Label>
+              <Input id={accBankId} value={accBank} onChange={(e) => setAccBank(e.target.value)} />
             </div>
           </div>
           <DialogFooter>
@@ -211,12 +218,12 @@ export default function SourcePicker({
           </DialogHeader>
           <div className="grid gap-4 py-2">
             <div className="grid gap-1">
-              <Label>Nome</Label>
-              <Input value={cardName} onChange={(e) => setCardName(e.target.value)} />
+              <Label htmlFor={cardNameId}>Nome</Label>
+              <Input id={cardNameId} value={cardName} onChange={(e) => setCardName(e.target.value)} />
             </div>
             <div className="grid gap-1">
-              <Label>Bandeira (opcional)</Label>
-              <Input value={cardBrand} onChange={(e) => setCardBrand(e.target.value)} placeholder="Visa, Mastercard..." />
+              <Label htmlFor={cardBrandId}>Bandeira (opcional)</Label>
+              <Input id={cardBrandId} value={cardBrand} onChange={(e) => setCardBrand(e.target.value)} placeholder="Visa, Mastercard..." />
             </div>
           </div>
           <DialogFooter>

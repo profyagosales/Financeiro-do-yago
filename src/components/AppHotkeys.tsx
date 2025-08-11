@@ -17,23 +17,53 @@ export function AppHotkeys() {
 
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
+
       // Ajuda
       if (e.shiftKey && e.key === "?") {
         e.preventDefault();
         toast.message("Atalhos", {
           description:
-            "g d: Dashboard • g f: Finanças • g i: Investimentos • g m: Metas • g c: Configurações",
+            "N: nova transação • /: buscar • F: Finanças • M: Milhas • g d: Dashboard • g f: Finanças • g i: Investimentos • g m: Metas • g c: Configurações",
         });
         return;
       }
+
+      const key = e.key.toLowerCase();
+
+      // atalhos diretos (sem aguardando 'g')
+      if (!awaiting && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (key === 'f') {
+          e.preventDefault();
+          nav('/financas/mensal');
+          return;
+        }
+        if (key === 'm') {
+          e.preventDefault();
+          nav('/milhas/livelo');
+          return;
+        }
+        if (key === 'n') {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent('nova-transacao'));
+          return;
+        }
+        if (e.key === '/') {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent('global-search'));
+          return;
+        }
+      }
+
       // Sequência "g" + letra
-      if (!awaiting && e.key.toLowerCase() === "g") {
+      if (!awaiting && key === "g") {
         setAwaiting(true);
         timer.current = window.setTimeout(() => setAwaiting(false), 1200) as unknown as number;
         return;
       }
       if (awaiting) {
-        const path = map[e.key.toLowerCase()];
+        const path = map[key];
         if (path) {
           e.preventDefault();
           if (timer.current) window.clearTimeout(timer.current);

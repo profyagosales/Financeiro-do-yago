@@ -45,6 +45,8 @@ export default function App() {
         <PeriodProvider>
           {/* Toaster global */}
           <Toaster richColors position="top-right" />
+          {/* Atalhos globais */}
+          <AppHotkeys />
           <AppRoutes />
         </PeriodProvider>
       </Router>
@@ -67,6 +69,7 @@ function AppRoutes() {
         <AppHotkeys />
 
         <Suspense fallback={<RouteLoader />}>
+
           <Routes>
             {/* redirect raiz */}
             <Route path="/" element={<Navigate to="/dashboard" />} />

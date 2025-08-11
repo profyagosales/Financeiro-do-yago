@@ -26,6 +26,8 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/comp
 
 import { useCategories } from '@/hooks/useCategories';
 import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 dayjs.locale('pt-br');
 
@@ -34,7 +36,7 @@ const norm = (s: string) =>
   (s || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 // força qualquer valor a número válido
-const safe = (n: unknown) => Number(n) || 0;
+const n = (v: unknown) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
 // CSV helper local (exporta apenas filtradas)
 function toCSV(rows: UITransaction[]) {
@@ -92,25 +94,29 @@ export default function FinancasMensal() {
   const [mesAtual, setMesAtual] = useState(initialMes);
   const [categoriaId, setCategoriaId] = useState<'Todas' | string>(initialCategoria ?? 'Todas');
   const [fonte, setFonte] = useState<SourceValue>(initialFonte);
+  const [buscaInput, setBuscaInput] = useState(initialBusca);
   const [busca, setBusca] = useState(initialBusca);
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams();
     params.set('mes', mesAtual);
     params.set('ano', mesAtual.slice(0, 4));
     if (categoriaId && categoriaId !== 'Todas') params.set('cat', categoriaId);
-    else params.delete('cat');
     if (fonte.id) params.set('fonte', `${fonte.kind}:${fonte.id}`);
-    else params.delete('fonte');
     if (busca) params.set('q', busca);
-    else params.delete('q');
     setSearchParams(params, { replace: true });
-  }, [mesAtual, categoriaId, fonte, busca, setSearchParams, searchParams]);
+  }, [mesAtual, categoriaId, fonte, busca, setSearchParams]);
+
+  useEffect(() => {
+    const id = setTimeout(() => setBusca(buscaInput), 300);
+    return () => clearTimeout(id);
+  }, [buscaInput]);
 
   const limparFiltros = () => {
     setCategoriaId('Todas');
     setFonte({ kind: 'account', id: null });
     setBusca('');
+    setBuscaInput('');
   };
 
   // ===== modal (criar/editar) =====
@@ -185,23 +191,23 @@ export default function FinancasMensal() {
     () =>
       transacoesFiltradas
         .filter((t) => t.type === 'income')
-        .reduce((s, t) => s + safe(t.value), 0),
+        .reduce((s, t) => s + n(t.value), 0),
     [transacoesFiltradas]
   );
   const saidasAbs = useMemo(
     () =>
       transacoesFiltradas
         .filter((t) => t.type === 'expense')
-        .reduce((s, t) => s + safe(t.value), 0),
+        .reduce((s, t) => s + n(t.value), 0),
     [transacoesFiltradas]
   );
-  const saldo = useMemo(() => entradas - saidasAbs, [entradas, saidasAbs]);
+  const saldo = useMemo(() => n(entradas - saidasAbs), [entradas, saidasAbs]);
 
   const aPagarHoje = useMemo(() => {
     const hoje = dayjs().format('YYYY-MM-DD');
     return transacoesFiltradas
       .filter((t) => t.type === 'expense' && t.date === hoje)
-      .reduce((s, t) => s + safe(t.value), 0);
+      .reduce((s, t) => s + n(t.value), 0);
   }, [transacoesFiltradas]);
 
   // ===== Handlers modal =====
@@ -212,9 +218,9 @@ export default function FinancasMensal() {
 
   const salvar = async (dataForm: BaseData) => {
     try {
+      const value = Math.abs(dataForm.value);
+      const amount = dataForm.type === 'expense' ? -value : value;
       if (editando) {
-        const amount =
-          dataForm.type === 'expense' ? -Math.abs(dataForm.value) : Math.abs(dataForm.value);
         await update(editando.id, {
           date: dataForm.date,
           description: dataForm.description,
@@ -225,7 +231,7 @@ export default function FinancasMensal() {
         } as Partial<Transaction>);
         toast.success('Transação atualizada!');
       } else {
-        await addSmart(dataForm as unknown as TransactionInput);
+        await addSmart({ ...dataForm, value } as unknown as TransactionInput);
         toast.success('Transação adicionada!');
       }
       setModalAberto(false);
@@ -376,8 +382,8 @@ export default function FinancasMensal() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-200/70" />
               <Input
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
+                value={buscaInput}
+                onChange={(e) => setBuscaInput(e.target.value)}
                 placeholder="Descrição, loja, observações…"
                 className="w-full h-10 pl-9 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
               />
@@ -411,101 +417,125 @@ export default function FinancasMensal() {
       </section>
 
       {/* KPIs */}
-      <TooltipProvider delayDuration={200}>
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <MotionCard>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-emerald-600 text-white">
-                    <Coins size={18} />
+      {loading ? (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 w-full" />
+          ))}
+        </div>
+      ) : (
+        <TooltipProvider delayDuration={200}>
+          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <MotionCard>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-emerald-600 text-white">
+                      <Coins size={18} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo do mês</span>
+                      <AnimatedNumber value={saldo} />
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo do mês</span>
-                    <AnimatedNumber value={saldo} />
-                  </div>
-                </div>
-              </MotionCard>
-            </TooltipTrigger>
-            <TooltipContent>Saldo = Entradas - Saídas</TooltipContent>
-          </Tooltip>
+                </MotionCard>
+              </TooltipTrigger>
+              <TooltipContent>Saldo = Entradas - Saídas</TooltipContent>
+            </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <MotionCard>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-blue-600 text-white">
-                    <TrendingUp size={18} />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <MotionCard>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-blue-600 text-white">
+                      <TrendingUp size={18} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm text-slate-500 dark:text-slate-300">Entradas</span>
+                      <AnimatedNumber value={entradas} />
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm text-slate-500 dark:text-slate-300">Entradas</span>
-                    <AnimatedNumber value={entradas} />
-                  </div>
-                </div>
-              </MotionCard>
-            </TooltipTrigger>
-            <TooltipContent>Entradas = soma das receitas</TooltipContent>
-          </Tooltip>
+                </MotionCard>
+              </TooltipTrigger>
+              <TooltipContent>Entradas = soma das receitas</TooltipContent>
+            </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <MotionCard>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-rose-500 text-white">
-                    <TrendingDown size={18} />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <MotionCard>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-rose-500 text-white">
+                      <TrendingDown size={18} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm text-slate-500 dark:text-slate-300">Saídas</span>
+                      <AnimatedNumber value={saidasAbs} />
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm text-slate-500 dark:text-slate-300">Saídas</span>
-                    <AnimatedNumber value={saidasAbs} />
-                  </div>
-                </div>
-              </MotionCard>
-            </TooltipTrigger>
-            <TooltipContent>Saídas = soma das despesas</TooltipContent>
-          </Tooltip>
+                </MotionCard>
+              </TooltipTrigger>
+              <TooltipContent>Saídas = soma das despesas</TooltipContent>
+            </Tooltip>
 
-          <MotionCard>
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-full bg-amber-500 text-white">
-                <Clock size={18} />
+            <MotionCard>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-full bg-amber-500 text-white">
+                  <Clock size={18} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm text-slate-500 dark:text-slate-300">A pagar hoje</span>
+                  <AnimatedNumber value={aPagarHoje} />
+                </div>
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm text-slate-500 dark:text-slate-300">A pagar hoje</span>
-                <AnimatedNumber value={aPagarHoje} />
-              </div>
-            </div>
-          </MotionCard>
-        </section>
-      </TooltipProvider>
+            </MotionCard>
+          </section>
+        </TooltipProvider>
+      )}
 
       {/* Gráficos */}
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <DailyBars transacoes={transacoesFiltradas} mes={mesAtual} />
+          {loading ? (
+            <Skeleton className="h-72 w-full" />
+          ) : transacoesFiltradas.length === 0 ? (
+            <EmptyState icon={<TrendingUp className="h-6 w-6" />} title="Sem dados" />
+          ) : (
+            <DailyBars transacoes={transacoesFiltradas} mes={mesAtual} />
+          )}
         </div>
         <div className="lg:col-span-1">
-          <CategoryDonut
-            transacoes={transacoesFiltradas.filter(
-              (t): t is UITransaction & { category: string } => !!t.category
-            )}
-          />
+          {loading ? (
+            <Skeleton className="h-72 w-full" />
+          ) : transacoesFiltradas.filter((t): t is UITransaction & { category: string } => !!t.category).length === 0 ? (
+            <EmptyState icon={<TrendingDown className="h-6 w-6" />} title="Sem dados" />
+          ) : (
+            <CategoryDonut
+              transacoes={transacoesFiltradas.filter(
+                (t): t is UITransaction & { category: string } => !!t.category
+              )}
+            />
+          )}
         </div>
       </section>
 
-      {/* mensagens de estado */}
-      {loading && <p>Carregando…</p>}
       {error && <p className="text-red-600">{error}</p>}
 
       {/* TABELA */}
-      <TransactionsTable
-        transacoes={transacoesFiltradas}
-        onEdit={(row) => {
-          setEditando(data.find((d) => d.id === row.id) || null);
-          setModalAberto(true);
-        }}
-        onDelete={(id: number) => excluir(id)}
-        onSelectionChange={setIdsSelecionadas}
-      />
+      {loading ? (
+        <Skeleton className="h-64 w-full" />
+      ) : transacoesFiltradas.length === 0 ? (
+        <EmptyState icon={<Search className="h-6 w-6" />} title="Nenhuma transação" />
+      ) : (
+        <TransactionsTable
+          transacoes={transacoesFiltradas}
+          onEdit={(row) => {
+            setEditando(data.find((d) => d.id === row.id) || null);
+            setModalAberto(true);
+          }}
+          onDelete={(id: number) => excluir(id)}
+          onSelectionChange={setIdsSelecionadas}
+        />
+      )}
 
       {/* botão flutuante (FAB) */}
       <TooltipProvider delayDuration={200} disableHoverableContent>
