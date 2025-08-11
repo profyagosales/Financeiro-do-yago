@@ -23,5 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Generated PWA assets
+public/icons/*.png
+public/icons/favicon.ico
 *storybook.log
 storybook-static
