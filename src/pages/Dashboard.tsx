@@ -24,10 +24,13 @@ import {
   CalendarRange,
   Target,
   Plane,
+  PieChart as PieChartIcon,
 } from "lucide-react";
 import BrandIcon from "@/components/BrandIcon";
 import FilterBar from "@/components/FilterBar";
 import { usePeriod } from "@/state/periodFilter";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 // ---------------------------------- helpers
 const brl = (n: number) =>
@@ -160,6 +163,28 @@ export default function Dashboard() {
   const container = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0, transition: { staggerChildren: 0.06 } } };
   const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
 
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(t);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-40 w-full" />
+        <div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-[136px] w-full" />
+          ))}
+        </div>
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
   return (
     <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
       {/* HERO --------------------------------------------------- */}
@@ -230,43 +255,47 @@ export default function Dashboard() {
           <Card className="h-full">
             <CardHeader title={fluxoTitle} subtitle="Entradas, saídas e saldo acumulado" />
             <div className="h-[220px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart
-                  data={fluxo}
-                  margin={{ top: 8, right: 12, bottom: 0, left: 8 }}
-                  barCategoryGap={24}
-                  barGap={8}
-                >
-                  <defs>
-                    <linearGradient id="saldoFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(var(--chart-emerald))" stopOpacity={0.35} />
-                      <stop offset="100%" stopColor="hsl(var(--chart-emerald))" stopOpacity={0.05} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} strokeDasharray="2 4" />
-                  <XAxis dataKey="m" tickMargin={8} axisLine={false} tickLine={false} />
-                  <YAxis
-                    tickFormatter={(v) => brl(Number(v)).replace("R$", "")}
-                    width={64}
-                    tickMargin={8}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    formatter={(v: any) => brl(Number(v))}
-                    contentStyle={{
-                      borderRadius: 12,
-                      border: '1px solid hsl(var(--border))',
-                      background: 'hsl(var(--chart-tooltip-bg))',
-                      color: 'hsl(var(--chart-tooltip-fg))'
-                    }}
-                    wrapperStyle={{ outline: 'none' }}
-                  />
-                  <Bar dataKey="in" fill="hsl(var(--chart-blue))" fillOpacity={0.95} radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="out" fill="hsl(var(--chart-rose))" fillOpacity={0.92} radius={[8, 8, 0, 0]} />
-                  <Area type="monotone" dataKey="saldo" stroke="hsl(var(--chart-emerald))" fill="url(#saldoFill)" strokeWidth={2} />
-                </ComposedChart>
-              </ResponsiveContainer>
+              {fluxo.length === 0 ? (
+                <EmptyState icon={<Wallet className="h-8 w-8" />} title="Sem dados" />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart
+                    data={fluxo}
+                    margin={{ top: 8, right: 12, bottom: 0, left: 8 }}
+                    barCategoryGap={24}
+                    barGap={8}
+                  >
+                    <defs>
+                      <linearGradient id="saldoFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--chart-emerald))" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="hsl(var(--chart-emerald))" stopOpacity={0.05} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} strokeDasharray="2 4" />
+                    <XAxis dataKey="m" tickMargin={8} axisLine={false} tickLine={false} />
+                    <YAxis
+                      tickFormatter={(v) => brl(Number(v)).replace("R$", "")}
+                      width={64}
+                      tickMargin={8}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      formatter={(v: any) => brl(Number(v))}
+                      contentStyle={{
+                        borderRadius: 12,
+                        border: '1px solid hsl(var(--border))',
+                        background: 'hsl(var(--chart-tooltip-bg))',
+                        color: 'hsl(var(--chart-tooltip-fg))'
+                      }}
+                      wrapperStyle={{ outline: 'none' }}
+                    />
+                    <Bar dataKey="in" fill="hsl(var(--chart-blue))" fillOpacity={0.95} radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="out" fill="hsl(var(--chart-rose))" fillOpacity={0.92} radius={[8, 8, 0, 0]} />
+                    <Area type="monotone" dataKey="saldo" stroke="hsl(var(--chart-emerald))" fill="url(#saldoFill)" strokeWidth={2} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </Card>
         </motion.div>
@@ -274,53 +303,59 @@ export default function Dashboard() {
         <motion.div variants={item}>
           <Card className="h-full">
             <CardHeader title="Distribuição da carteira" subtitle="Por classe de ativos" />
-            <div className="h-[220px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <defs>
-                    {cores.map((c, i) => (
-                      <linearGradient id={`g${i}`} x1="0" x2="1" y1="0" y2="1" key={i}>
-                        <stop offset="0%" stopColor={c} stopOpacity={0.9} />
-                        <stop offset="100%" stopColor={c} stopOpacity={0.6} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <Pie
-                    data={carteira}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={58}
-                    outerRadius={86}
-                    paddingAngle={3}
-                    startAngle={90}
-                    endAngle={-270}
-                    cornerRadius={6}
-                    stroke="#ffffff"
-                    strokeOpacity={0.85}
-                  >
-                    {carteira.map((_, i) => (
-                      <Cell key={i} fill={`url(#g${i})`} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(v: number) => brl(v)}
-                    contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.06)' }}
-                    wrapperStyle={{ outline: 'none' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <ul className="mt-3 grid grid-cols-2 gap-2 text-sm">
-              {carteira.map((c, i) => (
-                <li key={c.name} className="flex items-center gap-2">
-                  <span className="inline-block h-2 w-2 rounded-full" style={{ background: cores[i] }} />
-                  <span className="text-muted-foreground">{c.name}</span>
-                  <span className="ml-auto font-medium">{brl(c.value)}</span>
-                </li>
-              ))}
-            </ul>
+            {carteira.length === 0 ? (
+              <EmptyState icon={<PieChartIcon className="h-8 w-8" />} title="Sem dados" />
+            ) : (
+              <>
+                <div className="h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <defs>
+                        {cores.map((c, i) => (
+                          <linearGradient id={`g${i}`} x1="0" x2="1" y1="0" y2="1" key={i}>
+                            <stop offset="0%" stopColor={c} stopOpacity={0.9} />
+                            <stop offset="100%" stopColor={c} stopOpacity={0.6} />
+                          </linearGradient>
+                        ))}
+                      </defs>
+                      <Pie
+                        data={carteira}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={58}
+                        outerRadius={86}
+                        paddingAngle={3}
+                        startAngle={90}
+                        endAngle={-270}
+                        cornerRadius={6}
+                        stroke="#ffffff"
+                        strokeOpacity={0.85}
+                      >
+                        {carteira.map((_, i) => (
+                          <Cell key={i} fill={`url(#g${i})`} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(v: number) => brl(v)}
+                        contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.06)' }}
+                        wrapperStyle={{ outline: 'none' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <ul className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                  {carteira.map((c, i) => (
+                    <li key={c.name} className="flex items-center gap-2">
+                      <span className="inline-block h-2 w-2 rounded-full" style={{ background: cores[i] }} />
+                      <span className="text-muted-foreground">{c.name}</span>
+                      <span className="ml-auto font-medium">{brl(c.value)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </Card>
         </motion.div>
       </motion.div>
@@ -330,20 +365,24 @@ export default function Dashboard() {
         <motion.div variants={item}>
           <Card className="h-full">
             <CardHeader title="Próximas contas a vencer" subtitle="Próximos 10 dias" />
-            <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
-              {contasAVencer.map((c) => (
-                <li key={c.nome + c.vencimento} className="flex items-center gap-3 py-3">
-                  <BrandIcon name={c.nome} />
-                  <div className="min-w-0">
-                    <div className="font-medium truncate">{c.nome}</div>
-                    <div className="text-xs text-muted-foreground">
-                      vence em {new Date(c.vencimento).toLocaleDateString("pt-BR")}
+            {contasAVencer.length === 0 ? (
+              <EmptyState icon={<CreditCard className="h-6 w-6" />} title="Nenhuma conta a vencer" />
+            ) : (
+              <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
+                {contasAVencer.map((c) => (
+                  <li key={c.nome + c.vencimento} className="flex items-center gap-3 py-3">
+                    <BrandIcon name={c.nome} />
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{c.nome}</div>
+                      <div className="text-xs text-muted-foreground">
+                        vence em {new Date(c.vencimento).toLocaleDateString("pt-BR")}
+                      </div>
                     </div>
-                  </div>
-                  <div className="ml-auto font-medium">{brl(c.valor)}</div>
-                </li>
-              ))}
-            </ul>
+                    <div className="ml-auto font-medium">{brl(c.valor)}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
             <CardFooterAction to="/financas/mensal" label="Ver Finanças" />
           </Card>
         </motion.div>
@@ -392,17 +431,25 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
-                  {aportesRecentes.map((r) => (
-                    <tr key={r.data + r.ativo}>
-                      <td className="py-2">
-                        <BrandIcon name={`${r.ativo} ${r.tipo}`} />
+                  {aportesRecentes.length === 0 ? (
+                    <tr>
+                      <td colSpan={5}>
+                        <EmptyState icon={<TrendingUp className="h-6 w-6" />} title="Sem aportes" />
                       </td>
-                      <td className="py-2">{new Date(r.data).toLocaleDateString("pt-BR")}</td>
-                      <td className="py-2">{r.ativo}</td>
-                      <td className="py-2">{r.tipo}</td>
-                      <td className="py-2 text-right font-medium">{brl(r.preco * (r.qtd || 1))}</td>
                     </tr>
-                  ))}
+                  ) : (
+                    aportesRecentes.map((r) => (
+                      <tr key={r.data + r.ativo}>
+                        <td className="py-2">
+                          <BrandIcon name={`${r.ativo} ${r.tipo}`} />
+                        </td>
+                        <td className="py-2">{new Date(r.data).toLocaleDateString("pt-BR")}</td>
+                        <td className="py-2">{r.ativo}</td>
+                        <td className="py-2">{r.tipo}</td>
+                        <td className="py-2 text-right font-medium">{brl(r.preco * (r.qtd || 1))}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

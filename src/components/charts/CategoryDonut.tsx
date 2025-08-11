@@ -4,11 +4,18 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 import { mapCategoryColor } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
 
-type Props = { transacoes?: UITransaction[]; mes?: string };
+type Props = {
+  transacoes?: UITransaction[];
+  mes?: string;
+  categoriesData?: Array<{ category: string; value: number }>;
+};
 
-export default function CategoryDonut({ transacoes = [] }: Props) {
+export default function CategoryDonut({ transacoes = [], categoriesData }: Props) {
   // soma por categoria (apenas despesas)
   const data = useMemo(() => {
+    if (categoriesData) {
+      return categoriesData.map((c) => ({ name: c.category, value: c.value }));
+    }
     const byCat = transacoes
       .filter((t) => t.type === 'expense')
       .reduce<Record<string, number>>((acc, t) => {
@@ -18,12 +25,12 @@ export default function CategoryDonut({ transacoes = [] }: Props) {
       }, {});
 
     return Object.entries(byCat).map(([name, value]) => ({ name, value }));
-  }, [transacoes]);
+  }, [categoriesData, transacoes]);
 
   if (!data.length) {
     return (
       <div className="rounded-xl border bg-white dark:bg-slate-900 p-4 h-[360px] flex items-center justify-center text-sm text-slate-500">
-        Sem despesas no período.
+        Sem dados no período
       </div>
     );
   }
@@ -33,7 +40,7 @@ export default function CategoryDonut({ transacoes = [] }: Props) {
       <h3 className="font-medium mb-3">Despesas por categoria</h3>
       <div className="h-[320px]">
         <ResponsiveContainer>
-          <PieChart margin={{ top: 20, bottom: 20, left: 20, right: 20 }}>
+          <PieChart margin={{ top: 12, right: 16, bottom: 12, left: 8 }}>
             <Pie
               data={data}
               dataKey="value"
@@ -49,7 +56,12 @@ export default function CategoryDonut({ transacoes = [] }: Props) {
                 ))}
               </Pie>
             <Tooltip
-              formatter={(v: number) => `R$ ${v.toFixed(2)}`}
+              formatter={(v: number) =>
+                (Number(v) || 0).toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                })
+              }
               labelFormatter={(name: string) => name}
             />
             <Legend />

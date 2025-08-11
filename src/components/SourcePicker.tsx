@@ -91,13 +91,14 @@ export default function SourcePicker({
       {/* Picker por tipo */}
       {kind === "account" ? (
         <Select
-          value={selectedId ?? undefined}
-          onValueChange={(v) => onChange({ kind: "account", id: v })}
+          value={selectedId ?? ""}
+          onValueChange={(v) => onChange({ kind: "account", id: v || null })}
         >
           <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent className="rounded-xl max-h-72">
+            <SelectItem value="">Todas</SelectItem>
             {accounts.map((a) => (
               <SelectItem key={a.id} value={a.id}>
                 <span className="inline-flex items-center gap-2">
@@ -114,13 +115,14 @@ export default function SourcePicker({
       ) : (
         <>
           <Select
-            value={selectedId ?? undefined}
-            onValueChange={(v) => onChange({ kind: "card", id: v })}
+            value={selectedId ?? ""}
+            onValueChange={(v) => onChange({ kind: "card", id: v || null })}
           >
             <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent className="rounded-xl max-h-72">
+              <SelectItem value="">Todas</SelectItem>
               {cards.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   <span className="inline-flex items-center gap-2">

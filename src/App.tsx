@@ -44,6 +44,8 @@ export default function App() {
         <PeriodProvider>
           {/* Toaster global */}
           <Toaster richColors position="top-right" />
+          {/* Atalhos globais */}
+          <AppHotkeys />
           <AppRoutes />
         </PeriodProvider>
       </Router>
@@ -62,9 +64,6 @@ function AppRoutes() {
     <div className="flex min-h-screen">
       <Sidebar />
       <main className="flex-1 p-6">
-        {/* ⬇️ Atalhos globais (g d, g f, g i, g m, g c, Shift+/? para ajuda) */}
-        <AppHotkeys />
-
         <Suspense fallback={<p>Carregando…</p>}>
           <Routes>
             {/* redirect raiz */}

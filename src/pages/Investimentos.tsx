@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useInvestments } from "@/hooks/useInvestments";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 import {
   PieChart as PieIcon,
@@ -87,24 +89,30 @@ export default function InvestimentosResumo() {
 
       {/* KPIs */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-1">
-            <CardDescription>Total investido</CardDescription>
-            <CardTitle>{BRL(kpis.total)}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-1">
-            <CardDescription>Operações no mês</CardDescription>
-            <CardTitle>{kpis.opsMes}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-1">
-            <CardDescription>Ativos diferentes</CardDescription>
-            <CardTitle>{kpis.ativos}</CardTitle>
-          </CardHeader>
-        </Card>
+        {loading ? (
+          Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)
+        ) : (
+          <>
+            <Card>
+              <CardHeader className="pb-1">
+                <CardDescription>Total investido</CardDescription>
+                <CardTitle>{BRL(kpis.total)}</CardTitle>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader className="pb-1">
+                <CardDescription>Operações no mês</CardDescription>
+                <CardTitle>{kpis.opsMes}</CardTitle>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader className="pb-1">
+                <CardDescription>Ativos diferentes</CardDescription>
+                <CardTitle>{kpis.ativos}</CardTitle>
+              </CardHeader>
+            </Card>
+          </>
+        )}
       </div>
 
       {/* Filtros (somente leitura) */}
@@ -136,16 +144,22 @@ export default function InvestimentosResumo() {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={byType} dataKey="value" nameKey="name" outerRadius={90} innerRadius={60}>
-                  {byType.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                  ))}
-                </Pie>
-                <RTooltip formatter={(v: any) => BRL(Number(v))} />
-              </PieChart>
-            </ResponsiveContainer>
+            {loading ? (
+              <Skeleton className="h-full w-full" />
+            ) : byType.length === 0 ? (
+              <EmptyState icon={<PieIcon className="h-6 w-6" />} title="Sem dados" />
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={byType} dataKey="value" nameKey="name" outerRadius={90} innerRadius={60}>
+                    {byType.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RTooltip formatter={(v: any) => BRL(Number(v))} />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
 
@@ -156,15 +170,21 @@ export default function InvestimentosResumo() {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthly}>
-                <CartesianGrid vertical={false} />
-                <XAxis dataKey="month" />
-                <YAxis tickFormatter={(v) => BRL(Number(v)).replace("R$", "")} />
-                <RTooltip formatter={(v: any) => BRL(Number(v))} />
-                <Bar dataKey="total" />
-              </BarChart>
-            </ResponsiveContainer>
+            {loading ? (
+              <Skeleton className="h-full w-full" />
+            ) : monthly.length === 0 ? (
+              <EmptyState icon={<LineIcon className="h-6 w-6" />} title="Sem dados" />
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthly}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis dataKey="month" />
+                  <YAxis tickFormatter={(v) => BRL(Number(v)).replace("R$", "")} />
+                  <RTooltip formatter={(v: any) => BRL(Number(v))} />
+                  <Bar dataKey="total" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -241,21 +261,32 @@ export default function InvestimentosResumo() {
               </tr>
             </thead>
             <tbody>
-              {top5.map((a) => (
-                <tr key={(a.symbol || a.name) as string} className="border-t">
-                  <td className="py-2 pr-3">
-                    <div className="font-medium">{a.name}</div>
-                    {a.symbol ? <div className="text-muted-foreground">{a.symbol}</div> : null}
-                  </td>
-                  <td className="py-2 pr-3"><Badge variant="secondary">{a.type}</Badge></td>
-                  <td className="py-2 pr-3">{BRL(a.total)}</td>
-                </tr>
-              ))}
-              {top5.length === 0 && (
-                <tr>
-                  <td className="py-6" colSpan={3}>Sem dados.</td>
-                </tr>
-              )}
+              {loading
+                ? Array.from({ length: 3 }).map((_, i) => (
+                    <tr key={i} className="border-t">
+                      <td className="py-2 pr-3" colSpan={3}>
+                        <Skeleton className="h-6 w-full" />
+                      </td>
+                    </tr>
+                  ))
+                : top5.length === 0
+                ? (
+                    <tr>
+                      <td colSpan={3}>
+                        <EmptyState icon={<PieIcon className="h-6 w-6" />} title="Sem dados" />
+                      </td>
+                    </tr>
+                  )
+                : top5.map((a) => (
+                    <tr key={(a.symbol || a.name) as string} className="border-t">
+                      <td className="py-2 pr-3">
+                        <div className="font-medium">{a.name}</div>
+                        {a.symbol ? <div className="text-muted-foreground">{a.symbol}</div> : null}
+                      </td>
+                      <td className="py-2 pr-3"><Badge variant="secondary">{a.type}</Badge></td>
+                      <td className="py-2 pr-3">{BRL(a.total)}</td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </CardContent>
@@ -281,35 +312,40 @@ export default function InvestimentosResumo() {
               </tr>
             </thead>
             <tbody>
-              {loading && (
-                <tr>
-                  <td className="py-6" colSpan={7}>Carregando…</td>
-                </tr>
-              )}
-              {error && (
+              {loading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <tr key={i} className="border-t">
+                    <td colSpan={7} className="py-2 pr-3">
+                      <Skeleton className="h-6 w-full" />
+                    </td>
+                  </tr>
+                ))
+              ) : error ? (
                 <tr>
                   <td className="py-6 text-red-600" colSpan={7}>{error}</td>
                 </tr>
-              )}
-              {!loading && latest.length === 0 && (
+              ) : latest.length === 0 ? (
                 <tr>
-                  <td className="py-6" colSpan={7}>Nenhum registro.</td>
-                </tr>
-              )}
-              {latest.map((r) => (
-                <tr key={r.id} className="border-t">
-                  <td className="py-2 pr-3">{new Date(r.date).toLocaleDateString("pt-BR")}</td>
-                  <td className="py-2 pr-3"><Badge variant="secondary">{String(r.type)}</Badge></td>
-                  <td className="py-2 pr-3">
-                    <div className="font-medium">{r.name}</div>
-                    <div className="text-muted-foreground">{r.symbol}</div>
+                  <td colSpan={7}>
+                    <EmptyState icon={<Coins className="h-6 w-6" />} title="Nenhum registro" />
                   </td>
-                  <td className="py-2 pr-3">{r.quantity}</td>
-                  <td className="py-2 pr-3">{BRL(r.price)}</td>
-                  <td className="py-2 pr-3">{BRL(r.fees)}</td>
-                  <td className="py-2 pr-3">{BRL(r.quantity * r.price + (r.fees ?? 0))}</td>
                 </tr>
-              ))}
+              ) : (
+                latest.map((r) => (
+                  <tr key={r.id} className="border-t">
+                    <td className="py-2 pr-3">{new Date(r.date).toLocaleDateString("pt-BR")}</td>
+                    <td className="py-2 pr-3"><Badge variant="secondary">{String(r.type)}</Badge></td>
+                    <td className="py-2 pr-3">
+                      <div className="font-medium">{r.name}</div>
+                      <div className="text-muted-foreground">{r.symbol}</div>
+                    </td>
+                    <td className="py-2 pr-3">{r.quantity}</td>
+                    <td className="py-2 pr-3">{BRL(r.price)}</td>
+                    <td className="py-2 pr-3">{BRL(r.fees)}</td>
+                    <td className="py-2 pr-3">{BRL(r.quantity * r.price + (r.fees ?? 0))}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </CardContent>

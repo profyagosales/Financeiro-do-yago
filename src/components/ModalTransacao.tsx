@@ -96,7 +96,6 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
 
   const handleSubmit = useCallback(async () => {
     if (!validate()) {
-      // Mostra um resumo no toast, além dos hints nos campos
       const primeiroErro = Object.values(errors).find(Boolean);
       if (primeiroErro) toast.error(primeiroErro as string);
       return;
@@ -104,19 +103,17 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
 
     setLoading(true);
     try {
-      const payload: BaseData = {
-        ...form,
-        value: Math.abs(Number(form.value)),
-      };
+      const value = Math.abs(Number(form.value));
+      const payload: BaseData = { ...form, value };
       await onSubmit(payload);
-      toast.success(initialData ? 'Transação atualizada!' : 'Transação criada!');
       onClose();
-    } catch (e: any) {
-      toast.error(e?.message || 'Erro ao salvar');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erro ao salvar';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
-  }, [errors, form, initialData, onClose, onSubmit, validate]);
+  }, [errors, form, onClose, onSubmit, validate]);
 
   useEffect(() => {
     if (initialData) {
@@ -163,7 +160,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     const name = newCatName.trim();
     if (!name) { toast.info('Digite um nome para a categoria'); return; }
     try {
-      await create({ name, kind: form.type, parent_id: suggestedParentId ?? null });
+      await create({ name, kind: form.type, parent_id: suggestedParentId ?? null } as any);
       await list();
       const created = flat.find(c => c.name === name && c.parent_id === (suggestedParentId ?? null));
       if (created) {
