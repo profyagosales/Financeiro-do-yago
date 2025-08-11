@@ -36,7 +36,7 @@ export default function CategoryPicker({
   onChange,
   placeholder = "Selecione a categoria",
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- API placeholder
-  kind = "all",
+  kind: _kind = "all",
   allowClear = true,
   allowCreate = false,
   onRequestCreate,
