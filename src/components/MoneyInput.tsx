@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from 'react';
 
 type Props = {
   value: number;
@@ -6,10 +6,10 @@ type Props = {
   placeholder?: string;
 };
 export default function MoneyInput({ value, onChange, placeholder }: Props) {
-  const [raw, setRaw] = React.useState(
+  const [raw, setRaw] = useState(
     (value ?? 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   );
-  React.useEffect(() => {
+  useEffect(() => {
     setRaw((value ?? 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
   }, [value]);
 

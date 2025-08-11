@@ -1,5 +1,5 @@
 // src/components/FilterBar.tsx
-import React, { useCallback } from "react";
+import { useCallback, type KeyboardEvent } from 'react';
 import { usePeriod } from "@/state/periodFilter";
 import { CalendarRange, Calendar } from "lucide-react";
 import {
@@ -58,7 +58,7 @@ export default function FilterBar({ variant = "default", className = "" }: Props
   );
 
   const onKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
+    (e: KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "ArrowUp") { setYear(year + 1); e.preventDefault(); }
       else if (e.key === "ArrowDown") { setYear(year - 1); e.preventDefault(); }
       else if (mode === "monthly" && e.key === "ArrowLeft") { wrapMonth(month - 1); e.preventDefault(); }
