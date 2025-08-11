@@ -4,12 +4,12 @@ import { Toaster } from 'sonner';
 
 /* ---------- Contexto de Autenticação ---------- */
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Login from './pages/Login';
 
 /* ---------- Componentes ---------- */
 import { Sidebar } from './components/Sidebar';
 import { AppHotkeys } from "./components/AppHotkeys";
 import { PeriodProvider } from './state/periodFilter';
+import RouteLoader from './components/RouteLoader';
 
 /* ---------- lazy imports de páginas ---------- */
 const Dashboard      = lazy(() => import('./pages/Dashboard'));
@@ -34,6 +34,7 @@ const ListaDesejos = lazy(() => import('./pages/ListaDesejos'));
 const ListaCompras = lazy(() => import('./pages/ListaCompras'));
 
 const Configuracoes = lazy(() => import('./pages/Configuracoes'));
+const Login         = lazy(() => import('./pages/Login'));
 
 /* ────────────────────────────────────────────── */
 
@@ -57,14 +58,18 @@ export default function App() {
 function AppRoutes() {
   const { user, loading } = useAuth();
 
-  if (loading) return <p className="p-6">Carregando sessão…</p>;
+  if (loading) return <RouteLoader />;
   if (!user)   return <Login />;
 
   return (
     <div className="flex min-h-screen">
       <Sidebar />
       <main className="flex-1 p-6">
-        <Suspense fallback={<p>Carregando…</p>}>
+        {/* ⬇️ Atalhos globais (g d, g f, g i, g m, g c, Shift+/? para ajuda) */}
+        <AppHotkeys />
+
+        <Suspense fallback={<RouteLoader />}>
+
           <Routes>
             {/* redirect raiz */}
             <Route path="/" element={<Navigate to="/dashboard" />} />
