@@ -69,35 +69,9 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
 
   const suggestedParentId = useMemo(() => form.category_id ?? null, [form.category_id]);
 
-  useEffect(() => {
-    if (initialData) {
-      setForm((prev) => ({
-        ...prev,
-        ...initialData,
-        attachment_file: null, // não herdamos arquivo
-        date: initialData.date || new Date().toISOString().slice(0,10),
-      }));
-    } else {
-      setForm((f) => ({ ...f, date: new Date().toISOString().slice(0,10) }));
-    }
-  }, [initialData, open]);
-
-  // Atalhos: Enter (salva) e Esc (fecha) quando o diálogo está aberto
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      const inInput = !!(e.target as HTMLElement)?.closest('input, textarea, [contenteditable="true"], select');
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'Enter' && !inInput) {
-        e.preventDefault();
-        handleSubmit();
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open, form, handleSubmit, onClose]);
-
-  const handleChange = (key: keyof BaseData, v: any) => setForm(prev => ({ ...prev, [key]: v }));
+  const handleChange = useCallback((key: keyof BaseData, v: any) => {
+    setForm(prev => ({ ...prev, [key]: v }));
+  }, []);
 
   const validate = useCallback((): boolean => {
     const next: { [k: string]: string | null } = {};
@@ -144,20 +118,48 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     }
   }, [errors, form, initialData, onClose, onSubmit, validate]);
 
+  useEffect(() => {
+    if (initialData) {
+      setForm((prev) => ({
+        ...prev,
+        ...initialData,
+        attachment_file: null, // não herdamos arquivo
+        date: initialData.date || new Date().toISOString().slice(0,10),
+      }));
+    } else {
+      setForm((f) => ({ ...f, date: new Date().toISOString().slice(0,10) }));
+    }
+  }, [initialData, open]);
+
+  // Atalhos: Enter (salva) e Esc (fecha) quando o diálogo está aberto
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      const inInput = !!(e.target as HTMLElement)?.closest('input, textarea, [contenteditable="true"], select');
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'Enter' && !inInput) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, handleSubmit, onClose]);
+
   const showInstallments = form.type === 'expense' && form.source_kind === 'card';
 
   // Quando usuário escolhe uma categoria no picker (id), refletimos nome e id no form
-  const onCategoryPicked = (id: string | null) => {
+  const onCategoryPicked = useCallback((id: string | null) => {
     if (!id) {
       setForm(prev => ({ ...prev, category_id: null, category: 'Outros' }));
       return;
     }
     const cat = byId.get(id);
     setForm(prev => ({ ...prev, category_id: id, category: cat?.name || prev.category }));
-  };
+  }, [byId]);
 
   // Criar categoria rápida
-  const createCategoryQuick = async () => {
+  const createCategoryQuick = useCallback(async () => {
     const name = newCatName.trim();
     if (!name) { toast.info('Digite um nome para a categoria'); return; }
     try {
@@ -173,15 +175,15 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     } catch (e: any) {
       toast.error(e?.message || 'Erro ao criar categoria');
     }
-  };
+  }, [create, flat, form.type, list, newCatName, suggestedParentId]);
 
   // Quando escolher fonte (conta/cartão)
-  const onSourcePicked = (s: SourceValue) => {
+  const onSourcePicked = useCallback((s: SourceValue) => {
     let label: string | null = null;
     if (s.kind === 'account' && s.id) label = findAccount(s.id)?.name || null;
     if (s.kind === 'card' && s.id) label = cardsById.get(s.id)?.name || null;
     setForm(prev => ({ ...prev, source_kind: s.kind, source_id: s.id ?? null, source_label: label }));
-  };
+  }, [cardsById, findAccount]);
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
