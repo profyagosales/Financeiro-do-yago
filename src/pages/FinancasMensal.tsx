@@ -34,7 +34,7 @@ const norm = (s: string) =>
   (s || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 // força qualquer valor a número válido
-const safe = (n: unknown) => Number(n) || 0;
+const n = (v: unknown) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
 // CSV helper local (exporta apenas filtradas)
 function toCSV(rows: UITransaction[]) {
@@ -92,25 +92,29 @@ export default function FinancasMensal() {
   const [mesAtual, setMesAtual] = useState(initialMes);
   const [categoriaId, setCategoriaId] = useState<'Todas' | string>(initialCategoria ?? 'Todas');
   const [fonte, setFonte] = useState<SourceValue>(initialFonte);
+  const [buscaInput, setBuscaInput] = useState(initialBusca);
   const [busca, setBusca] = useState(initialBusca);
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams();
     params.set('mes', mesAtual);
     params.set('ano', mesAtual.slice(0, 4));
     if (categoriaId && categoriaId !== 'Todas') params.set('cat', categoriaId);
-    else params.delete('cat');
     if (fonte.id) params.set('fonte', `${fonte.kind}:${fonte.id}`);
-    else params.delete('fonte');
     if (busca) params.set('q', busca);
-    else params.delete('q');
     setSearchParams(params, { replace: true });
-  }, [mesAtual, categoriaId, fonte, busca, setSearchParams, searchParams]);
+  }, [mesAtual, categoriaId, fonte, busca, setSearchParams]);
+
+  useEffect(() => {
+    const id = setTimeout(() => setBusca(buscaInput), 300);
+    return () => clearTimeout(id);
+  }, [buscaInput]);
 
   const limparFiltros = () => {
     setCategoriaId('Todas');
     setFonte({ kind: 'account', id: null });
     setBusca('');
+    setBuscaInput('');
   };
 
   // ===== modal (criar/editar) =====
@@ -185,23 +189,23 @@ export default function FinancasMensal() {
     () =>
       transacoesFiltradas
         .filter((t) => t.type === 'income')
-        .reduce((s, t) => s + safe(t.value), 0),
+        .reduce((s, t) => s + n(t.value), 0),
     [transacoesFiltradas]
   );
   const saidasAbs = useMemo(
     () =>
       transacoesFiltradas
         .filter((t) => t.type === 'expense')
-        .reduce((s, t) => s + safe(t.value), 0),
+        .reduce((s, t) => s + n(t.value), 0),
     [transacoesFiltradas]
   );
-  const saldo = useMemo(() => entradas - saidasAbs, [entradas, saidasAbs]);
+  const saldo = useMemo(() => n(entradas - saidasAbs), [entradas, saidasAbs]);
 
   const aPagarHoje = useMemo(() => {
     const hoje = dayjs().format('YYYY-MM-DD');
     return transacoesFiltradas
       .filter((t) => t.type === 'expense' && t.date === hoje)
-      .reduce((s, t) => s + safe(t.value), 0);
+      .reduce((s, t) => s + n(t.value), 0);
   }, [transacoesFiltradas]);
 
   // ===== Handlers modal =====
@@ -212,9 +216,9 @@ export default function FinancasMensal() {
 
   const salvar = async (dataForm: BaseData) => {
     try {
+      const value = Math.abs(dataForm.value);
+      const amount = dataForm.type === 'expense' ? -value : value;
       if (editando) {
-        const amount =
-          dataForm.type === 'expense' ? -Math.abs(dataForm.value) : Math.abs(dataForm.value);
         await update(editando.id, {
           date: dataForm.date,
           description: dataForm.description,
@@ -225,7 +229,7 @@ export default function FinancasMensal() {
         } as Partial<Transaction>);
         toast.success('Transação atualizada!');
       } else {
-        await addSmart(dataForm as unknown as TransactionInput);
+        await addSmart({ ...dataForm, value } as unknown as TransactionInput);
         toast.success('Transação adicionada!');
       }
       setModalAberto(false);
@@ -376,8 +380,8 @@ export default function FinancasMensal() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-200/70" />
               <Input
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
+                value={buscaInput}
+                onChange={(e) => setBuscaInput(e.target.value)}
                 placeholder="Descrição, loja, observações…"
                 className="w-full h-10 pl-9 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
               />
