@@ -24,10 +24,14 @@ type Props = {
   value: string | null | undefined;
   onChange: (id: string | null) => void;
   placeholder?: string;
+  /** optional aria-label for the select trigger */
+  ariaLabel?: string;
   kind?: "expense" | "income" | "transfer" | "all";
   allowClear?: boolean;
   allowCreate?: boolean;
   onRequestCreate?: () => void;
+  /** when true, include an option to select all categories */
+  showAll?: boolean;
   className?: string;
 };
 
@@ -35,11 +39,13 @@ export default function CategoryPicker({
   value,
   onChange,
   placeholder = "Selecione a categoria",
+  ariaLabel,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- API placeholder
   kind: _kind = "all",
   allowClear = true,
   allowCreate = false,
   onRequestCreate,
+  showAll = false,
   className = "",
 }: Props) {
   const { flat, byId, create, update, remove } = useCategories();
@@ -134,22 +140,21 @@ export default function CategoryPicker({
 
   return (
     <div className={`flex w-full items-center gap-2 ${className}`}>
-      <Select
-        value={value ?? undefined}
-        onValueChange={(v) => onChange(v || null)}
-      >
-        <SelectTrigger className="w-full">
+      <Select value={value ?? undefined} onValueChange={(v) => onChange(v || null)}>
+        <SelectTrigger
+          aria-label={ariaLabel ?? placeholder}
+          className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent className="max-h-80">
+        <SelectContent className="max-h-80 rounded-xl">
+          {showAll && <SelectItem value="">Todas</SelectItem>}
           {options.map((opt) => (
             <SelectItem key={opt.id} value={opt.id}>
               <span className="inline-flex items-center gap-2">
                 <span
                   className="h-2.5 w-2.5 rounded-full"
-                  style={{
-                    backgroundColor: byId.get(opt.id)?.color || "#CBD5E1",
-                  }}
+                  style={{ backgroundColor: byId.get(opt.id)?.color || "#CBD5E1" }}
                 />
                 {opt.label}
               </span>

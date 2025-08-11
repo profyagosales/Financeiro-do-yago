@@ -26,6 +26,7 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/comp
 
 import { useCategories } from '@/hooks/useCategories';
 import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
+import CategoryPicker from '@/components/CategoryPicker';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 
@@ -137,13 +138,7 @@ export default function FinancasMensal() {
     useTransactions(year, month);
 
   // ===== categorias (mapear id -> nome) =====
-  const { flat: categorias, byId: categoriasById } = useCategories();
-
-  type CategoriaOption = { id: string; name: string };
-  const categoriasOptions: CategoriaOption[] = useMemo(() => {
-    const base = categorias.map((c) => ({ id: c.id, name: c.name }));
-    return [{ id: 'Todas', name: 'Todas' }, ...base];
-  }, [categorias]);
+  const { byId: categoriasById } = useCategories();
 
   // ===== converter para UI (type/value) =====
   const uiTransacoes: UITransaction[] = useMemo(() => {
@@ -330,7 +325,10 @@ export default function FinancasMensal() {
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Mês</span>
             <Select value={mesAtual} onValueChange={setMesAtual}>
-              <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+              <SelectTrigger
+                aria-label="Mês"
+                className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+              >
                 <SelectValue placeholder="Selecione o mês" />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
@@ -350,18 +348,15 @@ export default function FinancasMensal() {
           {/* Categoria */}
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Categoria</span>
-            <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v as string | 'Todas')}>
-              <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
-                <SelectValue placeholder="Todas" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl max-h-72">
-                {categoriasOptions.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <CategoryPicker
+              value={categoriaId === 'Todas' ? null : categoriaId}
+              onChange={(v) => setCategoriaId(v ?? 'Todas')}
+              placeholder="Todas"
+              ariaLabel="Categoria"
+              showAll
+              allowClear={false}
+              className="w-full"
+            />
           </div>
 
           {/* Fonte */}
@@ -371,6 +366,7 @@ export default function FinancasMensal() {
               value={fonte}
               onChange={setFonte}
               placeholder="Todas"
+              ariaLabel="Fonte"
               className="w-full"
               showCardHints={false}
             />
@@ -385,6 +381,7 @@ export default function FinancasMensal() {
                 value={buscaInput}
                 onChange={(e) => setBuscaInput(e.target.value)}
                 placeholder="Descrição, loja, observações…"
+                aria-label="Buscar"
                 className="w-full h-10 pl-9 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
               />
             </div>

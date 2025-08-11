@@ -17,6 +17,7 @@ export default function SourcePicker({
   value,
   onChange,
   placeholder = "Selecione a fonte",
+  ariaLabel,
   allowCreate = false,
   showCardHints = true,
   className = "",
@@ -24,6 +25,7 @@ export default function SourcePicker({
   value: SourceValue;
   onChange: (s: SourceValue) => void;
   placeholder?: string;
+  ariaLabel?: string;
   allowCreate?: boolean;
   showCardHints?: boolean;
   className?: string;
@@ -99,7 +101,10 @@ export default function SourcePicker({
           value={selectedId ?? ""}
           onValueChange={(v) => onChange({ kind: "account", id: v || null })}
         >
-          <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+          <SelectTrigger
+            aria-label={ariaLabel ?? placeholder}
+            className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+          >
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent className="rounded-xl max-h-72">
@@ -123,13 +128,16 @@ export default function SourcePicker({
             value={selectedId ?? ""}
             onValueChange={(v) => onChange({ kind: "card", id: v || null })}
           >
-            <SelectTrigger className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
-              <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl max-h-72">
-              <SelectItem value="">Todas</SelectItem>
-              {cards.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
+          <SelectTrigger
+            aria-label={ariaLabel ?? placeholder}
+            className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+          >
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl max-h-72">
+            <SelectItem value="">Todas</SelectItem>
+            {cards.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
                   <span className="inline-flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-sky-500" />
                     <span className="font-medium">{c.name}</span>
