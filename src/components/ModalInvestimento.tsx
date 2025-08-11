@@ -26,7 +26,13 @@ export default function ModalInvestimento({ open, onClose, initialData, onSubmit
   });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { initialData ? setForm(initialData) : setForm(f => ({ ...f, date: new Date().toISOString().slice(0,10) })); }, [initialData, open]);
+  useEffect(() => {
+    if (initialData) {
+      setForm(initialData);
+    } else {
+      setForm((f) => ({ ...f, date: new Date().toISOString().slice(0, 10) }));
+    }
+  }, [initialData, open]);
 
   const handle = (k: keyof Base, v: any) => setForm(p => ({ ...p, [k]: v }));
 

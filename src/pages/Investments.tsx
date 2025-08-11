@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
-import { PageHeader } from "@/components/PageHeader";
+import PageHeader from "@/components/PageHeader";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -118,7 +118,7 @@ export default function InvestmentsResumo() {
 
       {/* Filtros topo */}
       <div className="mt-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <Tabs value={tab} onValueChange={(v: any) => setTab(v)}>
+        <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
           <TabsList>
             <TabsTrigger value="Todos">Todos</TabsTrigger>
             <TabsTrigger value="Renda fixa">Renda fixa</TabsTrigger>
@@ -167,7 +167,7 @@ export default function InvestmentsResumo() {
                     {byType.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                   </Pie>
                   <Legend />
-                  <Tooltip formatter={(v: any) => BRL(Number(v))} />
+                  <Tooltip formatter={(v: unknown) => BRL(Number(v))} />
                 </PieChart>
               </ResponsiveContainer>
             )}
@@ -182,7 +182,7 @@ export default function InvestmentsResumo() {
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis dataKey="month" tickMargin={8} />
                 <YAxis tickFormatter={(v) => (v / 1000).toFixed(0) + "k"} />
-                <Tooltip formatter={(v: any) => BRL(Number(v))} />
+                <Tooltip formatter={(v: unknown) => BRL(Number(v))} />
                 <Bar dataKey="valor" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

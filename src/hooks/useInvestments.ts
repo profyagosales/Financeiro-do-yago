@@ -150,7 +150,7 @@ export function useInvestments(params: UseInvestmentsParams = {}) {
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     fetchAll();
   }, [month, year, (type as string) ?? "", q ?? ""]);
 
@@ -179,7 +179,7 @@ export function useInvestments(params: UseInvestmentsParams = {}) {
         .insert({ ...base, user_id: uid, note: payload.note ?? payload.notes ?? null });
       if (error) throw error;
       return;
-    } catch (e1: any) {
+    } catch {
       // Tentativa 2: usar `notes`
       const { error: e2 } = await supabase
         .from("investments")
@@ -211,7 +211,7 @@ export function useInvestments(params: UseInvestmentsParams = {}) {
         .eq("id", id);
       if (error) throw error;
       return;
-    } catch (e1: any) {
+    } catch {
       // Tentativa 2: `notes`
       const { error: e2 } = await supabase
         .from("investments")

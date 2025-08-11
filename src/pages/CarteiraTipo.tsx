@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
-import { PageHeader } from "@/components/PageHeader";
+import PageHeader from "@/components/PageHeader";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -110,8 +110,9 @@ export default function CarteiraTipo({ tipo }: Props) {
       // reload
       const { data } = await supabase.from("investments").select("*").eq("type", tipo).order("date", { ascending: true });
       setItems((data || []) as Investment[]);
-    } catch (e: any) {
-      toast.error("Erro ao salvar", { description: e.message });
+    } catch (e: unknown) {
+      const err = e as Error;
+      toast.error("Erro ao salvar", { description: err.message });
     }
   };
 
@@ -122,8 +123,9 @@ export default function CarteiraTipo({ tipo }: Props) {
       if (error) throw error;
       toast.success("Excluído.");
       setItems((s) => s.filter((x) => x.id !== it.id));
-    } catch (e: any) {
-      toast.error("Erro ao excluir", { description: e.message });
+    } catch (e: unknown) {
+      const err = e as Error;
+      toast.error("Erro ao excluir", { description: err.message });
     }
   };
 
