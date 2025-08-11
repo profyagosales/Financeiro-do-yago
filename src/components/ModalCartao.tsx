@@ -1,6 +1,6 @@
 
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -112,7 +112,15 @@ export default function ModalCartao({ open, onClose, onCreated }: ModalCartaoPro
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="grid gap-1">
               <Label>Limite (R$) — opcional</Label>
-              <Input type="number" step="0.01" inputMode="decimal" value={limitAmount as any} onChange={(e) => setLimitAmount(e.target.value)} />
+              <Input
+                type="number"
+                step="0.01"
+                inputMode="decimal"
+                value={limitAmount as any}
+                onChange={(e) =>
+                  setLimitAmount(e.target.value === "" ? "" : Number(e.target.value))
+                }
+              />
             </div>
             <div className="grid gap-1">
               <Label>Conta p/ débito da fatura (opcional)</Label>
@@ -131,11 +139,27 @@ export default function ModalCartao({ open, onClose, onCreated }: ModalCartaoPro
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="grid gap-1">
               <Label>Dia de fechamento</Label>
-              <Input type="number" min={1} max={31} value={cutDay as any} onChange={(e) => setCutDay(e.target.value)} />
+              <Input
+                type="number"
+                min={1}
+                max={31}
+                value={cutDay as any}
+                onChange={(e) =>
+                  setCutDay(e.target.value === "" ? "" : Number(e.target.value))
+                }
+              />
             </div>
             <div className="grid gap-1">
               <Label>Dia de vencimento (opcional)</Label>
-              <Input type="number" min={1} max={31} value={dueDay as any} onChange={(e) => setDueDay(e.target.value)} />
+              <Input
+                type="number"
+                min={1}
+                max={31}
+                value={dueDay as any}
+                onChange={(e) =>
+                  setDueDay(e.target.value === "" ? "" : Number(e.target.value))
+                }
+              />
             </div>
           </div>
 

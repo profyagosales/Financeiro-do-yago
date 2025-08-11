@@ -52,7 +52,7 @@ export type UseInvestmentsParams = {
   q?: string;     // busca textual
 };
 
-function normalizeType(t?: InvestmentType | null): TypePt | "Outros" {
+function normalizeType(t?: string | null): TypePt | "Outros" {
   if (!t) return "Outros";
   const map: Record<string, TypePt> = {
     renda_fixa: "Renda fixa",
@@ -79,7 +79,7 @@ function monthBounds(month?: number, year?: number) {
 
 export function useInvestments(params: UseInvestmentsParams = {}) {
   const { month, year, type = "all", q } = params;
-  const typeStr = (type as string) ?? "";
+  const typeStr = typeof type === "string" ? type : "";
   const qStr = q ?? "";
 
   const [rows, setRows] = useState<Investment[]>([]);

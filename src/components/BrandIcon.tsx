@@ -1,5 +1,4 @@
 // src/components/BrandIcon.tsx
-import * as React from "react";
 import { Icon } from "@iconify/react";
 import {
   Wifi,
