@@ -5,9 +5,9 @@ import dayjs from 'dayjs';
 import { SERIES_COLORS } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
 
-type Props = { transacoes: UITransaction[]; mes?: string };
+type Props = { transacoes?: UITransaction[]; mes?: string };
 
-export default function DailyBars({ transacoes, mes }: Props) {
+export default function DailyBars({ transacoes = [], mes }: Props) {
   // cria série diária do mês: receitas e despesas
   const data = useMemo(() => {
     const month = mes ?? dayjs().format('YYYY-MM');
@@ -15,10 +15,10 @@ export default function DailyBars({ transacoes, mes }: Props) {
     return Array.from({ length: daysInMonth }, (_, i) => {
       const d = dayjs(month + '-01').date(i + 1).format('YYYY-MM-DD');
       const receitas = transacoes
-        .filter(t => t.type === 'income' && t.date === d)
+        .filter((t) => t.type === 'income' && t.date === d)
         .reduce((s, t) => s + t.value, 0);
       const despesas = transacoes
-        .filter(t => t.type === 'expense' && t.date === d)
+        .filter((t) => t.type === 'expense' && t.date === d)
         .reduce((s, t) => s + t.value, 0);
       return { dia: i + 1, receitas, despesas };
     });
@@ -29,7 +29,7 @@ export default function DailyBars({ transacoes, mes }: Props) {
       <h3 className="font-medium mb-3">Movimento diário</h3>
       <div className="h-[320px]">
         <ResponsiveContainer>
-          <BarChart data={data} margin={{ top: 20, right: 20, bottom: 0, left: 20 }}>
+          <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <XAxis dataKey="dia" />
             <YAxis tickFormatter={(v) => `R$ ${v}`} />
             <Tooltip

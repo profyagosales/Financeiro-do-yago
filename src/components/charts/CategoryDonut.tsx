@@ -4,13 +4,13 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 import { mapCategoryColor } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
 
-type Props = { transacoes: UITransaction[]; mes?: string };
+type Props = { transacoes?: UITransaction[]; mes?: string };
 
-export default function CategoryDonut({ transacoes }: Props) {
+export default function CategoryDonut({ transacoes = [] }: Props) {
   // soma por categoria (apenas despesas)
   const data = useMemo(() => {
     const byCat = transacoes
-      .filter(t => t.type === 'expense')
+      .filter((t) => t.type === 'expense')
       .reduce<Record<string, number>>((acc, t) => {
         const key = t.category || 'Sem categoria';
         acc[key] = (acc[key] ?? 0) + t.value;
@@ -33,7 +33,7 @@ export default function CategoryDonut({ transacoes }: Props) {
       <h3 className="font-medium mb-3">Despesas por categoria</h3>
       <div className="h-[320px]">
         <ResponsiveContainer>
-          <PieChart margin={{ top: 20, bottom: 20 }}>
+          <PieChart margin={{ top: 20, bottom: 20, left: 20, right: 20 }}>
             <Pie
               data={data}
               dataKey="value"
