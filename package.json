@@ -11,8 +11,10 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "prepare": "husky",
+    "codemod:imports": "tsx scripts/codemod-rewrite-imports.ts",
+    "validate:env": "tsx scripts/validate-env.ts",
+    "gen:mock": "tsx scripts/generate-mock.ts"
     "precommit": "lint-staged",
-    "codemod:imports": "tsx scripts/codemod-rewrite-imports.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.6",
