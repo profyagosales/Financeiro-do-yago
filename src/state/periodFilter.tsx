@@ -1,5 +1,5 @@
 // src/state/periodFilter.tsx
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 type Mode = "monthly" | "yearly";
 
@@ -32,7 +32,7 @@ function writeToURL(mode: Mode, month: number, year: number) {
   window.history.replaceState(null, "", newUrl);
 }
 
-export function PeriodProvider({ children }: { children: React.ReactNode }) {
+export function PeriodProvider({ children }: { children: ReactNode }) {
   const now = new Date();
   const initialMonth = now.getMonth() + 1;
   const initialYear = now.getFullYear();
@@ -43,7 +43,7 @@ export function PeriodProvider({ children }: { children: React.ReactNode }) {
     if (u.mode || u.month || u.year) return u;
     try {
       const raw = localStorage.getItem("fy.period");
-      return raw ? (JSON.parse(raw) as any) : {};
+      return raw ? (JSON.parse(raw) as Partial<PeriodState>) : {};
     } catch {
       return {};
     }

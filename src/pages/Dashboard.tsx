@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode, type PropsWithChildren } from 'react';
 import { Link } from "react-router-dom";
 import { motion, useMotionValue, animate } from "framer-motion";
 import {
@@ -281,7 +281,7 @@ export default function Dashboard() {
                       tickLine={false}
                     />
                     <Tooltip
-                      formatter={(v: any) => brl(Number(v))}
+                      formatter={(v: unknown) => brl(Number(v))}
                       contentStyle={{
                         borderRadius: 12,
                         border: '1px solid hsl(var(--border))',
@@ -542,7 +542,7 @@ function KpiCard({
   sparkColor,
 }: {
   title: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   value: number;
   trend?: "up" | "down";
   colorFrom: string;
@@ -592,7 +592,7 @@ function KpiCard({
   );
 }
 
-function Card({ className, children }: React.PropsWithChildren<{ className?: string }>) {
+function Card({ className, children }: PropsWithChildren<{ className?: string }>) {
   return <div className={`card-surface p-5 sm:p-6 ${className || ""}`}>{children}</div>;
 }
 
@@ -613,7 +613,7 @@ function CardFooterAction({ to, label }: { to: string; label: string }) {
   );
 }
 
-function QuickLink({ to, icon, title, desc }: { to: string; icon: React.ReactNode; title: string; desc: string }) {
+function QuickLink({ to, icon, title, desc }: { to: string; icon: ReactNode; title: string; desc: string }) {
   return (
     <Card>
       <div className="mb-2 flex items-center gap-3">

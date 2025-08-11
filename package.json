@@ -13,13 +13,12 @@
     "format": "prettier --write .",
     "prepare": "husky",
     "codemod:imports": "tsx scripts/codemod-rewrite-imports.ts",
-    "release:notes": "tsx scripts/generate-release-notes.ts"
+    "release:notes": "tsx scripts/generate-release-notes.ts",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
     "validate:env": "tsx scripts/validate-env.ts",
-    "gen:mock": "tsx scripts/generate-mock.ts"
+    "gen:mock": "tsx scripts/generate-mock.ts",
     "precommit": "lint-staged",
-    "codemod:imports": "tsx scripts/codemod-rewrite-imports.ts",
     "assets:pwa": "tsx scripts/generate-icons.ts",
     "postinstall": "node -e \"console.log('Dica: rode npm run assets:pwa para gerar PNG/ICO a partir dos SVGs.');\""
   },
