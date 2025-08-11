@@ -23,7 +23,7 @@ export default function CategoryDonut({ transacoes = [] }: Props) {
   if (!data.length) {
     return (
       <div className="rounded-xl border bg-white dark:bg-slate-900 p-4 h-[360px] flex items-center justify-center text-sm text-slate-500">
-        Sem despesas no período.
+        Sem dados no período
       </div>
     );
   }
@@ -33,7 +33,7 @@ export default function CategoryDonut({ transacoes = [] }: Props) {
       <h3 className="font-medium mb-3">Despesas por categoria</h3>
       <div className="h-[320px]">
         <ResponsiveContainer>
-          <PieChart margin={{ top: 20, bottom: 20, left: 20, right: 20 }}>
+          <PieChart margin={{ top: 12, right: 16, bottom: 12, left: 8 }}>
             <Pie
               data={data}
               dataKey="value"

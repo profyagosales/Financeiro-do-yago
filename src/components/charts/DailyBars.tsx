@@ -24,37 +24,45 @@ export default function DailyBars({ transacoes = [], mes }: Props) {
     });
   }, [transacoes, mes]);
 
+  const hasData = data.some((d) => d.receitas || d.despesas);
+
   return (
     <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
       <h3 className="font-medium mb-3">Movimento diário</h3>
       <div className="h-[320px]">
-        <ResponsiveContainer>
-          <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-            <XAxis dataKey="dia" />
-            <YAxis tickFormatter={(v) => `R$ ${v}`} />
-            <Tooltip
-              formatter={(v: number) => `R$ ${v.toFixed(2)}`}
-              labelFormatter={(l: number) => `Dia ${l}`}
-            />
-            <Legend />
-            <Bar
-              dataKey="despesas"
-              name="Despesas"
-              fill={SERIES_COLORS.expense}
-              radius={[4, 4, 0, 0]}
-            >
-              <LabelList position="top" formatter={(v) => (v ? `R$ ${v}` : '')} />
-            </Bar>
-            <Bar
-              dataKey="receitas"
-              name="Receitas"
-              fill={SERIES_COLORS.income}
-              radius={[4, 4, 0, 0]}
-            >
-              <LabelList position="top" formatter={(v) => (v ? `R$ ${v}` : '')} />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        {hasData ? (
+          <ResponsiveContainer>
+            <BarChart data={data} margin={{ top: 12, right: 16, bottom: 12, left: 8 }}>
+              <XAxis dataKey="dia" />
+              <YAxis tickFormatter={(v) => `R$ ${v}`} />
+              <Tooltip
+                formatter={(v: number) => `R$ ${v.toFixed(2)}`}
+                labelFormatter={(l: number) => `Dia ${l}`}
+              />
+              <Legend />
+              <Bar
+                dataKey="despesas"
+                name="Despesas"
+                fill={SERIES_COLORS.expense}
+                radius={[4, 4, 0, 0]}
+              >
+                <LabelList position="top" formatter={(v) => (v ? `R$ ${v}` : '')} />
+              </Bar>
+              <Bar
+                dataKey="receitas"
+                name="Receitas"
+                fill={SERIES_COLORS.income}
+                radius={[4, 4, 0, 0]}
+              >
+                <LabelList position="top" formatter={(v) => (v ? `R$ ${v}` : '')} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-full flex items-center justify-center text-sm text-slate-500">
+            Sem dados no período
+          </div>
+        )}
       </div>
     </div>
   );
