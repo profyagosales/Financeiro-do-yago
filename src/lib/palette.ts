@@ -1,6 +1,23 @@
 // src/lib/palette.ts
 // Cores fixas por categoria + helpers
 
+export type PaletteCategory =
+  | 'primary'
+  | 'secondary'
+  | 'neutral'
+  | 'success'
+  | 'warning'
+  | 'error';
+
+export const PALETTE: Record<PaletteCategory, string> = {
+  primary: 'var(--color-primary)',
+  secondary: 'var(--color-secondary)',
+  neutral: 'var(--color-neutral)',
+  success: 'var(--color-success)',
+  warning: 'var(--color-warning)',
+  error: 'var(--color-error)',
+};
+
 export const CATEGORY_COLORS: Record<string, string> = {
   'Alimentação': '#22c55e',   // emerald-500
   'Transporte':  '#f97316',   // orange-500

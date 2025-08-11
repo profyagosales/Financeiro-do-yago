@@ -7,9 +7,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design tokens */
+:root {
+  /* Colors */
+  --color-primary: #009579;
+  --color-secondary: #1E88E5;
+  --color-neutral: #64748b;
+  --color-success: #22c55e;
+  --color-warning: #f6be23;
+  --color-error: #ff4f5a;
+  --color-surface: #ffffff;
+
+  /* Typography */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-display: "Sora Variable", var(--font-sans);
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+
+  /* Borders */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-card: 1.75rem;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-card: 0 8px 20px rgba(0,0,0,0.08);
+}
+
 /* Preferência de tema */
 :root { color-scheme: light; }
-.dark { color-scheme: dark; }
+.dark { color-scheme: dark; --color-surface: #1e293b; }
 
 /* Tokens (mantém compatível com shadcn) */
 @layer base {
