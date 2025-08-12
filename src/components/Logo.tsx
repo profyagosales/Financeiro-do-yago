@@ -1,8 +1,10 @@
+import * as React from "react";
 
 export type LogoProps = {
   size?: "sm" | "md" | "lg";
   variant?: "full" | "mark";
   monochrome?: boolean;
+  className?: string;
 };
 
 const SIZE_MAP: Record<NonNullable<LogoProps["size"]>, number> = {
@@ -15,6 +17,7 @@ function Logo({
   size = "md",
   variant = "mark",
   monochrome = false,
+  className,
 }: LogoProps) {
   const id = React.useId();
   const dimension = SIZE_MAP[size];
@@ -56,6 +59,7 @@ function Logo({
         viewBox="0 0 48 48"
         fill="none"
         aria-label="Logo Financeiro do Yago"
+        className={className}
       >
         {mark}
       </svg>
@@ -69,6 +73,7 @@ function Logo({
       viewBox="0 0 300 48"
       fill="none"
       aria-label="Logo Financeiro do Yago"
+      className={className}
     >
       {mark}
       <text
