@@ -1,5 +1,6 @@
 // src/components/ModalInvestimento.tsx
 import { useEffect, useState } from 'react';
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,20 +10,26 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@
 type Base = {
   date: string;
   asset: string;
-  type: 'Renda Fixa' | 'FII' | 'Ação' | 'Cripto';
+  type: 'Renda Fixa' | 'FIIs' | 'Ações' | 'Cripto';
   quantity: number;
   price: number;
 };
 type Props = {
-  open: boolean; onClose: () => void; initialData?: Base | null;
+  open: boolean;
+  onClose: () => void;
+  initialData?: Base | null;
+  defaultType?: Base['type'];
   onSubmit: (d: Base) => Promise<void> | void;
 };
-const TYPES: Base['type'][] = ['Renda Fixa','FII','Ação','Cripto'];
+const TYPES: Base['type'][] = ['Renda Fixa', 'FIIs', 'Ações', 'Cripto'];
 
-export default function ModalInvestimento({ open, onClose, initialData, onSubmit }: Props) {
+export default function ModalInvestimento({ open, onClose, initialData, defaultType = 'Renda Fixa', onSubmit }: Props) {
   const [form, setForm] = useState<Base>({
-    date: new Date().toISOString().slice(0,10),
-    asset: '', type: 'Renda Fixa', quantity: 0, price: 0,
+    date: new Date().toISOString().slice(0, 10),
+    asset: '',
+    type: defaultType,
+    quantity: 0,
+    price: 0,
   });
   const [loading, setLoading] = useState(false);
 
@@ -30,9 +37,9 @@ export default function ModalInvestimento({ open, onClose, initialData, onSubmit
     if (initialData) {
       setForm(initialData);
     } else {
-      setForm((f) => ({ ...f, date: new Date().toISOString().slice(0, 10) }));
+      setForm((f) => ({ ...f, date: new Date().toISOString().slice(0, 10), type: defaultType }));
     }
-  }, [initialData, open]);
+  }, [initialData, open, defaultType]);
 
   const handle = (k: keyof Base, v: any) => setForm(p => ({ ...p, [k]: v }));
 

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
+
 import { supabase } from "@/lib/supabaseClient";
 
 /**
@@ -248,6 +249,36 @@ export function useInvestments(params: UseInvestmentsParams = {}) {
     [rows]
   );
 
+  const positions = useMemo(() => {
+    const map = new Map<string, { symbol: string | null; name: string; quantity: number; total: number }>();
+    for (const r of withTotals) {
+      const key = (r.symbol || r.name || '').toUpperCase();
+      const invested = r.total;
+      const prev = map.get(key);
+      if (prev) {
+        prev.quantity += r.quantity;
+        prev.total += invested;
+      } else {
+        map.set(key, {
+          symbol: r.symbol,
+          name: r.name,
+          quantity: r.quantity,
+          total: invested,
+        });
+      }
+    }
+    const arr = Array.from(map.values()).map((p) => {
+      const avg = p.total / (p.quantity || 1);
+      return {
+        ...p,
+        avgPrice: avg,
+        currentPrice: avg,
+      };
+    });
+    const total = arr.reduce((s, p) => s + p.total, 0);
+    return arr.map((p) => ({ ...p, percent: total ? (p.total / total) * 100 : 0 }));
+  }, [withTotals]);
+
   const kpis = useMemo(() => {
     const total = withTotals.reduce((s, r) => s + r.total, 0);
     const ativos = new Set(withTotals.map((r) => (r.symbol || r.name))).size;
@@ -283,6 +314,8 @@ export function useInvestments(params: UseInvestmentsParams = {}) {
 
   return {
     rows: withTotals,
+    history: withTotals,
+    positions,
     loading,
     error,
     kpis,
