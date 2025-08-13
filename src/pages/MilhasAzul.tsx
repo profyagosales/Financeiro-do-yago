@@ -1,4 +1,5 @@
-import MilhasLivelo from './MilhasLivelo';
+import { MilhasProgram } from './MilhasLivelo';
+
 export default function MilhasAzul() {
-  return <MilhasLivelo />;
+  return <MilhasProgram program="azul" />;
 }

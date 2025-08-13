@@ -1,18 +1,18 @@
 import { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
+import { toast } from 'sonner';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
-import MilesHeader from '@/components/MilesHeader';
+import MilesHeader, { type MilesProgram } from '@/components/MilesHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
 import ModalMilesMovement, { type MilesMovement } from '@/components/ModalMilesMovement';
-import { toast } from 'sonner';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 dayjs.locale('pt-br');
 
-export default function MilhasLivelo() {
+export function MilhasProgram({ program }: { program: MilesProgram }) {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<MilesMovement | null>(null);
 
@@ -63,7 +63,7 @@ export default function MilhasLivelo() {
 
   return (
     <div className="space-y-6">
-      <MilesHeader program="livelo" subtitle="Saldo, expiração e movimentos">
+      <MilesHeader program={program} subtitle="Saldo, expiração e movimentos">
         <Button onClick={()=>{ setEdit(null); setOpen(true); }}>Novo movimento</Button>
       </MilesHeader>
 
@@ -130,4 +130,8 @@ export default function MilhasLivelo() {
       />
     </div>
   );
+}
+
+export default function MilhasLivelo() {
+  return <MilhasProgram program="livelo" />;
 }

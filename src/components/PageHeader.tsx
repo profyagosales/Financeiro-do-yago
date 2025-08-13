@@ -6,12 +6,13 @@ export type Breadcrumb = { label: string; href?: string };
 export type PageHeaderProps = {
   title: string; subtitle?: string; icon?: ReactNode;
   actions?: ReactNode; breadcrumbs?: Breadcrumb[]; children?: ReactNode;
+  gradient?: string;
 };
 
 const PageHeader = (props: PageHeaderProps) => {
-  const { title, subtitle, icon, actions, breadcrumbs, children } = props;
+  const { title, subtitle, icon, actions, breadcrumbs, children, gradient } = props;
   return (
-    <div className="mb-6 rounded-xl bg-gradient-to-r from-emerald-900 to-teal-700 text-white">
+    <div className={`mb-6 rounded-xl bg-gradient-to-r ${gradient ?? 'from-emerald-900 to-teal-700'} text-white`}>
       <div className="container mx-auto px-4 py-5 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
           {icon ? <div className="rounded-lg bg-white/10 p-2 shrink-0">{icon}</div> : null}

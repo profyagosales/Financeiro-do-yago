@@ -4,7 +4,6 @@ import { Toaster } from 'sonner';
 
 /* ---------- Contexto de Autenticação ---------- */
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-
 /* ---------- Componentes ---------- */
 import { Sidebar } from './components/Sidebar';
 import { AppHotkeys } from "./components/AppHotkeys";
@@ -26,6 +25,7 @@ const CarteiraCripto    = lazy(() => import('./pages/CarteiraCripto'));
 
 const Metas = lazy(() => import('./pages/Metas'));
 
+const MilhasHome   = lazy(() => import('./pages/MilhasHome'));
 const MilhasLivelo = lazy(() => import('./pages/MilhasLivelo'));
 const MilhasLatam  = lazy(() => import('./pages/MilhasLatam'));
 const MilhasAzul   = lazy(() => import('./pages/MilhasAzul'));
@@ -94,8 +94,9 @@ function AppRoutes() {
             <Route path="/metas" element={<Metas />} />
 
             {/* Milhas */}
+            <Route path="/milhas"           element={<MilhasHome />} />
             <Route path="/milhas/livelo"    element={<MilhasLivelo />} />
-            <Route path="/milhas/latampass" element={<MilhasLatam />} />
+            <Route path="/milhas/latam"     element={<MilhasLatam />} />
             <Route path="/milhas/azul"      element={<MilhasAzul />} />
 
             {/* Listas */}

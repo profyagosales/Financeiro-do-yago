@@ -6,6 +6,7 @@ import {
   CandlestickChart, Coins, Target, Plane, Gift, ShoppingCart, Settings,
   ChevronDown, ChevronsLeft, ChevronsRight,
 } from "lucide-react";
+
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -50,7 +51,7 @@ const sections: Section[] = [
         type: "group", label: "Milhas", icon: Plane,
         children: [
           { type: "item", label: "Livelo", to: "/milhas/livelo", icon: Plane },
-          { type: "item", label: "Latam Pass", to: "/milhas/latampass", icon: Plane },
+          { type: "item", label: "Latam Pass", to: "/milhas/latam", icon: Plane },
           { type: "item", label: "Azul", to: "/milhas/azul", icon: Plane },
         ],
       },
