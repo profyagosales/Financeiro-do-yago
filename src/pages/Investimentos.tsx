@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+
 import dayjs from "dayjs";
 import {
   PieChart as PieIcon,
@@ -19,11 +20,11 @@ import {
 } from "recharts";
 
 import PageHeader from "@/components/PageHeader";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { useInvestments } from "@/hooks/useInvestments";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { useInvestments } from "@/hooks/useInvestments";
 
 const BRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });

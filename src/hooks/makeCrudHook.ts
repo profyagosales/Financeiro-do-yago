@@ -1,7 +1,8 @@
 // src/hooks/makeCrudHook.ts
 import { useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabaseClient';
 
 export function makeCrudHook<T extends { id: number }>(table: string) {
   return function useCrud(filter: Record<string, unknown> = {}) {

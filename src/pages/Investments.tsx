@@ -1,18 +1,19 @@
 // src/pages/Investments.tsx  (RESUMO)
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import { useAuth } from "@/contexts/AuthContext";
-import PageHeader from "@/components/PageHeader";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
+import { PieChart as PieIcon } from "lucide-react";
 import {
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
   BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip,
 } from "recharts";
-import { PieChart as PieIcon } from "lucide-react";
+
+import PageHeader from "@/components/PageHeader";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
+
 
 /* ---------------- utils ---------------- */
 type Investment = {

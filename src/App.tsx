@@ -1,14 +1,15 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
 /* ---------- Contexto de Autenticação ---------- */
+import { AppHotkeys } from "./components/AppHotkeys";
+import RouteLoader from './components/RouteLoader';
+import { Sidebar } from './components/Sidebar';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 /* ---------- Componentes ---------- */
-import { Sidebar } from './components/Sidebar';
-import { AppHotkeys } from "./components/AppHotkeys";
 import { PeriodProvider } from './state/periodFilter';
-import RouteLoader from './components/RouteLoader';
 
 /* ---------- lazy imports de páginas ---------- */
 const Dashboard      = lazy(() => import('./pages/Dashboard'));

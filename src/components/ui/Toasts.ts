@@ -1,6 +1,7 @@
 import { createElement } from 'react';
-import toast, { Toaster, type ToastOptions } from 'react-hot-toast';
+
 import { CheckCircle2, XCircle } from 'lucide-react';
+import toast, { Toaster, type ToastOptions } from 'react-hot-toast';
 
 const baseOptions: ToastOptions = {
   position: 'top-right',

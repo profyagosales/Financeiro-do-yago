@@ -1,7 +1,8 @@
 // src/components/FilterBar.tsx
 import { useCallback, type KeyboardEvent } from 'react';
-import { usePeriod } from "@/state/periodFilter";
+
 import { CalendarRange, Calendar } from "lucide-react";
+
 import {
   Select,
   SelectTrigger,
@@ -9,6 +10,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { usePeriod } from "@/state/periodFilter";
 
 /**
  * Barra de filtro com selects premium (shadcn/ui) e navegação por teclado.

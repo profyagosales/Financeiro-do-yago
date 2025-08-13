@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { supabase } from "@/lib/supabaseClient";
 import { mapCategoryColor } from "@/lib/palette";
+import { supabase } from "@/lib/supabaseClient";
 
 export type Category = {
   id: string;

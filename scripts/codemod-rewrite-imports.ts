@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+
 import ts from 'typescript'
 
 const DRY_RUN = process.argv.includes('--dry-run')

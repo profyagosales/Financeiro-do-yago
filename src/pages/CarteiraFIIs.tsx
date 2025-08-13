@@ -1,14 +1,15 @@
 import { useMemo, useState } from "react";
+
 import dayjs from "dayjs";
 import { Building2, Plus } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar } from "recharts";
 
+import ModalInvestimento from "@/components/ModalInvestimento";
 import PageHeader from "@/components/PageHeader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/Skeleton";
-import ModalInvestimento from "@/components/ModalInvestimento";
 import { useInvestments } from "@/hooks/useInvestments";
 
 const BRL = (v: number) =>

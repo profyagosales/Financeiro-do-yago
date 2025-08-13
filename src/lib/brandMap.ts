@@ -1,5 +1,4 @@
 // src/lib/brandMap.ts
-import type { LucideIcon } from "lucide-react";
 import {
   Landmark,
   CreditCard,
@@ -11,6 +10,8 @@ import {
   Car,
   Music,
 } from "lucide-react";
+
+import type { LucideIcon } from "lucide-react";
 
 export type BrandKey =
   | "nubank"

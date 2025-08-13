@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import { Coins, TrendingUp, TrendingDown, CalendarRange } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -10,11 +12,13 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-import { Link } from "react-router-dom";
 
+import CategoryDonut from "@/components/charts/CategoryDonut";
 import PageHeader from "@/components/PageHeader";
-import { MotionCard } from "@/components/ui/MotionCard";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { MotionCard } from "@/components/ui/MotionCard";
 import {
   Select,
   SelectContent,
@@ -22,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import CategoryDonut from "@/components/charts/CategoryDonut";
+import { Skeleton } from "@/components/ui/Skeleton";
 import {
   Table,
   TableBody,
@@ -31,10 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { getYearSummary, type YearSummary } from "@/hooks/useTransactions";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
 
 dayjs.locale("pt-br");
 
