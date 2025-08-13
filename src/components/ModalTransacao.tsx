@@ -181,7 +181,13 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     let label: string | null = null;
     if (s.kind === 'account' && s.id) label = findAccount(s.id)?.name || null;
     if (s.kind === 'card' && s.id) label = cardsById.get(s.id)?.name || null;
-    setForm(prev => ({ ...prev, source_kind: s.kind, source_id: s.id ?? null, source_label: label }));
+    setForm(prev => ({
+      ...prev,
+      source_kind: s.kind,
+      source_id: s.id ?? null,
+      source_label: label,
+      installments: s.kind === 'card' ? prev.installments : null,
+    }));
   }, [cardsById, findAccount]);
 
   return (
