@@ -1,4 +1,16 @@
 // src/components/charts/CategoryDonut.tsx
+import { useMemo } from "react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
+
+import { mapCategoryColor } from "@/lib/palette";
+import type { UITransaction } from "@/components/TransactionsTable";
 import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
@@ -8,19 +20,22 @@ import type { UITransaction } from '@/components/TransactionsTable';
 type Props = {
   transacoes?: UITransaction[];
   mes?: string;
-  categoriesData?: Array<{ category: string; value: number }>;
+  categoriesData?: Array<{ name: string; total: number }>;
 };
 
-export default function CategoryDonut({ transacoes = [], categoriesData }: Props) {
+export default function CategoryDonut({
+  transacoes = [],
+  categoriesData,
+}: Props) {
   // soma por categoria (apenas despesas)
   const data = useMemo(() => {
     if (categoriesData) {
-      return categoriesData.map((c) => ({ name: c.category, value: c.value }));
+      return categoriesData.map((c) => ({ name: c.name, value: c.total }));
     }
     const byCat = transacoes
-      .filter((t) => t.type === 'expense')
+      .filter((t) => t.type === "expense")
       .reduce<Record<string, number>>((acc, t) => {
-        const key = t.category || 'Sem categoria';
+        const key = t.category || "Sem categoria";
         acc[key] = (acc[key] ?? 0) + t.value;
         return acc;
       }, {});
@@ -53,16 +68,16 @@ export default function CategoryDonut({ transacoes = [], categoriesData }: Props
               paddingAngle={2}
               label={({ percent = 0 }) => `${(percent * 100).toFixed(0)}%`}
               labelLine={false}
-              >
-                {data.map((entry) => (
-                  <Cell key={entry.name} fill={mapCategoryColor(entry.name)} />
-                ))}
-              </Pie>
+            >
+              {data.map((entry) => (
+                <Cell key={entry.name} fill={mapCategoryColor(entry.name)} />
+              ))}
+            </Pie>
             <Tooltip
               formatter={(v: number) =>
-                (Number(v) || 0).toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
+                (Number(v) || 0).toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
                 })
               }
               labelFormatter={(name: string) => name}
