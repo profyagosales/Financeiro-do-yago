@@ -1,8 +1,9 @@
 import { useMemo, useRef, useState } from "react";
 
-import PageHeader from "@/components/PageHeader";
 import FilterBar from "@/components/FilterBar";
+import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   Select,
   SelectContent,
@@ -11,9 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { usePeriod } from "@/state/periodFilter";
 import { useBills, type Bill } from "@/hooks/useBills";
+import { usePeriod } from "@/state/periodFilter";
 
 export default function Bills() {
   const { month, year } = usePeriod();

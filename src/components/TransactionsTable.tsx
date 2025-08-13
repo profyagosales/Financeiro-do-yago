@@ -1,23 +1,24 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
+
+import dayjs from 'dayjs';
 import {
   Pencil, Trash2, ChevronLeft, ChevronRight, ArrowUpDown, Wallet, CreditCard,
   Upload, Download, Copy, CheckSquare, Square, Plus
 } from 'lucide-react';
-import dayjs from 'dayjs';
 import { toast } from 'sonner';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { useAccounts } from '@/hooks/useAccounts';
-import { useCreditCards } from '@/hooks/useCreditCards';
 import type { Account } from '@/hooks/useAccounts';
+import { useCreditCards } from '@/hooks/useCreditCards';
 import type { Card } from '@/hooks/useCreditCards';
-import { Badge } from '@/components/ui/badge';
 
 // Tipo de linha exibida na tabela (shape de UI vindo de FinancasMensal)
 type SourceRef =

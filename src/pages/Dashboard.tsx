@@ -1,6 +1,19 @@
 import { useEffect, useMemo, useState, type ReactNode, type PropsWithChildren } from 'react';
-import { Link } from "react-router-dom";
+
 import { motion, useMotionValue, animate } from "framer-motion";
+import {
+  Wallet,
+  PiggyBank,
+  TrendingUp,
+  CreditCard,
+  ChevronRight,
+  Landmark,
+  CalendarRange,
+  Target,
+  Plane,
+  PieChart as PieChartIcon,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -14,23 +27,12 @@ import {
   Cell,
   CartesianGrid,
 } from "recharts";
-import {
-  Wallet,
-  PiggyBank,
-  TrendingUp,
-  CreditCard,
-  ChevronRight,
-  Landmark,
-  CalendarRange,
-  Target,
-  Plane,
-  PieChart as PieChartIcon,
-} from "lucide-react";
+
 import BrandIcon from "@/components/BrandIcon";
 import FilterBar from "@/components/FilterBar";
-import { usePeriod } from "@/state/periodFilter";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { usePeriod } from "@/state/periodFilter";
 
 // ---------------------------------- helpers
 const brl = (n: number) =>

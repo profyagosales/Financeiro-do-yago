@@ -1,5 +1,7 @@
 // src/components/charts/DailyBars.tsx
 import { useMemo } from 'react';
+
+import dayjs from 'dayjs';
 import {
   BarChart,
   Bar,
@@ -10,10 +12,9 @@ import {
   Legend,
   LabelList,
 } from 'recharts';
-import dayjs from 'dayjs';
 
-import { SERIES_COLORS } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
+import { SERIES_COLORS } from '@/lib/palette';
 
 type Props = { transacoes?: UITransaction[]; mes?: string };
 

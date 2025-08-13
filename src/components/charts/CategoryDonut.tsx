@@ -1,5 +1,7 @@
 // src/components/charts/CategoryDonut.tsx
 import { useMemo } from "react";
+import { useMemo } from 'react';
+
 import {
   PieChart,
   Pie,
@@ -8,14 +10,12 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-
-import { mapCategoryColor } from "@/lib/palette";
-import type { UITransaction } from "@/components/TransactionsTable";
-import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
-import { mapCategoryColor } from '@/lib/palette';
+import type { UITransaction } from "@/components/TransactionsTable";
 import type { UITransaction } from '@/components/TransactionsTable';
+import { mapCategoryColor } from "@/lib/palette";
+import { mapCategoryColor } from '@/lib/palette';
 
 type Props = {
   transacoes?: UITransaction[];

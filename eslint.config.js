@@ -22,6 +22,18 @@ export default tseslint.config([
     plugins: {
       import: pluginImport,
     },
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: [
+            './tsconfig.json',
+            './tsconfig.app.json',
+            './tsconfig.node.json',
+          ],
+          alwaysTryTypes: true,
+        },
+      },
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -32,17 +44,37 @@ export default tseslint.config([
       'import/order': [
         'error',
         {
+          alphabetize: { order: 'asc', caseInsensitive: true },
           'newlines-between': 'always',
+          distinctGroup: true,
           groups: [
             'builtin',
             'external',
             'internal',
-            'parent',
-            'sibling',
-            'index',
+            ['parent', 'sibling', 'index'],
+            'object',
+            'type',
           ],
+          pathGroups: [
+            {
+              pattern: 'react',
+              group: 'external',
+              position: 'before',
+            },
+            {
+              pattern: '@/**',
+              group: 'internal',
+            },
+          ],
+          pathGroupsExcludedImportTypes: ['react'],
         },
       ],
+    },
+  },
+  {
+    files: ['**/*.stories.*'],
+    rules: {
+      'import/order': 'off',
     },
   },
 ], storybook.configs["flat/recommended"]);

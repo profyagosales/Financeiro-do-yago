@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import { motion, useSpring, useTransform } from 'framer-motion';
 
 export function AnimatedNumber({ value, currency=true }:{ value:number; currency?:boolean }) {

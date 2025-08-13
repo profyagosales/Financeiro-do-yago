@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { supabase } from "@/lib/supabaseClient";
 import { buildSingleEvent } from "@/lib/ics";
+import { supabase } from "@/lib/supabaseClient";
 
 export type Bill = {
   id: string;
