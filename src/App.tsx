@@ -6,7 +6,6 @@ import RouteLoader from '@/components/RouteLoader';
 import Sidebar from '@/components/Sidebar';
 import { Toaster } from '@/components/ui/Toasts';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { PeriodProvider } from '@/contexts/PeriodContext';
 
 /* ---------- lazy imports de páginas ---------- */
 const Dashboard      = lazy(() => import('./pages/Dashboard'));
@@ -32,6 +31,7 @@ const ListaCompras = lazy(() => import('./pages/ListaCompras'));
 
 const Configuracoes = lazy(() => import('./pages/Configuracoes'));
 const Login         = lazy(() => import('./pages/Login'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 
 /* ────────────────────────────────────────────── */
 
@@ -39,11 +39,9 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <PeriodProvider>
-          {/* Toaster global */}
-          <Toaster richColors position="top-right" />
-          <AppRoutes />
-        </PeriodProvider>
+        {/* Toaster global */}
+        <Toaster richColors position="top-right" />
+        <AppRoutes />
       </Router>
     </AuthProvider>
   );
@@ -54,7 +52,19 @@ function AppRoutes() {
   const { user, loading } = useAuth();
 
   if (loading) return <RouteLoader />;
-  if (!user)   return (<Suspense fallback={<RouteLoader />}><Login /></Suspense>);
+  if (!user)
+    return (
+      <Suspense fallback={<RouteLoader />}>
+        <Routes>
+          {/* rota para redefinição de senha via e-mail do Supabase */}
+          <Route path="/reset-password" element={<ResetPassword />} />
+          {/* rota explícita de login */}
+          <Route path="/login" element={<Login />} />
+          {/* fallback para qualquer outra rota não autenticada */}
+          <Route path="*" element={<Login />} />
+        </Routes>
+      </Suspense>
+    );
 
   return (
     <div className="flex min-h-screen">
