@@ -1,187 +1,157 @@
-// src/pages/CarteiraCripto.tsx
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
-import { Plus, MoreHorizontal, Pencil, Trash2, Coins } from "lucide-react";
+import dayjs from "dayjs";
+import { Coins, Plus } from "lucide-react";
+import { ResponsiveContainer, BarChart, Bar } from "recharts";
 
-import { useInvestments } from "@/hooks/useInvestments";
-import ModalInvest from "@/components/ModalInvest";
 import PageHeader from "@/components/PageHeader";
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/Skeleton";
+import ModalInvestimento from "@/components/ModalInvestimento";
+import { useInvestments } from "@/hooks/useInvestments";
 
-// Formatter BRL
-const BRL = (v: number | null | undefined) => (v ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const BRL = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const COLORS = ["#0ea5e9", "#22c55e", "#a78bfa", "#f97316"];
 
 export default function CarteiraCripto() {
-  const { rows, loading, kpis, add, update, remove } = useInvestments({ type: "Cripto" });
+  const [period, setPeriod] = useState(dayjs().format("YYYY-MM"));
+  const [open, setOpen] = useState(false);
+  const [year, month] = period
+    ? [Number(period.split("-")[0]), Number(period.split("-")[1])]
+    : [undefined, undefined];
+  const { positions, add, loading } = useInvestments({ type: "Cripto", month, year });
 
-  const [q, setQ] = useState("");
-  const [openNew, setOpenNew] = useState(false);
-  const [editing, setEditing] = useState<typeof rows[number] | null>(null);
+  const keys = positions.map((p) => p.symbol || p.name);
+  const chartData = useMemo(() => {
+    const obj: any = {};
+    positions.forEach((p) => {
+      obj[p.symbol || p.name] = p.percent;
+    });
+    return [obj];
+  }, [positions]);
 
-  const filtered = useMemo(() => {
-    const t = q.trim().toLowerCase();
-    if (!t) return rows;
-    return rows.filter((it) => [it.name, it.symbol, it.broker, it.note, (it as any).notes]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase()
-      .includes(t)
-    );
-  }, [rows, q]);
-
-  const onCreate = async (payload: any) => {
-    try {
-      await add({ ...payload, type: "Cripto" });
-      toast.success("Aporte cadastrado!");
-      setOpenNew(false);
-    } catch (e: any) {
-      toast.error("Erro ao salvar", { description: e.message });
-    }
-  };
-
-  const onUpdate = async (id: number, patch: any) => {
-    try {
-      await update(id, { ...patch, type: "Cripto" });
-      toast.success("Atualizado!");
-      setEditing(null);
-    } catch (e: any) {
-      toast.error("Erro ao atualizar", { description: e.message });
-    }
-  };
-
-  const onDelete = async (id: number, name: string) => {
-    if (!confirm(`Excluir "${name}"?`)) return;
-    try {
-      await remove(id);
-      toast.success("Excluído.");
-    } catch (e: any) {
-      toast.error("Erro ao excluir", { description: e.message });
-    }
+  const onCreate = async (d: any) => {
+    await add({
+      type: "Cripto",
+      name: d.asset,
+      symbol: d.asset,
+      quantity: d.quantity,
+      price: d.price,
+      date: d.date,
+      fees: 0,
+    });
+    setOpen(false);
   };
 
   return (
     <>
       <PageHeader
         title="Carteira — Cripto"
-        subtitle="Lançamentos e aportes desta classe."
+        subtitle="Posições consolidadas desta classe."
         icon={<Coins className="h-5 w-5" />}
-        breadcrumbs={[{ label: "Investimentos", href: "/investimentos" }, { label: "Carteira", href: "/investimentos/cripto" }, { label: "Cripto" }]}
-        actions={<Button className="gap-2" onClick={() => setOpenNew(true)}><Plus className="h-4 w-4" /> Novo investimento</Button>}
+        breadcrumbs={[
+          { label: "Investimentos", href: "/investimentos" },
+          { label: "Carteira", href: "/investimentos/cripto" },
+          { label: "Cripto" },
+        ]}
+        actions={
+          <Button className="gap-2" onClick={() => setOpen(true)}>
+            <Plus className="h-4 w-4" /> Adicionar investimento
+          </Button>
+        }
       />
 
-      {/* Filtro + KPIs */}
-      <div className="mt-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="mt-4">
         <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar por nome, ticker ou corretora…"
-          className="w-full md:w-80"
+          type="month"
+          value={period}
+          onChange={(e) => setPeriod(e.target.value)}
+          className="w-40"
         />
       </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-3">
-        <Card className="shadow-sm">
-          <CardHeader className="pb-2"><CardDescription>Total investido</CardDescription>
-            <CardTitle className="text-2xl">{BRL(kpis.total)}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card className="shadow-sm">
-          <CardHeader className="pb-2"><CardDescription>Operações (mês atual)</CardDescription>
-            <CardTitle className="text-2xl">{kpis.opsMes}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card className="shadow-sm">
-          <CardHeader className="pb-2"><CardDescription>Ativos</CardDescription>
-            <CardTitle className="text-2xl">{kpis.ativos}</CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
+      <Card className="mt-6">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Distribuição</CardTitle>
+        </CardHeader>
+        <CardContent className="h-16">
+          {loading ? (
+            <Skeleton className="h-full w-full" />
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} stackOffset="expand">
+                {keys.map((k, i) => (
+                  <Bar key={k} dataKey={k} stackId="a" fill={COLORS[i % COLORS.length]} />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Lista */}
-      <div className="mt-6 grid gap-3">
-        {loading && <Card className="h-24 animate-pulse bg-muted/40" />} 
-        {!loading && filtered.length === 0 && (
-          <Card className="p-6">
-            <CardTitle className="text-base">Sem lançamentos</CardTitle>
-            <CardDescription>Use “Novo investimento” para cadastrar.</CardDescription>
-          </Card>
-        )}
+      <Card className="mt-6 overflow-x-auto">
+        <CardContent className="p-0">
+          <table className="w-full text-sm">
+            <thead className="text-left text-muted-foreground">
+              <tr>
+                <th className="py-2 px-3">Ticker</th>
+                <th className="py-2 px-3">Nome</th>
+                <th className="py-2 px-3">Qtde</th>
+                <th className="py-2 px-3">Preço médio</th>
+                <th className="py-2 px-3">Preço atual</th>
+                <th className="py-2 px-3">P/L</th>
+                <th className="py-2 px-3">% carteira</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <tr key={i}>
+                    <td colSpan={7} className="py-4 px-3">
+                      <Skeleton className="h-6 w-full" />
+                    </td>
+                  </tr>
+                ))
+              ) : positions.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-4 text-center text-muted-foreground">
+                    Sem posições
+                  </td>
+                </tr>
+              ) : (
+                positions.map((p) => {
+                  const pl = (p.currentPrice - p.avgPrice) * p.quantity;
+                  const plPct = p.avgPrice
+                    ? ((p.currentPrice - p.avgPrice) / p.avgPrice) * 100
+                    : 0;
+                  return (
+                    <tr key={p.name} className="border-t">
+                      <td className="py-2 px-3">{p.symbol || p.name}</td>
+                      <td className="py-2 px-3">{p.name}</td>
+                      <td className="py-2 px-3">{p.quantity}</td>
+                      <td className="py-2 px-3">{BRL(p.avgPrice)}</td>
+                      <td className="py-2 px-3">{BRL(p.currentPrice)}</td>
+                      <td className="py-2 px-3">
+                        {BRL(pl)} ({plPct.toFixed(2)}%)
+                      </td>
+                      <td className="py-2 px-3">{p.percent.toFixed(2)}%</td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
 
-        {!loading && filtered.map((it) => (
-          <Card key={it.id} className="shadow-sm">
-            <CardHeader className="pb-2">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <CardTitle className="text-base truncate">
-                    {it.name} {it.symbol ? <span className="text-muted-foreground">({it.symbol})</span> : null}
-                  </CardTitle>
-                  <CardDescription className="mt-1 flex flex-wrap items-center gap-2">
-                    <Badge>Cripto</Badge>
-                    {it.broker ? <span className="text-xs text-muted-foreground">• {it.broker}</span> : null}
-                    <span className="text-xs text-muted-foreground">• {new Date(it.date).toLocaleDateString("pt-BR")}</span>
-                  </CardDescription>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setEditing(it)}>
-                      <Pencil className="mr-2 h-4 w-4" /> Editar
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600" onClick={() => onDelete(it.id, it.name)}>
-                      <Trash2 className="mr-2 h-4 w-4" /> Excluir
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
-              <div>
-                <div className="text-muted-foreground">Quantidade</div>
-                <div className="font-medium">{it.quantity}</div>
-              </div>
-              <div>
-                <div className="text-muted-foreground">Preço unit.</div>
-                <div className="font-medium">{BRL(it.price)}</div>
-              </div>
-              <div>
-                <div className="text-muted-foreground">Taxas</div>
-                <div className="font-medium">{BRL(it.fees)}</div>
-              </div>
-              <div>
-                <div className="text-muted-foreground">Investido</div>
-                <div className="font-medium">{BRL(it.quantity * it.price + (it.fees ?? 0))}</div>
-              </div>
-              <div>
-                <div className="text-muted-foreground">Obs.</div>
-                <div className="truncate">{(it as any).note || (it as any).notes || "-"}</div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Modais */}
-      <ModalInvest
-        open={openNew}
-        onClose={() => setOpenNew(false)}
+      <ModalInvestimento
+        open={open}
+        onClose={() => setOpen(false)}
         defaultType="Cripto"
         onSubmit={onCreate}
       />
-
-        <ModalInvest
-          open={!!editing}
-          onClose={() => setEditing(null)}
-          initial={editing as any}
-          defaultType="Cripto"
-          onSubmit={(payload) => { if (editing) return onUpdate(editing.id, payload); }}
-        />
     </>
   );
 }

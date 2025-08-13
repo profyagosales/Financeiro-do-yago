@@ -1,141 +1,113 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import PageHeader from "@/components/PageHeader";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useInvestments } from "@/hooks/useInvestments";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
-
+import { useMemo } from "react";
+import dayjs from "dayjs";
 import {
   PieChart as PieIcon,
   LineChart as LineIcon,
-  Landmark,
-  Building2,
-  CandlestickChart,
-  Coins,
+  TrendingUp,
 } from "lucide-react";
 import {
+  ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
   Tooltip as RTooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
 } from "recharts";
 
-// Helpers
-const BRL = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-const COLORS = ["#0ea5e9", "#22c55e", "#a78bfa", "#f97316"]; // azul, verde, roxo, laranja
+import PageHeader from "@/components/PageHeader";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { useInvestments } from "@/hooks/useInvestments";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Badge } from "@/components/ui/badge";
 
-type Tab = "all" | "renda_fixa" | "fii" | "acoes" | "cripto";
-function tabToType(tab: Tab): "all" | "Renda fixa" | "FIIs" | "Ações" | "Cripto" {
-  switch (tab) {
-    case "renda_fixa":
-      return "Renda fixa";
-    case "fii":
-      return "FIIs";
-    case "acoes":
-      return "Ações";
-    case "cripto":
-      return "Cripto";
-    default:
-      return "all";
-  }
-}
+const BRL = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const COLORS = ["#0ea5e9", "#22c55e", "#a78bfa", "#f97316"];
 
 export default function InvestimentosResumo() {
-  const [tab, setTab] = useState<Tab>("all");
-  const [q, setQ] = useState("");
+  const { history, byType, loading } = useInvestments();
 
-  const { rows, loading, error, kpis, byType, monthly } = useInvestments({
-    type: tabToType(tab),
-    q,
-  });
+  const aporteMes = useMemo(() => {
+    const start = dayjs().startOf("month");
+    return history
+      .filter((r) => dayjs(r.date).isSame(start, "month"))
+      .reduce((s, r) => s + r.total, 0);
+  }, [history]);
 
-  // Top 5 ativos (por valor investido agregado)
-  const top5 = useMemo(() => {
-    const map = new Map<string, { name: string; symbol?: string | null; type: string; total: number }>();
-    for (const r of rows) {
-      const key = (r.symbol || r.name || "").toUpperCase();
-      const total = r.quantity * r.price + (r.fees ?? 0);
-      const prev = map.get(key);
-      if (prev) prev.total += total;
-      else map.set(key, { name: r.name, symbol: r.symbol ?? undefined, type: String(r.type), total });
-    }
-    return Array.from(map.values())
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 5);
-  }, [rows]);
+  const patrimonio = useMemo(
+    () => history.reduce((s, r) => s + r.total, 0),
+    [history]
+  );
 
-  // Últimas operações (somente leitura)
-  const latest = useMemo(() => rows.slice(0, 10), [rows]);
+  const variacao = useMemo(() => {
+    const start = dayjs().startOf("month");
+    const prev = history
+      .filter((r) => dayjs(r.date).isBefore(start))
+      .reduce((s, r) => s + r.total, 0);
+    return prev ? ((patrimonio - prev) / prev) * 100 : 0;
+  }, [history, patrimonio]);
+
+  const latest = useMemo(() => history.slice(0, 5), [history]);
+
+  const patrimonioSeries = useMemo(() => {
+    const base = dayjs().startOf("month").subtract(11, "month");
+    const seq = Array.from({ length: 12 }).map((_, i) => base.add(i, "month"));
+    let acc = 0;
+    return seq.map((d) => {
+      const monthly = history
+        .filter((r) => dayjs(r.date).isSame(d, "month"))
+        .reduce((s, r) => s + r.total, 0);
+      acc += monthly;
+      return { month: d.format("MMM/YY"), total: acc };
+    });
+  }, [history]);
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Investimentos — Resumo"
-        subtitle="Visão geral dos seus aportes por classe de ativos. Crie e edite nas páginas de Carteira."
+        subtitle="Visão geral dos seus aportes."
         icon={<PieIcon className="h-5 w-5" />}
-        breadcrumbs={[{ label: "Investimentos", href: "/investimentos" }, { label: "Resumo" }]}
+        breadcrumbs={[
+          { label: "Investimentos", href: "/investimentos" },
+          { label: "Resumo" },
+        ]}
       />
 
-      {/* KPIs */}
       <div className="grid gap-4 md:grid-cols-3">
         {loading ? (
-          Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)
+          Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 w-full" />
+          ))
         ) : (
           <>
             <Card>
               <CardHeader className="pb-1">
-                <CardDescription>Total investido</CardDescription>
-                <CardTitle>{BRL(kpis.total)}</CardTitle>
+                <CardDescription>Aporte no mês</CardDescription>
+                <CardTitle>{BRL(aporteMes)}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-1">
-                <CardDescription>Operações no mês</CardDescription>
-                <CardTitle>{kpis.opsMes}</CardTitle>
+                <CardDescription>Patrimônio</CardDescription>
+                <CardTitle>{BRL(patrimonio)}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-1">
-                <CardDescription>Ativos diferentes</CardDescription>
-                <CardTitle>{kpis.ativos}</CardTitle>
+                <CardDescription>Variação %</CardDescription>
+                <CardTitle>{variacao.toFixed(2)}%</CardTitle>
               </CardHeader>
             </Card>
           </>
         )}
       </div>
 
-      {/* Filtros (somente leitura) */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <Tabs value={tab} onValueChange={(v: any) => setTab(v)}>
-          <TabsList>
-            <TabsTrigger value="all">Todos</TabsTrigger>
-            <TabsTrigger value="renda_fixa">Renda fixa</TabsTrigger>
-            <TabsTrigger value="fii">FIIs</TabsTrigger>
-            <TabsTrigger value="acoes">Ações</TabsTrigger>
-            <TabsTrigger value="cripto">Cripto</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        <Input
-          placeholder="Buscar por nome, ticker ou corretora…"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          className="md:w-80"
-        />
-      </div>
-
-      {/* Gráficos */}
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader className="pb-2">
@@ -151,7 +123,7 @@ export default function InvestimentosResumo() {
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={byType} dataKey="value" nameKey="name" outerRadius={90} innerRadius={60}>
+                  <Pie data={byType} dataKey="value" nameKey="name" innerRadius={60} outerRadius={90}>
                     {byType.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
@@ -166,137 +138,33 @@ export default function InvestimentosResumo() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
-              <LineIcon className="h-4 w-4" /> Aportes nos últimos 12 meses
+              <LineIcon className="h-4 w-4" /> Evolução do patrimônio
             </CardTitle>
           </CardHeader>
           <CardContent className="h-72">
             {loading ? (
               <Skeleton className="h-full w-full" />
-            ) : monthly.length === 0 ? (
+            ) : patrimonioSeries.every((p) => p.total === 0) ? (
               <EmptyState icon={<LineIcon className="h-6 w-6" />} title="Sem dados" />
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthly}>
+                <AreaChart data={patrimonioSeries}>
                   <CartesianGrid vertical={false} />
                   <XAxis dataKey="month" />
                   <YAxis tickFormatter={(v) => BRL(Number(v)).replace("R$", "")} />
                   <RTooltip formatter={(v: any) => BRL(Number(v))} />
-                  <Bar dataKey="total" />
-                </BarChart>
+                  <Area type="monotone" dataKey="total" stroke="#0ea5e9" fill="#0ea5e9" fillOpacity={0.2} />
+                </AreaChart>
               </ResponsiveContainer>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* CTAs para Carteiras */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Landmark className="h-4 w-4" /> Renda Fixa
-            </CardTitle>
-            <CardDescription>Cadastre e gerencie seus títulos.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild className="w-full">
-              <Link to="/investimentos/renda-fixa">Ir para carteira</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Building2 className="h-4 w-4" /> FIIs
-            </CardTitle>
-            <CardDescription>Fundos Imobiliários.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild className="w-full">
-              <Link to="/investimentos/fiis">Ir para carteira</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <CandlestickChart className="h-4 w-4" /> Bolsa
-            </CardTitle>
-            <CardDescription>Ações e BDRs.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild className="w-full">
-              <Link to="/investimentos/bolsa">Ir para carteira</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Coins className="h-4 w-4" /> Cripto
-            </CardTitle>
-            <CardDescription>Criptomoedas e tokens.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild className="w-full">
-              <Link to="/investimentos/cripto">Ir para carteira</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Top 5 Ativos por valor investido */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Top 5 ativos por valor investido</CardTitle>
-          <CardDescription>Soma dos aportes por ativo.</CardDescription>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="text-left text-muted-foreground">
-              <tr>
-                <th className="py-2 pr-3">Ativo</th>
-                <th className="py-2 pr-3">Tipo</th>
-                <th className="py-2 pr-3">Total investido</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading
-                ? Array.from({ length: 3 }).map((_, i) => (
-                    <tr key={i} className="border-t">
-                      <td className="py-2 pr-3" colSpan={3}>
-                        <Skeleton className="h-6 w-full" />
-                      </td>
-                    </tr>
-                  ))
-                : top5.length === 0
-                ? (
-                    <tr>
-                      <td colSpan={3}>
-                        <EmptyState icon={<PieIcon className="h-6 w-6" />} title="Sem dados" />
-                      </td>
-                    </tr>
-                  )
-                : top5.map((a) => (
-                    <tr key={(a.symbol || a.name) as string} className="border-t">
-                      <td className="py-2 pr-3">
-                        <div className="font-medium">{a.name}</div>
-                        {a.symbol ? <div className="text-muted-foreground">{a.symbol}</div> : null}
-                      </td>
-                      <td className="py-2 pr-3"><Badge variant="secondary">{a.type}</Badge></td>
-                      <td className="py-2 pr-3">{BRL(a.total)}</td>
-                    </tr>
-                  ))}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
-
-      {/* Últimas operações (somente leitura) */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">Últimas operações</CardTitle>
-          <CardDescription>Últimos 10 lançamentos registrados.</CardDescription>
+          <CardTitle className="text-base">Últimos aportes</CardTitle>
+          <CardDescription>Registros mais recentes.</CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -307,7 +175,6 @@ export default function InvestimentosResumo() {
                 <th className="py-2 pr-3">Ativo</th>
                 <th className="py-2 pr-3">Qtde</th>
                 <th className="py-2 pr-3">Preço</th>
-                <th className="py-2 pr-3">Taxas</th>
                 <th className="py-2 pr-3">Total</th>
               </tr>
             </thead>
@@ -315,34 +182,26 @@ export default function InvestimentosResumo() {
               {loading ? (
                 Array.from({ length: 3 }).map((_, i) => (
                   <tr key={i} className="border-t">
-                    <td colSpan={7} className="py-2 pr-3">
+                    <td colSpan={6} className="py-2 pr-3">
                       <Skeleton className="h-6 w-full" />
                     </td>
                   </tr>
                 ))
-              ) : error ? (
-                <tr>
-                  <td className="py-6 text-red-600" colSpan={7}>{error}</td>
-                </tr>
               ) : latest.length === 0 ? (
                 <tr>
-                  <td colSpan={7}>
-                    <EmptyState icon={<Coins className="h-6 w-6" />} title="Nenhum registro" />
+                  <td colSpan={6}>
+                    <EmptyState icon={<TrendingUp className="h-6 w-6" />} title="Nenhum registro" />
                   </td>
                 </tr>
               ) : (
                 latest.map((r) => (
                   <tr key={r.id} className="border-t">
-                    <td className="py-2 pr-3">{new Date(r.date).toLocaleDateString("pt-BR")}</td>
+                    <td className="py-2 pr-3">{dayjs(r.date).format('DD/MM/YY')}</td>
                     <td className="py-2 pr-3"><Badge variant="secondary">{String(r.type)}</Badge></td>
-                    <td className="py-2 pr-3">
-                      <div className="font-medium">{r.name}</div>
-                      <div className="text-muted-foreground">{r.symbol}</div>
-                    </td>
+                    <td className="py-2 pr-3">{r.name}</td>
                     <td className="py-2 pr-3">{r.quantity}</td>
                     <td className="py-2 pr-3">{BRL(r.price)}</td>
-                    <td className="py-2 pr-3">{BRL(r.fees)}</td>
-                    <td className="py-2 pr-3">{BRL(r.quantity * r.price + (r.fees ?? 0))}</td>
+                    <td className="py-2 pr-3">{BRL(r.total)}</td>
                   </tr>
                 ))
               )}
