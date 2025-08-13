@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +11,6 @@ import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
 import { useCategories } from '@/hooks/useCategories';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useCreditCards } from '@/hooks/useCreditCards';
-import { toast } from 'sonner';
 import MoneyInput from '@/components/MoneyInput';
 
 // --- Types -----------------------------------------------------------------
@@ -179,7 +180,13 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     let label: string | null = null;
     if (s.kind === 'account' && s.id) label = findAccount(s.id)?.name || null;
     if (s.kind === 'card' && s.id) label = cardsById.get(s.id)?.name || null;
-    setForm(prev => ({ ...prev, source_kind: s.kind, source_id: s.id ?? null, source_label: label }));
+    setForm(prev => ({
+      ...prev,
+      source_kind: s.kind,
+      source_id: s.id ?? null,
+      source_label: label,
+      installments: s.kind === 'card' ? prev.installments : null,
+    }));
   }, [cardsById, findAccount]);
 
   return (

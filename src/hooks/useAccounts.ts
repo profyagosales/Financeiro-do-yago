@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+
 import { supabase } from "@/lib/supabaseClient";
 
 export type Account = {
@@ -16,6 +17,8 @@ export type Account = {
 function sanitize(payload: Partial<Account>) {
   const p: Partial<Account> = { ...payload };
   if (typeof p.name === "string") p.name = p.name.trim();
+  if (typeof p.institution === "string") p.institution = p.institution.trim() || null;
+  if (p.balance !== undefined && p.balance !== null) p.balance = Number(p.balance);
   return p;
 }
 
@@ -123,8 +126,11 @@ export function useAccounts() {
     } as const;
   }, [data]);
 
+  const byId = useMemo(() => new Map(data.map((a) => [a.id, a])), [data]);
+
   return {
     data,
+    byId,
     grouped,
     loading,
     error,

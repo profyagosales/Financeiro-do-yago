@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState, useId } from "react";
+import { Wallet, CreditCard, Plus } from "lucide-react";
+import { toast } from "sonner";
+
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCreditCards, cycleFor as cardCycleFor } from "@/hooks/useCreditCards";
-import { Wallet, CreditCard, Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-
-import type { CreditCard as CardModel } from "@/hooks/useCreditCards";
+import type { Card } from "@/hooks/useCreditCards";
 
 export type SourceValue = { kind: "account" | "card"; id: string | null };
 
@@ -59,7 +59,7 @@ export default function SourcePicker({
 
   const cardHint = useMemo(() => {
     if (!showCardHints || kind !== "card" || !selectedId) return null;
-    const cc: CardModel | undefined = cardsById.get(selectedId);
+    const cc: Card | undefined = cardsById.get(selectedId);
     if (!cc) return null;
     const cyc = cardCycleFor(cc);
     if (!cyc) return null;
@@ -138,15 +138,15 @@ export default function SourcePicker({
             <SelectItem value="">Todas</SelectItem>
             {cards.map((c) => (
               <SelectItem key={c.id} value={c.id}>
-                  <span className="inline-flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-sky-500" />
-                    <span className="font-medium">{c.name}</span>
-                    {typeof c.limit_amount === "number" && (
-                      <span className="ml-1 text-xs opacity-70">limite {brl(c.limit_amount)}</span>
-                    )}
-                  </span>
-                </SelectItem>
-              ))}
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-sky-500" />
+                  <span className="font-medium">{c.name}</span>
+                  {typeof c.limit === "number" && (
+                    <span className="ml-1 text-xs opacity-70">limite {brl(c.limit)}</span>
+                  )}
+                </span>
+              </SelectItem>
+            ))}
             </SelectContent>
           </Select>
           {cardHint && (
