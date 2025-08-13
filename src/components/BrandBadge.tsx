@@ -1,10 +1,10 @@
 
-export type MilesBrand = 'livelo' | 'latampass' | 'azul';
+export type MilesBrand = 'livelo' | 'latam' | 'azul';
 
 export const BRAND_STYLE: Record<MilesBrand, { bg: string; text: string; label: string }> = {
-  livelo:    { bg: 'from-fuchsia-600 to-pink-500', text: 'text-white',      label: 'Livelo' },
-  latampass: { bg: 'from-rose-600 to-purple-600',   text: 'text-white',      label: 'LATAM Pass' },
-  azul:      { bg: 'from-sky-600 to-blue-700',      text: 'text-white',      label: 'Azul' },
+  livelo: { bg: 'from-fuchsia-600 to-pink-500', text: 'text-white', label: 'Livelo' },
+  latam:  { bg: 'from-rose-600 to-purple-600',   text: 'text-white', label: 'LATAM Pass' },
+  azul:   { bg: 'from-sky-600 to-blue-700',      text: 'text-white', label: 'Azul' },
 };
 
 export function BrandBadge({ brand, className='' }: { brand: MilesBrand; className?: string }) {
