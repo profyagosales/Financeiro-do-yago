@@ -1,34 +1,25 @@
-// src/pages/FinancasMensal.tsx
-import { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
-
-import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
-import { ModalTransacao, type BaseData } from '@/components/ModalTransacao';
-
-import PageHeader from '@/components/PageHeader';
-import { MotionCard } from '@/components/ui/MotionCard';
-import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { Coins, TrendingUp, TrendingDown, Clock, Search, Plus, Download, CalendarRange, Copy } from 'lucide-react';
+import { CalendarRange, Clock, Coins, Copy, Download, Plus, Search, TrendingDown, TrendingUp } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import TransactionsTable, { type UITransaction } from '@/components/TransactionsTable';
 
-import DailyBars from '@/components/charts/DailyBars';
 import CategoryDonut from '@/components/charts/CategoryDonut';
-
-// shadcn/ui
+import DailyBars from '@/components/charts/DailyBars';
+import { ModalTransacao } from '@/components/ModalTransacao';
+import PageHeader from '@/components/PageHeader';
+import SourcePicker from '@/components/SourcePicker';
+import TransactionsTable, { type UITransaction } from '@/components/TransactionsTable';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-
+import { MotionCard } from '@/components/ui/MotionCard';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useCategories } from '@/hooks/useCategories';
-import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
-import CategoryPicker from '@/components/CategoryPicker';
-import { Skeleton } from '@/components/ui/Skeleton';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
 
 dayjs.locale('pt-br');
 
