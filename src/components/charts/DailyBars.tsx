@@ -1,7 +1,17 @@
 // src/components/charts/DailyBars.tsx
 import { useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, LabelList } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  LabelList,
+} from 'recharts';
 import dayjs from 'dayjs';
+
 import { SERIES_COLORS } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
 
@@ -26,19 +36,22 @@ export default function DailyBars({ transacoes = [], mes }: Props) {
 
   const hasData = data.some((d) => d.receitas || d.despesas);
 
+  const brl = (v: number) =>
+    (Number(v) || 0).toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+
   return (
     <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
       <h3 className="font-medium mb-3">Movimento diário</h3>
       <div className="h-[320px]">
         {hasData ? (
           <ResponsiveContainer>
-            <BarChart data={data} margin={{ top: 12, right: 16, bottom: 12, left: 8 }}>
+            <BarChart data={data} margin={{ top: 16, right: 16, bottom: 8, left: 0 }}>
               <XAxis dataKey="dia" />
-              <YAxis tickFormatter={(v) => `R$ ${v}`} />
-              <Tooltip
-                formatter={(v: number) => `R$ ${v.toFixed(2)}`}
-                labelFormatter={(l: number) => `Dia ${l}`}
-              />
+              <YAxis tickFormatter={brl} />
+              <Tooltip formatter={(v: number) => brl(v)} labelFormatter={(l: number) => `Dia ${l}`} />
               <Legend />
               <Bar
                 dataKey="despesas"
@@ -46,7 +59,7 @@ export default function DailyBars({ transacoes = [], mes }: Props) {
                 fill={SERIES_COLORS.expense}
                 radius={[4, 4, 0, 0]}
               >
-                <LabelList position="top" formatter={(v) => (v ? `R$ ${v}` : '')} />
+                <LabelList position="top" formatter={(v) => (v ? brl(Number(v)) : '')} />
               </Bar>
               <Bar
                 dataKey="receitas"
@@ -54,7 +67,7 @@ export default function DailyBars({ transacoes = [], mes }: Props) {
                 fill={SERIES_COLORS.income}
                 radius={[4, 4, 0, 0]}
               >
-                <LabelList position="top" formatter={(v) => (v ? `R$ ${v}` : '')} />
+                <LabelList position="top" formatter={(v) => (v ? brl(Number(v)) : '')} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
