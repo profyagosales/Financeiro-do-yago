@@ -1,10 +1,10 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
-import { AppHotkeys } from '@/components/AppHotkeys';
+import AppHotkeys from '@/components/AppHotkeys';
 import RouteLoader from '@/components/RouteLoader';
 import Sidebar from '@/components/Sidebar';
-import { Toaster } from '@/components/Toaster';
+import { Toaster } from '@/components/ui/Toasts';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { PeriodProvider } from '@/contexts/PeriodContext';
 
@@ -42,8 +42,6 @@ export default function App() {
         <PeriodProvider>
           {/* Toaster global */}
           <Toaster richColors position="top-right" />
-          {/* Atalhos globais */}
-          <AppHotkeys />
           <AppRoutes />
         </PeriodProvider>
       </Router>
@@ -56,7 +54,7 @@ function AppRoutes() {
   const { user, loading } = useAuth();
 
   if (loading) return <RouteLoader />;
-  if (!user)   return <Login />;
+  if (!user)   return (<Suspense fallback={<RouteLoader />}><Login /></Suspense>);
 
   return (
     <div className="flex min-h-screen">
