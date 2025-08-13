@@ -1,6 +1,7 @@
 // src/components/charts/CategoryDonut.tsx
 import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+
 import { mapCategoryColor } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
 
@@ -24,7 +25,9 @@ export default function CategoryDonut({ transacoes = [], categoriesData }: Props
         return acc;
       }, {});
 
-    return Object.entries(byCat).map(([name, value]) => ({ name, value }));
+    return Object.entries(byCat)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [categoriesData, transacoes]);
 
   if (!data.length) {
@@ -40,7 +43,7 @@ export default function CategoryDonut({ transacoes = [], categoriesData }: Props
       <h3 className="font-medium mb-3">Despesas por categoria</h3>
       <div className="h-[320px]">
         <ResponsiveContainer>
-          <PieChart margin={{ top: 12, right: 16, bottom: 12, left: 8 }}>
+          <PieChart margin={{ top: 16, right: 16, bottom: 8, left: 0 }}>
             <Pie
               data={data}
               dataKey="value"
