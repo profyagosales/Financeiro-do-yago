@@ -1,5 +1,5 @@
 // src/lib/ics.ts
-// Helper to build a single VEVENT block for ICS export
+// Helper to build a single ICS file containing one VEVENT.
 
 export type IcsEvent = {
   title: string;
@@ -32,7 +32,7 @@ export function buildSingleEvent({
 }: IcsEvent): string {
   const uid = `${Date.now()}-${Math.random().toString(36).slice(2)}@fy`;
   const dtStamp = formatDateTime(new Date());
-  const lines = [
+  const eventLines = [
     "BEGIN:VEVENT",
     `UID:${uid}`,
     `DTSTAMP:${dtStamp}`,
@@ -40,14 +40,20 @@ export function buildSingleEvent({
     `DTSTART;VALUE=DATE:${formatDate(start)}`,
   ];
   if (end) {
-    lines.push(`DTEND;VALUE=DATE:${formatDate(end)}`);
+    eventLines.push(`DTEND;VALUE=DATE:${formatDate(end)}`);
   }
   if (description) {
-    lines.push(`DESCRIPTION:${escapeText(description)}`);
+    eventLines.push(`DESCRIPTION:${escapeText(description)}`);
   }
   if (url) {
-    lines.push(`URL:${url}`);
+    eventLines.push(`URL:${url}`);
   }
-  lines.push("END:VEVENT");
-  return lines.join("\r\n");
+  eventLines.push("END:VEVENT");
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//fy//bills//PT-BR",
+    ...eventLines,
+    "END:VCALENDAR",
+  ].join("\r\n");
 }

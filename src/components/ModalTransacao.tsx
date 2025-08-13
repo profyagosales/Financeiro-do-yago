@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -12,6 +12,7 @@ import { useCategories } from '@/hooks/useCategories';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useCreditCards } from '@/hooks/useCreditCards';
 import MoneyInput from '@/components/MoneyInput';
+import ReceiptUpload from '@/components/ReceiptUpload';
 
 // --- Types -----------------------------------------------------------------
 export type BaseData = {
@@ -267,15 +268,18 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
             </div>
           )}
 
-          {/* Anexo (nota/recibo) */}
+          {/* Anexo (nota/recibo) com OCR */}
           <div className="grid gap-1">
             <Label>Anexo (nota/recibo — PDF/Imagem)</Label>
-            <input
-              type="file"
-              accept="application/pdf,image/*"
-              onChange={(e) => handleChange('attachment_file', e.target.files?.[0] || null)}
+            <ReceiptUpload
+              onFileChange={(f) => handleChange('attachment_file', f)}
+              onParsed={(data) => {
+                if (data.description) handleChange('description', data.description);
+                if (typeof data.value === 'number') handleChange('value', data.value);
+                if (data.date) handleChange('date', data.date);
+              }}
             />
-            <span className="text-xs text-slate-500">(Opcional; upload/extração OCR entram no próximo passo.)</span>
+            <span className="text-xs text-slate-500">(Opcional; tamanho máx. 5MB.)</span>
           </div>
         </div>
 
