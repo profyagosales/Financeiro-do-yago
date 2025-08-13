@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +11,6 @@ import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
 import { useCategories } from '@/hooks/useCategories';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useCreditCards } from '@/hooks/useCreditCards';
-import { toast } from 'sonner';
 import MoneyInput from '@/components/MoneyInput';
 
 // --- Types -----------------------------------------------------------------
@@ -41,7 +42,7 @@ export type Props = {
 const METODOS = ['Pix','Cartão','Dinheiro','Boleto','Transferência','Outro'];
 
 export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) {
-  const { flat, byId, create, list } = useCategories();
+  const { byId } = useCategories();
   const { findById: findAccount } = useAccounts();
   const { byId: cardsById } = useCreditCards();
 
@@ -64,10 +65,6 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
   const [errors, setErrors] = useState<{ [k: string]: string | null }>({});
 
   // Dialog de criação rápida de categoria
-  const [newCatOpen, setNewCatOpen] = useState(false);
-  const [newCatName, setNewCatName] = useState('');
-
-  const suggestedParentId = useMemo(() => form.category_id ?? null, [form.category_id]);
 
   const handleChange = useCallback((key: keyof BaseData, v: any) => {
     setForm(prev => ({ ...prev, [key]: v }));
@@ -155,25 +152,6 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     setForm(prev => ({ ...prev, category_id: id, category: cat?.name || prev.category }));
   }, [byId]);
 
-  // Criar categoria rápida
-  const createCategoryQuick = useCallback(async () => {
-    const name = newCatName.trim();
-    if (!name) { toast.info('Digite um nome para a categoria'); return; }
-    try {
-      await create({ name, kind: form.type, parent_id: suggestedParentId ?? null } as any);
-      await list();
-      const created = flat.find(c => c.name === name && c.parent_id === (suggestedParentId ?? null));
-      if (created) {
-        setForm(prev => ({ ...prev, category_id: created.id, category: created.name }));
-      }
-      setNewCatOpen(false);
-      setNewCatName('');
-      toast.success('Categoria criada!');
-    } catch (e: any) {
-      toast.error(e?.message || 'Erro ao criar categoria');
-    }
-  }, [create, flat, form.type, list, newCatName, suggestedParentId]);
-
   // Quando escolher fonte (conta/cartão)
   const onSourcePicked = useCallback((s: SourceValue) => {
     let label: string | null = null;
@@ -235,9 +213,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
               <CategoryPicker
                 value={form.category_id ?? null}
                 onChange={onCategoryPicked}
-                kind={form.type}
-                allowCreate
-                onRequestCreate={() => setNewCatOpen(true)}
+                ariaLabel="Categoria"
               />
             </div>
           </div>
@@ -310,30 +286,6 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
           </Button>
         </DialogFooter>
       </DialogContent>
-
-      {/* Dialog: Nova categoria rápida */}
-      <Dialog open={newCatOpen} onOpenChange={setNewCatOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Nova categoria ({form.type === 'income' ? 'Receita' : 'Despesa'})</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-3">
-            <div className="grid gap-1">
-              <Label>Nome</Label>
-              <Input value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Ex.: Streaming" />
-            </div>
-            {suggestedParentId && (
-              <div className="text-xs text-slate-500">
-                Será criada como <b>subcategoria</b> de <b>{byId.get(suggestedParentId)?.name}</b>.
-              </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setNewCatOpen(false)}>Cancelar</Button>
-            <Button onClick={createCategoryQuick}>Criar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
     </Dialog>
   );

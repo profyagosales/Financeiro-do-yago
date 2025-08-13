@@ -1,29 +1,25 @@
 // src/pages/FinancasMensal.tsx
-import { useState, useMemo, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
+import { Coins, TrendingUp, TrendingDown, Clock, Search, Plus, Download, CalendarRange, Copy } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
 import { ModalTransacao, type BaseData } from '@/components/ModalTransacao';
-
 import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { Coins, TrendingUp, TrendingDown, Clock, Search, Plus, Download, CalendarRange, Copy } from 'lucide-react';
-import { toast } from 'sonner';
 import TransactionsTable, { type UITransaction } from '@/components/TransactionsTable';
-
 import DailyBars from '@/components/charts/DailyBars';
 import CategoryDonut from '@/components/charts/CategoryDonut';
-
 // shadcn/ui
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-
 import { useCategories } from '@/hooks/useCategories';
 import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
 import CategoryPicker from '@/components/CategoryPicker';
@@ -351,11 +347,8 @@ export default function FinancasMensal() {
             <CategoryPicker
               value={categoriaId === 'Todas' ? null : categoriaId}
               onChange={(v) => setCategoriaId(v ?? 'Todas')}
-              placeholder="Todas"
               ariaLabel="Categoria"
               showAll
-              allowClear={false}
-              className="w-full"
             />
           </div>
 

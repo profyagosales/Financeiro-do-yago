@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+
 import { supabase } from "@/lib/supabaseClient";
 import { mapCategoryColor } from "@/lib/palette";
 
@@ -43,7 +44,10 @@ export function useCategories() {
       .order("name", { ascending: true })
       .returns<Category[]>();
     if (error) throw error;
-    const rows = data ?? [];
+    const rows = (data ?? []).map((c) => ({
+      ...c,
+      color: c.color ?? mapCategoryColor(c.name),
+    }));
     setFlat(rows);
     return rows;
   }, []);

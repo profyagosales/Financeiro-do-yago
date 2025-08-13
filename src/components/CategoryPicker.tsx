@@ -1,5 +1,7 @@
 import { useMemo, useState, useId } from "react";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, MoreHorizontal } from "lucide-react";
+import { toast } from "sonner";
+
 import {
   Select,
   SelectContent,
@@ -17,19 +19,19 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useCategories, type Category } from "@/hooks/useCategories";
 
 type Props = {
   value: string | null | undefined;
   onChange: (id: string | null) => void;
-  placeholder?: string;
   /** optional aria-label for the select trigger */
   ariaLabel?: string;
-  kind?: "expense" | "income" | "transfer" | "all";
-  allowClear?: boolean;
-  allowCreate?: boolean;
-  onRequestCreate?: () => void;
   /** when true, include an option to select all categories */
   showAll?: boolean;
   className?: string;
@@ -38,17 +40,12 @@ type Props = {
 export default function CategoryPicker({
   value,
   onChange,
-  placeholder = "Selecione a categoria",
   ariaLabel,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- API placeholder
-  kind: _kind = "all",
-  allowClear = true,
-  allowCreate = false,
-  onRequestCreate,
   showAll = false,
   className = "",
 }: Props) {
   const { flat, byId, create, update, remove } = useCategories();
+  const placeholder = showAll ? "Todas" : "Selecione a categoria";
 
   const options = useMemo(() => buildOptions(flat), [flat]);
 
@@ -163,67 +160,42 @@ export default function CategoryPicker({
         </SelectContent>
       </Select>
 
-      {allowCreate && (
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          title="Nova categoria"
-          aria-label="Nova categoria"
-          onClick={() =>
-            onRequestCreate ? onRequestCreate() : openCreate(null)
-          }
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-      )}
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        title="Nova categoria"
+        aria-label="Nova categoria"
+        onClick={() => openCreate(null)}
+      >
+        <Plus className="h-4 w-4" />
+      </Button>
 
       {value && (
-        <>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            title="Nova subcategoria"
-            aria-label="Nova subcategoria"
-            onClick={() => openCreate(value)}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            title="Editar"
-            aria-label="Editar"
-            onClick={() => openEdit(value)}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            title="Excluir"
-            aria-label="Excluir"
-            onClick={() => handleDeleteDirect(value)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </>
-      )}
-
-      {allowClear && value && (
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          title="Limpar seleção"
-          aria-label="Limpar seleção"
-          onClick={() => onChange(null)}
-        >
-          <X className="h-4 w-4" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              title="Opções"
+              aria-label="Opções"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => openCreate(value)}>
+              Nova subcategoria
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => openEdit(value)}>
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleDeleteDirect(value)}>
+              Excluir
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
 
       <Dialog open={open} onOpenChange={(o) => setOpen(o)}>
