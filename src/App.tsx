@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import AppHotkeys from '@/components/AppHotkeys';
+import { AppHotkeys } from '@/components/AppHotkeys';
 import RouteLoader from '@/components/RouteLoader';
 import Sidebar from '@/components/Sidebar';
 
