@@ -189,6 +189,7 @@ export default function FinancasMensal() {
     try {
       const value = Math.abs(dataForm.value);
       const amount = dataForm.type === 'expense' ? -value : value;
+      let transactionId: number | undefined;
       if (editando) {
         await update(editando.id, {
           date: dataForm.date,
@@ -199,23 +200,26 @@ export default function FinancasMensal() {
           card_id: dataForm.source_kind === 'card' ? dataForm.source_id ?? null : null,
         } as Partial<Transaction>);
         toast.success('Transação atualizada!');
+        transactionId = editando.id;
       } else {
         const inserted = await addSmart({ ...dataForm, value } as unknown as TransactionInput);
         toast.success('Transação adicionada!');
-        if (dataForm.miles && inserted[0]?.id) {
-          try {
-            await supabase.from('miles').insert({
-              user_id: user?.id,
-              transaction_id: inserted[0].id,
-              program: dataForm.miles.program,
-              amount: dataForm.miles.amount,
-              expected_at: dataForm.miles.expected_at,
-              status: 'pending',
-            });
-          } catch (e) {
-            console.error(e);
-            toast.error('Erro ao registrar milhas');
-          }
+        transactionId = inserted[0]?.id;
+      }
+
+      if (dataForm.miles && transactionId) {
+        try {
+          await supabase.from('miles_movements').upsert({
+            user_id: user?.id,
+            transaction_id: transactionId,
+            program: dataForm.miles.program,
+            amount: dataForm.miles.amount,
+            expected_at: dataForm.miles.expected_at,
+            status: 'pending',
+          });
+        } catch (e) {
+          console.warn(e);
+          toast.info('Módulo Milhas pendente de migração');
         }
       }
       setModalAberto(false);
