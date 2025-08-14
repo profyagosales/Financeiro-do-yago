@@ -1,108 +1,82 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-  CalendarRange,
   CreditCard,
-  Landmark,
-  PieChart as PieChartIcon,
   PiggyBank,
+  Plane,
+  Target,
+  Landmark,
   TrendingUp,
+  Wallet,
+  Heart,
+  ShoppingCart,
 } from "lucide-react";
-import { Heart, Plane, ShoppingCart, Target, Wallet } from "@/components/icons";
-import { useEffect, useMemo, useState, type PropsWithChildren } from 'react';
-import { Link } from "react-router-dom";
-import {
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
 
-import { Logo } from "@/components/Logo";
-import MetasSummary from "@/components/MetasSummary";
-import BalanceForecast from "@/components/dashboard/BalanceForecast";
-import PeriodSelector from "@/components/dashboard/PeriodSelector";
-import InsightBar from "@/components/dashboard/InsightBar";
-import ForecastMiniChart from "@/components/dashboard/ForecastMiniChart";
-import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
-import RecurrenceWidget from "@/components/dashboard/RecurrenceWidget";
-import AlertList from "@/components/dashboard/AlertList";
+import Hero from "@/components/dashboard/Hero";
+import QuickLinks, { type QuickLink } from "@/components/dashboard/QuickLinks";
+import KPIStrip, { type KpiItem } from "@/components/dashboard/KPIStrip";
 import InsightCard from "@/components/dashboard/InsightCard";
-import {
-  WidgetCard,
-  WidgetFooterAction,
-  WidgetHeader,
-} from "@/components/dashboard/WidgetCard";
-import { useRecurrences } from "@/hooks/useRecurrences";
-import { useInsights } from "@/hooks/useInsights";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { Card, CardHeader } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/utils";
+import ForecastChart, { type FluxoItem } from "@/components/dashboard/ForecastChart";
+import AlertList, { type AlertItem } from "@/components/dashboard/AlertList";
+import PeriodSelector from "@/components/dashboard/PeriodSelector";
+import { WidgetCard, WidgetHeader, WidgetFooterAction } from "@/components/dashboard/WidgetCard";
 import { usePeriod } from "@/state/periodFilter";
-import { KpiCard } from "@/components/financas";
 
-
-// Garantir decorativos não interativos
-// className nos decorativos: "pointer-events-none select-none -z-10 opacity-25"
-
-
-function monthShortPtBR(n: number) {
-  const arr = [
-    "Jan",
-    "Fev",
-    "Mar",
-    "Abr",
-    "Mai",
-    "Jun",
-    "Jul",
-    "Ago",
-    "Set",
-    "Out",
-    "Nov",
-    "Dez",
-  ];
-  return arr[Math.max(1, Math.min(12, n)) - 1];
-}
-
-
-
-// ---------------------------------- page
 export default function HomeOverview() {
-  // MOCKs – depois plugamos hooks reais
-  const kpis = { saldoMes: 7532, entradasMes: 12400, saidasMes: 4868, investidoTotal: 36250 };
+  const { month, year } = usePeriod();
 
-  const base = [
-    { m: "Jan", in: 3600, out: 1900 },
-    { m: "Fev", in: 4100, out: 2100 },
-    { m: "Mar", in: 3800, out: 1800 },
-    { m: "Abr", in: 4600, out: 2400 },
-    { m: "Mai", in: 4200, out: 2000 },
-    { m: "Jun", in: 3900, out: 2200 },
-    { m: "Jul", in: 4300, out: 2100 },
-    { m: "Ago", in: 4700, out: 2300 },
-    { m: "Set", in: 5200, out: 2600 },
-    { m: "Out", in: 5400, out: 2500 },
-    { m: "Nov", in: 5600, out: 2700 },
-    { m: "Dez", in: 6000, out: 2900 },
-  ];
-  const fluxo = useMemo(() => {
-    let acc = 0;
-    return base.map((d) => {
-      acc += d.in - d.out;
-      return { ...d, saldo: acc };
-    });
-  },
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- base is static
-  []);
+  const kpis: KpiItem[] = useMemo(() => {
+    const base = month * 100;
+    return [
+      {
+        title: "Saldo do mês",
+        icon: <Wallet className="size-5" />,
+        value: 5000 + base,
+        trend: base % 200 > 100 ? "up" : "down",
+        colorFrom: "hsl(var(--chart-emerald))",
+        colorTo: "hsl(var(--chart-teal))",
+        spark: Array.from({ length: 8 }, (_, i) => 4000 + base + i * 100),
+        sparkColor: "hsl(var(--chart-emerald))",
+      },
+      {
+        title: "Entradas",
+        icon: <TrendingUp className="size-5" />,
+        value: 8000 + base,
+        trend: "up",
+        colorFrom: "hsl(var(--chart-blue))",
+        colorTo: "hsl(var(--chart-indigo))",
+        spark: Array.from({ length: 8 }, (_, i) => 3000 + base + i * 80),
+        sparkColor: "hsl(var(--chart-blue))",
+      },
+      {
+        title: "Saídas",
+        icon: <CreditCard className="size-5" />,
+        value: 3000 + base,
+        trend: "down",
+        colorFrom: "hsl(var(--chart-rose))",
+        colorTo: "hsl(var(--chart-pink))",
+        spark: Array.from({ length: 8 }, (_, i) => 1500 + base + i * 60),
+        sparkColor: "hsl(var(--chart-rose))",
+      },
+      {
+        title: "Investido total",
+        icon: <PiggyBank className="size-5" />,
+        value: 20000 + base,
+        colorFrom: "hsl(var(--chart-violet))",
+        colorTo: "hsl(var(--chart-fuchsia))",
+        spark: Array.from({ length: 8 }, (_, i) => 18000 + base + i * 150),
+        sparkColor: "hsl(var(--chart-violet))",
+      },
+    ];
+  }, [month, year]);
 
-  const sparkIn = base.slice(-8).map((d) => d.in);
-  const sparkOut = base.slice(-8).map((d) => d.out);
-  const sparkSaldo = fluxo.slice(-8).map((d) => d.saldo);
-  const sparkInv = useMemo(() => {
-    let inv = 30000;
-    return base.slice(-8).map((d) => {
-      inv += Math.max(0, d.in - d.out) * 0.35;
-      return inv;
+  const forecastData: FluxoItem[] = useMemo(() => {
+    const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const data = months.map((m, idx) => {
+      const inValue = 3000 + month * 100 + idx * 200;
+      const outValue = 1500 + month * 60 + idx * 100;
+      const saldo = inValue - outValue;
+      return { m, in: inValue, out: outValue, saldo };
     });
   }, []);
 
@@ -126,13 +100,6 @@ export default function HomeOverview() {
     { nome: "Cartão Nubank", vencimento: "2025-08-16", valor: 830.0 },
   ];
 
-  const aportesRecentes = [
-    { data: "2025-08-03", tipo: "Renda fixa", ativo: "Tesouro Selic 2029", qtd: 1, preco: 550 },
-    { data: "2025-08-02", tipo: "FIIs", ativo: "MXRF11", qtd: 100, preco: 10.15 },
-    { data: "2025-08-01", tipo: "Ações", ativo: "PETR4", qtd: 20, preco: 38.4 },
-    { data: "2025-07-28", tipo: "Cripto", ativo: "BTC", qtd: 0.005, preco: 355000 },
-  ];
-
   const insightMessage = "Você economizou 15% a mais este mês.";
   const forecastData = base.slice(-6).map((d) => ({ month: d.m, in: d.in, out: d.out }));
   const { data: recurrences } = useRecurrences();
@@ -140,6 +107,21 @@ export default function HomeOverview() {
     { message: "Conta de luz vence em 3 dias" },
     { message: "Orçamento de lazer excedido" },
   ];
+
+  const { data: goals } = useGoals();
+  const metasItems = useMemo(
+    () =>
+      [...goals]
+        .sort((a, b) => (b.progress_pct || 0) - (a.progress_pct || 0))
+        .slice(0, 3)
+        .map((g) => ({ label: g.title, value: g.progress_pct || 0, total: 100 })),
+    [goals]
+  );
+  const investItems = useMemo(
+    () =>
+      carteira.map((c) => ({ label: c.name, value: c.value, total: kpis.investidoTotal })),
+    [carteira, kpis.investidoTotal]
+  );
 
   const shortcuts = [
     {
@@ -225,21 +207,26 @@ export default function HomeOverview() {
       goals: [],
       miles: [],
     }
+    return data.slice(0, month);
+  }, [month, year]);
+
+  const alerts: AlertItem[] = useMemo(
+    () => [
+      { nome: "Conta de luz", vencimento: `${year}-${String(month).padStart(2, "0")}-10`, valor: 200 },
+      { nome: "Internet", vencimento: `${year}-${String(month).padStart(2, "0")}-15`, valor: 120 },
+    ],
+    [month, year]
   );
 
-  const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
+  const links: QuickLink[] = [
+    { title: "Finanças", icon: <CreditCard className="h-5 w-5" />, href: "/financas/resumo" },
+    { title: "Investimentos", icon: <Landmark className="h-5 w-5" />, href: "/investimentos/resumo" },
+    { title: "Metas", icon: <Target className="h-5 w-5" />, href: "/metas" },
+    { title: "Milhas", icon: <Plane className="h-5 w-5" />, href: "/milhas" },
+    { title: "Desejos", icon: <Heart className="h-5 w-5" />, href: "/desejos" },
+    { title: "Compras", icon: <ShoppingCart className="h-5 w-5" />, href: "/compras" },
+  ];
 
-  const container = {
-    hidden: { opacity: 0, y: 6 },
-    show: { opacity: 1, y: 0, transition: { staggerChildren: 0.06 } },
-  };
-  const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
-
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(t);
-  }, []);
   return (
     <>
       <motion.div
@@ -275,11 +262,6 @@ export default function HomeOverview() {
             </div>
           </motion.div>
 
-          {/* SELECTOR TOP-RIGHT ------------------------------------- */}
-          <motion.div variants={item} className="flex justify-end">
-            <PeriodSelector />
-          </motion.div>
-
           {/* KPIs --------------------------------------------------- */}
           <motion.div
             className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-4"
@@ -291,231 +273,33 @@ export default function HomeOverview() {
               </motion.div>
             ))}
           </motion.div>
+    <motion.div key={`${month}-${year}`} className="space-y-8">
+      <Hero />
 
-      {/* WIDGETS ----------------------------------------------- */}
-      <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={container}>
-        <motion.div variants={item}>
-          <InsightBar items={insights} isLoading={insightsLoading} />
-        </motion.div>
-        <motion.div variants={item}>
-          <ForecastMiniChart data={forecastData} isLoading={forecastLoading} />
-        </motion.div>
-        <motion.div variants={item}>
+      <QuickLinks items={links} />
 
-          <RecurrenceList
-            items={recurrences.map((r) => ({ name: r.description, amount: r.amount }))}
-            onClick={() => setActiveWidget('recurrence')}
-          />
-        </motion.div>
-        <motion.div variants={item}>
-          <BalanceForecast current={kpis.saldoMes} forecast={kpis.saldoMes + 1000} />
-        </motion.div>
-        <motion.div variants={item}>
-          <AlertsDrawer alerts={alerts} isLoading={alertsLoading} />
-        </motion.div>
-      </motion.div>
+      <div className="flex justify-end">
+        <PeriodSelector />
+      </div>
 
-      {/* GRÁFICOS ---------------------------------------------- */}
-      <motion.div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3" variants={container}>
-        <motion.div variants={item} className="xl:col-span-2">
-          <Card className="h-full overflow-x-auto">
-            <CardHeader title={fluxoTitle} subtitle="Entradas, saídas e saldo acumulado" />
-            <div className="h-[220px] min-w-[320px]">
-              {fluxo.length === 0 ? (
-                <EmptyState icon={<Wallet className="h-8 w-8" />} title="Sem dados" />
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart
-                    data={fluxo}
-                    margin={{ top: 8, right: 12, bottom: 0, left: 8 }}
-                    barCategoryGap={24}
-                    barGap={8}
-                  >
-                    <defs>
-                      <linearGradient id="saldoFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="hsl(var(--chart-emerald))" stopOpacity={0.35} />
-                        <stop offset="100%" stopColor="hsl(var(--chart-emerald))" stopOpacity={0.05} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid vertical={false} strokeDasharray="2 4" />
-                    <XAxis dataKey="m" tickMargin={8} axisLine={false} tickLine={false} />
-                    <YAxis
-                      tickFormatter={(v) =>
-                        formatCurrency(Number(v)).replace(/^R\$\s?/, "")
-                      }
-                      width={64}
-                      tickMargin={8}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <Tooltip
-                      formatter={(v: unknown) => formatCurrency(Number(v))}
-                      contentStyle={{
-                        borderRadius: 12,
-                        border: '1px solid hsl(var(--border))',
-                        background: 'hsl(var(--chart-tooltip-bg))',
-                        color: 'hsl(var(--chart-tooltip-fg))'
-                      }}
-                      wrapperStyle={{ outline: 'none' }}
-                    />
-                    <Bar dataKey="in" fill="hsl(var(--chart-blue))" fillOpacity={0.95} radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="out" fill="hsl(var(--chart-rose))" fillOpacity={0.92} radius={[8, 8, 0, 0]} />
-                    <Area type="monotone" dataKey="saldo" stroke="hsl(var(--chart-emerald))" fill="url(#saldoFill)" strokeWidth={2} />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </Card>
-        </motion.div>
+      <KPIStrip items={kpis} />
 
-        <motion.div variants={item}>
-          <WidgetCard className="h-full overflow-x-auto">
-            <CardHeader title="Distribuição da carteira" subtitle="Por classe de ativos" />
-            {carteira.length === 0 ? (
-              <EmptyState
-                icon={<PieChartIcon className="h-8 w-8" />}
-                title="Sem dados"
-              />
-            ) : (
-              <>
-                <div className="h-[220px] min-w-[320px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <defs>
-                        {cores.map((c, i) => (
-                          <linearGradient
-                            id={`g${i}`}
-                            x1="0"
-                            x2="1"
-                            y1="0"
-                            y2="1"
-                            key={i}
-                          >
-                            <stop offset="0%" stopColor={c} stopOpacity={0.9} />
-                            <stop offset="100%" stopColor={c} stopOpacity={0.6} />
-                          </linearGradient>
-                        ))}
-                      </defs>
-                      <Pie
-                        data={carteira}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={58}
-                        outerRadius={86}
-                        paddingAngle={3}
-                        startAngle={90}
-                        endAngle={-270}
-                        cornerRadius={6}
-                        stroke="#ffffff"
-                        strokeOpacity={0.85}
-                      >
-                        {carteira.map((_, i) => (
-                          <Cell key={i} fill={`url(#g${i})`} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(v: number) => formatCurrency(v)}
-                        contentStyle={{
-                          borderRadius: 12,
-                          border: "1px solid rgba(0,0,0,0.06)",
-                        }}
-                        wrapperStyle={{ outline: "none" }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <ul className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                  {carteira.map((c, i) => (
-                    <li key={c.name} className="flex items-center gap-2">
-                      <span
-                        className="inline-block h-2 w-2 rounded-full"
-                        style={{ background: cores[i] }}
-                      />
-                      <span className="text-muted-foreground">{c.name}</span>
-                      <span className="ml-auto font-medium">
-                        {formatCurrency(c.value)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-              </WidgetCard>
-          </motion.div>
-      </motion.div>
 
-      <motion.div className="grid items-stretch gap-6 xl:grid-cols-3" variants={container}>
-        <motion.div variants={item}>
-          <WidgetCard className="h-full">
-            <WidgetHeader
-              title="Próximas contas a vencer"
-              subtitle="Próximos 10 dias"
-            />
-            <AlertList items={contasAVencer} />
-            <WidgetFooterAction to="/financas/mensal">Ver detalhes</WidgetFooterAction>
-          </WidgetCard>
-        </motion.div>
-
-        <motion.div variants={item}>
-          <WidgetCard className="h-full">
-            <WidgetHeader
-              title="Metas em andamento"
-              subtitle="Progresso geral"
-            />
-            <MetasSummary />
-            <WidgetFooterAction to="/financas/anual">Ver detalhes</WidgetFooterAction>
+      <div className="grid gap-6 md:grid-cols-2">
+        <WidgetCard>
+          <WidgetHeader title="Fluxo de caixa" subtitle="Entradas x saídas" />
+          <ForecastChart data={forecastData} />
+          <WidgetFooterAction to="/financas/resumo">Ver mais</WidgetFooterAction>
         </WidgetCard>
-        </motion.div>
 
         <motion.div variants={item}>
           <WidgetCard className="h-full">
             <WidgetHeader
-              title="Aportes recentes"
-              subtitle="Últimas 5 operações"
+              title="Investimentos por classe"
+              subtitle="Participação no total"
             />
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[480px] text-sm">
-                <thead className="text-zinc-500">
-                  <tr>
-                    <th className="w-6 py-2"></th>
-                    <th className="py-2 text-left font-medium">Data</th>
-                    <th className="py-2 text-left font-medium">Ativo</th>
-                    <th className="py-2 text-left font-medium">Classe</th>
-                    <th className="py-2 text-right font-medium">Valor</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
-                  {aportesRecentes.length === 0 ? (
-                    <tr>
-                      <td colSpan={5}>
-                        <EmptyState
-                          icon={<TrendingUp className="h-6 w-6" />}
-                          title="Sem aportes"
-                        />
-                      </td>
-                    </tr>
-                  ) : (
-                    aportesRecentes.map((r) => (
-                      <tr key={r.data + r.ativo}>
-                        <td className="py-2">
-                          <BrandIcon name={`${r.ativo} ${r.tipo}`} />
-                        </td>
-                        <td className="py-2">
-                          {new Date(r.data).toLocaleDateString("pt-BR")}
-                        </td>
-                        <td className="py-2">{r.ativo}</td>
-                        <td className="py-2">{r.tipo}</td>
-                        <td className="py-2 text-right font-medium">
-                          {formatCurrency(r.preco * (r.qtd || 1))}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+            <ProgressList items={investItems} />
+            <WidgetFooterAction to="/investimentos/resumo">Ver detalhes</WidgetFooterAction>
           </WidgetCard>
         </motion.div>
       </motion.div>
@@ -575,23 +359,27 @@ export default function HomeOverview() {
             Fechar
           </button>
         </div>
+        <WidgetCard>
+          <WidgetHeader title="Próximas contas" subtitle="Próximos 10 dias" />
+          <AlertList items={alerts} />
+          <WidgetFooterAction to="/financas/resumo">Ver mais</WidgetFooterAction>
+        </WidgetCard>
       </div>
-    )}
-  </>
-  );
-}
 
-
-// ---------------------------------- partials
-function Card({ className, children }: PropsWithChildren<{ className?: string }>) {
-  return <div className={`card-surface p-5 sm:p-6 ${className || ""}`}>{children}</div>;
-}
-
-function CardHeader({ title, subtitle }: { title: string; subtitle?: string }) {
-  return (
-    <div className="mb-3">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      {subtitle && <p className="text-sm text-zinc-500">{subtitle}</p>}
-    </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <InsightCard
+          to="/metas"
+          icon={<Target className="h-5 w-5" />}
+          title="Metas e projetos"
+          desc="Acompanhe seu progresso"
+        />
+        <InsightCard
+          to="/milhas"
+          icon={<Plane className="h-5 w-5" />}
+          title="Milhas e pontos"
+          desc="Programas ativos"
+        />
+      </div>
+    </motion.div>
   );
 }

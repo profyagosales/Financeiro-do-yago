@@ -10,8 +10,7 @@ import {
 } from "lucide-react";
 
 import PageHeader from "@/components/PageHeader";
-import SourcePicker, { type SourceValue } from "@/components/SourcePicker";
-import CategoryPicker from "@/components/CategoryPicker";
+import { WidgetCard, WidgetHeader, WidgetFooterAction } from "@/components/dashboard/WidgetCard";
 import DailyBars from "@/components/charts/DailyBars";
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import TransactionsTable, { type UITransaction } from "@/components/TransactionsTable";
@@ -136,17 +135,10 @@ export default function FinancasResumo() {
     { title: "A receber", icon: <CalendarClock className="size-5" />, value: toReceive, fmt: formatCurrency },
   ];
 
-  const handleExport = () => {
-    const rows = filtered.map((t) => ({
-      date: t.date,
-      description: t.description,
-      category: t.category,
-      source_kind: t.source_kind,
-      value: t.value,
-      type: t.type,
-    }));
-    exportTransactionsPDF(rows, {}, `${year}-${monthStr}`);
-  };
+
+  return (
+    <div className="space-y-6 pb-24">
+      <PageHeader title="Finanças — Resumo" subtitle="Visão consolidada das suas finanças." />
 
   return (
     <div className="space-y-6">
@@ -204,31 +196,149 @@ export default function FinancasResumo() {
         ))}
       </div>
 
-      <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-12 lg:col-span-6 rounded-2xl shadow/soft bg-background/60 backdrop-blur border border-white/10 dark:border-white/5 p-4">
-          <DailyBars
-            transacoes={filtered}
-            mes={`${year}-${monthStr}`}
-            isLoading={transLoading}
-          />
-        </div>
-        <div className="col-span-12 lg:col-span-6 rounded-2xl shadow/soft bg-background/60 backdrop-blur border border-white/10 dark:border-white/5 p-4">
-          <CategoryDonut categoriesData={categoriesData} isLoading={transLoading} />
-        </div>
-        <div className="col-span-12 lg:col-span-6 rounded-2xl shadow/soft bg-background/60 backdrop-blur border border-white/10 dark:border-white/5 p-4">
-          <h3 className="mb-3 font-medium">Próximos vencimentos</h3>
-          {billsLoading ? (
-            <SkeletonLine className="h-24" />
-          ) : upcomingBills.length ? (
-            <ul className="divide-y divide-white/10 text-sm dark:divide-white/5">
-              {upcomingBills.map((b) => (
-                <li key={b.id} className="flex items-center justify-between py-2">
-                  <span className="truncate pr-2">{b.description}</span>
-                  <span>{new Date(b.due_date).toLocaleDateString("pt-BR")}</span>
-                  <span className="font-medium">{formatCurrency(b.amount)}</span>
-                </li>
-              ))}
-            </ul>
+      {insights.length > 0 && <InsightBar insights={insights} />}
+
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        <WidgetCard className="glass-card">
+          <div className="mb-3 flex items-center gap-2">
+            <h3 className="text-lg font-semibold">Previsão — 30 dias</h3>
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="size-4 text-zinc-400" />
+                </TooltipTrigger>
+                <TooltipContent>Estimativa simples baseada na média dos últimos dias</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          {transacoes.length > 0 ? (
+            <>
+              <ForecastMiniChart data={forecastData} isLoading={transLoading} />
+              <p className="mt-2 text-sm text-zinc-500">
+                Saldo no fim do mês: {formatCurrency(forecastBalance)}
+              </p>
+            </>
+          ) : (
+            <EmptyState title="Sem dados" />
+          )}
+        </WidgetCard>
+        <WidgetCard className="glass-card">
+          <WidgetHeader title="Fluxo de caixa mensal" />
+          {loadingTrans ? (
+            <DailyBars isLoading />
+          ) : uiTransacoes.length > 0 ? (
+            <DailyBars transacoes={uiTransacoes} mes={`${year}-${String(month).padStart(2, "0")}`} />
+          ) : (
+            <EmptyState
+              title="Sem transações"
+              message="Adicione uma transação para ver o fluxo de caixa."
+              action={<Button size="sm" onClick={() => setModalOpen(true)}>Nova transação</Button>}
+            />
+          )}
+          <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
+        </WidgetCard>
+
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
+          <WidgetHeader title="Entradas vs saídas (12 meses)" />
+          {loadingTrans ? (
+            <SkeletonLine className="h-56 w-full" />
+          ) : uiTransacoes.length > 0 ? (
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={last12}>
+                  <XAxis dataKey="mes" />
+                  <YAxis />
+                  <RechartsTooltip formatter={(v: number) => formatCurrency(v)} />
+                  <Legend />
+                  <Bar dataKey="entradas" fill="#10b981" />
+                  <Bar dataKey="saidas" fill="#ef4444" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <EmptyState
+              title="Sem dados"
+              message="Adicione transações para visualizar."
+              action={<Button size="sm" onClick={() => setModalOpen(true)}>Nova transação</Button>}
+            />
+          )}
+          <WidgetFooterAction to="/financas/anual" label="Ver detalhes" />
+        </WidgetCard>
+
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
+          <WidgetHeader title="Despesas por categoria" />
+          {loadingTrans ? (
+            <CategoryDonut isLoading />
+          ) : budgetUsage.length > 0 ? (
+            <CategoryDonut categoriesData={budgetUsage.map(b => ({ category: b.category, value: b.spent }))} />
+          ) : (
+            <EmptyState
+              title="Sem dados"
+              message="Adicione transações para ver categorias."
+              action={<Button size="sm" onClick={() => setModalOpen(true)}>Nova transação</Button>}
+            />
+          )}
+          <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
+        </WidgetCard>
+
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
+          <WidgetHeader title="Contas a vencer" />
+          {upcomingBills.length > 0 ? (
+            <AlertList items={upcomingBills} />
+          ) : (
+            <EmptyState
+              title="Nenhuma conta a vencer"
+              action={<Button size="sm" onClick={() => setModalOpen(true)}>Nova transação</Button>}
+            />
+          )}
+          <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
+        </WidgetCard>
+
+        <WidgetCard className="glass-card">
+          <WidgetHeader title="Impacto de desejos comprados" />
+          {wishlistImpact > 0 ? (
+            <p className="px-4 py-6 text-3xl font-semibold">
+              {formatCurrency(wishlistImpact)}
+            </p>
+          ) : (
+            <EmptyState title="Sem desejos comprados" />
+          )}
+        </WidgetCard>
+
+        <RecurrenceList
+          className="glass-card"
+          items={recurrences.map((r) => ({ name: r.description, amount: r.amount }))}
+        />
+
+        <WidgetCard className="glass-card">
+          <WidgetHeader title="Lançamentos recentes" />
+          {uiTransacoes.length > 0 ? (
+            <div className="overflow-x-auto">
+              <ul className="flex gap-4">
+                {uiTransacoes.slice(0, 5).map(t => (
+                  <li
+                    key={t.id}
+                    className="min-w-[14rem] rounded-md border p-3 text-sm"
+                  >
+                    <div className="mb-1 flex items-center gap-2">
+                      <span className="truncate">{t.description}</span>
+                      {t.origin?.wishlist_item_id && (
+                        <Badge variant="outline">Origem: Desejo</Badge>
+                      )}
+                    </div>
+                    <span
+                      className={
+                        t.type === "income"
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-rose-600 dark:text-rose-400"
+                      }
+                    >
+                      {formatCurrency(t.value * (t.type === "income" ? 1 : -1))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : (
             <EmptyState title="Nenhuma conta" />
           )}
