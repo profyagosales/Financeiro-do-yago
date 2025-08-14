@@ -1,4 +1,4 @@
-import WidgetCard from './WidgetCard';
+import { WidgetCard, WidgetHeader, WidgetFooterAction } from './WidgetCard';
 
 import { formatCurrency } from '@/lib/utils';
 
@@ -14,7 +14,8 @@ interface RecurrenceListProps {
 
 export default function RecurrenceList({ items, ...rest }: RecurrenceListProps) {
   return (
-    <WidgetCard title="Despesas fixas" {...rest}>
+    <WidgetCard {...rest}>
+      <WidgetHeader title="Despesas fixas" />
       <ul className="space-y-1 text-sm">
         {items.map((r) => (
           <li key={r.name} className="flex justify-between">
@@ -23,6 +24,7 @@ export default function RecurrenceList({ items, ...rest }: RecurrenceListProps) 
           </li>
         ))}
       </ul>
+      <WidgetFooterAction to="/financas/mensal">Ver detalhes</WidgetFooterAction>
     </WidgetCard>
   );
 }
