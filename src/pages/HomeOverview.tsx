@@ -5,18 +5,22 @@ import {
   Wallet,
   TrendingUp,
   CreditCard,
-  PiggyBank,
   CalendarRange,
   Landmark,
   Target,
   Plane,
+  ShoppingCart,
+  Heart,
+  Bell,
 } from "lucide-react";
 
-import PageHeader from "@/components/PageHeader";
-import KPIStrip, { type KpiItem } from "@/components/dashboard/KPIStrip";
-import ForecastChart, { type FluxoItem } from "@/components/dashboard/ForecastChart";
+
+import Logo from "@/components/Logo";
+import KPIBar, { type KPIItem } from "@/components/Overview/KPIBar";
+import OverviewChart, { type OverviewPoint } from "@/components/Overview/OverviewChart";
+import InsightCard from "@/components/Overview/InsightCard";
 import AlertList, { type AlertItem } from "@/components/dashboard/AlertList";
-import InsightCard from "@/components/dashboard/InsightCard";
+import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { usePeriod, periodRange } from "@/state/periodFilter";
 
@@ -65,53 +69,60 @@ export default function HomeOverview() {
     [transactions]
   );
 
-  const kpis = useMemo<KpiItem[]>(() => {
+  const alerts = useMemo<AlertItem[]>(() => {
+    const base = [
+      { nome: "Internet", vencimento: startDate, valor: 129.9 },
+      { nome: "Luz", vencimento: endDate, valor: 220.5 },
+    ];
+    return base.filter((a) => {
+      const d = new Date(a.vencimento);
+      return d >= start && d <= end;
+    });
+  }, [startDate, endDate, start, end]);
+
+  const kpis = useMemo<KPIItem[]>(() => {
     if (transactions.length === 0) return [];
     const balance = income - expense;
+    const rent = invested ? (balance / invested) * 100 : 0;
     return [
       {
-        title: "Saldo do período",
+        title: "Saldo",
         icon: <Wallet className="size-5" />,
         value: balance,
-        trend: balance >= 0 ? "up" : "down",
-        colorFrom: "hsl(var(--chart-emerald))",
-        colorTo: "hsl(var(--chart-teal))",
         spark: Array.from({ length: 8 }, (_, i) => balance + i * 100),
         sparkColor: "hsl(var(--chart-emerald))",
       },
       {
-        title: "Entradas",
-        icon: <TrendingUp className="size-5" />,
-        value: income,
-        trend: "up",
-        colorFrom: "hsl(var(--chart-blue))",
-        colorTo: "hsl(var(--chart-indigo))",
-        spark: Array.from({ length: 8 }, (_, i) => income + i * 80),
-        sparkColor: "hsl(var(--chart-blue))",
-      },
-      {
-        title: "Saídas",
+        title: "Gastos do mês",
         icon: <CreditCard className="size-5" />,
         value: expense,
-        trend: "down",
-        colorFrom: "hsl(var(--chart-rose))",
-        colorTo: "hsl(var(--chart-pink))",
         spark: Array.from({ length: 8 }, (_, i) => expense + i * 60),
         sparkColor: "hsl(var(--chart-rose))",
       },
       {
-        title: "Investido",
-        icon: <PiggyBank className="size-5" />,
-        value: invested,
-        colorFrom: "hsl(var(--chart-violet))",
-        colorTo: "hsl(var(--chart-fuchsia))",
-        spark: Array.from({ length: 8 }, (_, i) => invested + i * 50),
-        sparkColor: "hsl(var(--chart-violet))",
+        title: "Rentabilidade",
+        icon: <TrendingUp className="size-5" />,
+        value: rent,
+        format: "percent",
+        spark: Array.from({ length: 8 }, (_, i) => rent + i * 2),
+        sparkColor: "hsl(var(--chart-blue))",
+      },
+      {
+        title: "Metas concluídas",
+        icon: <Target className="size-5" />,
+        value: 0,
+        format: "number",
+      },
+      {
+        title: "Alertas",
+        icon: <Bell className="size-5" />,
+        value: alerts.length,
+        format: "number",
       },
     ];
-  }, [transactions, income, expense, invested]);
+  }, [transactions, income, expense, invested, alerts.length]);
 
-  const forecastData = useMemo<FluxoItem[]>(() => {
+  const forecastData = useMemo<OverviewPoint[]>(() => {
     const base = [
       { date: "2025-01-01", in: 5000, out: 3200 },
       { date: "2025-02-01", in: 4800, out: 2500 },
@@ -131,64 +142,82 @@ export default function HomeOverview() {
       }));
   }, [start, end]);
 
-  const alerts = useMemo<AlertItem[]>(() => {
-    const base = [
-      { nome: "Internet", vencimento: startDate, valor: 129.9 },
-      { nome: "Luz", vencimento: endDate, valor: 220.5 },
-    ];
-    return base.filter((a) => {
-      const d = new Date(a.vencimento);
-      return d >= start && d <= end;
-    });
-  }, [startDate, endDate, start, end]);
-
   const insights = useMemo(() => {
-    const base = [
+    return [
       {
-        date: startDate,
-        to: "/financas/mensal",
         icon: <CalendarRange className="h-5 w-5" />,
         title: "Finanças do mês",
         desc: "Entradas, saídas e extratos",
+        link: "/financas/mensal",
       },
       {
-        date: startDate,
-        to: "/investimentos/resumo",
         icon: <Landmark className="h-5 w-5" />,
         title: "Investimentos",
         desc: "Carteira e aportes",
+        link: "/investimentos/resumo",
       },
       {
-        date: startDate,
-        to: "/metas",
         icon: <Target className="h-5 w-5" />,
-        title: "Metas e projetos",
+        title: "Metas atrasadas",
         desc: "Objetivos em andamento",
+        link: "/metas",
       },
       {
-        date: startDate,
-        to: "/milhas",
         icon: <Plane className="h-5 w-5" />,
-        title: "Milhas",
+        title: "Milhas a expirar",
         desc: "Programas e pontos",
+        link: "/milhas",
+      },
+      {
+        icon: <Bell className="h-5 w-5" />,
+        title: "Alertas",
+        desc: `${alerts.length} contas a vencer`,
+        link: "/financas/resumo",
       },
     ];
-    return base.filter((i) => {
-      const d = new Date(i.date);
-      return d >= start && d <= end;
-    });
-  }, [startDate, start, end]);
+  }, [alerts.length]);
+
+  const heroLinks = [
+    { to: "/financas/resumo", label: "Finanças", icon: <Wallet className="h-5 w-5" /> },
+    { to: "/metas", label: "Metas", icon: <Target className="h-5 w-5" /> },
+    { to: "/milhas", label: "Milhas", icon: <Plane className="h-5 w-5" /> },
+    { to: "/compras", label: "Compras", icon: <ShoppingCart className="h-5 w-5" /> },
+    { to: "/desejos", label: "Desejos", icon: <Heart className="h-5 w-5" /> },
+  ];
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-      <PageHeader title="Visão geral" />
+      <section className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="mx-auto w-max"
+        >
+          <Logo size="lg" />
+        </motion.div>
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          {heroLinks.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              className="flex items-center gap-1 rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20"
+            >
+              {l.icon}
+              {l.label}
+            </Link>
+          ))}
+        </div>
+        <div className="mt-4 flex justify-center">
+          <PeriodSelector />
+        </div>
+      </section>
 
       <section role="region" aria-labelledby="kpi-heading" className="space-y-4">
         <h2 id="kpi-heading" className="sr-only">
           Indicadores
         </h2>
         {kpis.length ? (
-          <KPIStrip items={kpis} />
+          <KPIBar items={kpis} />
         ) : (
           <div className="rounded-xl border border-white/10 bg-white/5 p-6">
             <EmptyState icon={<Wallet className="h-8 w-8" />} title="Sem dados" />
@@ -207,7 +236,7 @@ export default function HomeOverview() {
             Fluxo de caixa
           </h2>
           {forecastData.length ? (
-            <ForecastChart data={forecastData} />
+            <OverviewChart data={forecastData} />
           ) : (
             <EmptyState icon={<Wallet className="h-8 w-8" />} title="Sem dados" />
           )}
@@ -244,7 +273,7 @@ export default function HomeOverview() {
         </h2>
         {insights.length ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-12">
-            {insights.map(({ date: _d, ...card }) => (
+            {insights.map((card) => (
               <motion.div key={card.title} variants={item} className="lg:col-span-3">
                 <InsightCard {...card} />
               </motion.div>
