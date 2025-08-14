@@ -1,44 +1,44 @@
-import { useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { motion } from "framer-motion";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import {
-  Wallet,
-  PiggyBank,
-  TrendingUp,
-  CreditCard,
-  PieChart as PieChartIcon,
   CalendarRange,
-  Landmark,
-  Target,
-  Plane,
+  CreditCard,
   Heart,
+  Landmark,
+  PieChart as PieChartIcon,
+  PiggyBank,
+  Plane,
   ShoppingCart,
+  Target,
+  TrendingUp,
+  Wallet,
 } from "lucide-react";
+import { useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { Link } from "react-router-dom";
+import {
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 
 import { Logo } from "@/components/Logo";
-import PeriodSelector from "@/components/dashboard/PeriodSelector";
-import { usePeriod } from "@/state/periodFilter";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
-import ForecastChart from "@/components/dashboard/ForecastChart";
+import MetasSummary from "@/components/MetasSummary";
 import AlertList from "@/components/dashboard/AlertList";
+import BalanceForecast from "@/components/dashboard/BalanceForecast";
+import ForecastChart from "@/components/dashboard/ForecastChart";
 import InsightCard from "@/components/dashboard/InsightCard";
+import PeriodSelector from "@/components/dashboard/PeriodSelector";
+import RecurrenceList from "@/components/dashboard/RecurrenceList";
 import {
   WidgetCard,
-  WidgetHeader,
   WidgetFooterAction,
+  WidgetHeader,
 } from "@/components/dashboard/WidgetCard";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { formatCurrency } from "@/lib/utils";
-import MetasSummary from "@/components/MetasSummary";
-import RecurrenceList from "@/components/dashboard/RecurrenceList";
-import BalanceForecast from "@/components/dashboard/BalanceForecast";
+import { usePeriod } from "@/state/periodFilter";
 
 
 // Garantir decorativos não interativos
@@ -443,8 +443,8 @@ export default function HomeOverview() {
                 </ul>
               </>
             )}
-            </Card>
-        </motion.div>
+              </WidgetCard>
+          </motion.div>
       </motion.div>
 
       <motion.div className="grid items-stretch gap-6 xl:grid-cols-3" variants={container}>
@@ -455,7 +455,7 @@ export default function HomeOverview() {
               subtitle="Próximos 10 dias"
             />
             <AlertList items={contasAVencer} />
-            <WidgetFooterAction to="/financas/mensal" label="Ver Finanças" />
+            <WidgetFooterAction to="/financas/mensal">Ver detalhes</WidgetFooterAction>
           </WidgetCard>
         </motion.div>
 
@@ -466,11 +466,8 @@ export default function HomeOverview() {
               subtitle="Progresso geral"
             />
             <MetasSummary />
-            <WidgetFooterAction
-              to="/metas"
-              label="Ir para Metas & Projetos"
-            />
-          </WidgetCard>
+            <WidgetFooterAction to="/financas/anual">Ver detalhes</WidgetFooterAction>
+        </WidgetCard>
         </motion.div>
 
         <motion.div variants={item}>

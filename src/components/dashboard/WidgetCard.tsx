@@ -1,6 +1,6 @@
+import { ChevronRight } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
 
 // Generic card used by dashboard widgets.
 export function WidgetCard({ className, children }: PropsWithChildren<{ className?: string }>) {
@@ -16,13 +16,13 @@ export function WidgetHeader({ title, subtitle }: { title: string; subtitle?: st
   );
 }
 
-export function WidgetFooterAction({ to, label }: { to: string; label: string }) {
+export function WidgetFooterAction({ to, children }: PropsWithChildren<{ to: string }>) {
   return (
     <Link
       to={to}
       className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:underline"
     >
-      {label}
+      {children}
       <ChevronRight className="size-4" />
     </Link>
   );
