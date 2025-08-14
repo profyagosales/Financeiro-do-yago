@@ -16,7 +16,7 @@ export default function Topbar() {
     <header className="topbar-glass sticky top-0 z-50 border-b border-white/10 bg-gradient-to-r from-emerald-600/80 to-teal-600/80 backdrop-blur">
       <div className="mx-auto flex h-16 items-center px-4">
         <NavLink
-          to="/dashboard"
+          to="/homeoverview"
           className="flex items-center text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded"
         >
           <Logo size="lg" />

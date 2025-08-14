@@ -91,7 +91,7 @@ export function getNavItem(pathname: string): NavItem | null {
 }
 
 export const navRoutes: NavRoute[] = [
-  { ...dashboardNavItem, variant: 'pill' },
+  { label: 'Visão geral', to: '/homeoverview', variant: 'pill' },
   { label: 'Finanças', to: '/financas/resumo' },
   { label: 'Investimentos', to: '/investimentos/resumo' },
   { label: 'Metas & Projetos', to: '/metas' },
