@@ -74,7 +74,7 @@ export default function FinancasMensal() {
   const initAnoParam = searchParams.get('ano');
   const initialMes =
     initMesParam ?? (initAnoParam ? `${initAnoParam}-${currentMes.slice(5, 7)}` : currentMes);
-  const initialCategoria = searchParams.get('cat');
+  const initialCategoriaId = searchParams.get('cat');
   const initialBusca = searchParams.get('q') ?? '';
   const initialFonte: SourceValue = (() => {
     const f = searchParams.get('fonte');
@@ -88,7 +88,9 @@ export default function FinancasMensal() {
   })();
 
   const [mesAtual, setMesAtual] = useState(initialMes);
-  const [categoriaId, setCategoriaId] = useState<'Todas' | string>(initialCategoria ?? 'Todas');
+  const [categoriaId, setCategoriaId] = useState<string | undefined>(
+    initialCategoriaId ?? undefined
+  );
   const [fonte, setFonte] = useState<SourceValue>(initialFonte);
   const [buscaInput, setBuscaInput] = useState(initialBusca);
   const [busca, setBusca] = useState(initialBusca);
@@ -97,7 +99,7 @@ export default function FinancasMensal() {
     const params = new URLSearchParams();
     params.set('mes', mesAtual);
     params.set('ano', mesAtual.slice(0, 4));
-    if (categoriaId && categoriaId !== 'Todas') params.set('cat', categoriaId);
+    if (categoriaId) params.set('cat', categoriaId);
     if (fonte.id) params.set('fonte', `${fonte.kind}:${fonte.id}`);
     if (busca) params.set('q', busca);
     setSearchParams(params, { replace: true });
@@ -109,7 +111,7 @@ export default function FinancasMensal() {
   }, [buscaInput]);
 
   const limparFiltros = () => {
-    setCategoriaId('Todas');
+    setCategoriaId(undefined);
     setFonte({ kind: 'account', id: null });
     setBusca('');
     setBuscaInput('');
@@ -165,7 +167,10 @@ export default function FinancasMensal() {
 
   const transacoesFiltradas = useMemo(() => {
     let out = uiTransacoes;
-    if (categoriaId !== 'Todas') out = out.filter((t) => t.category_id === categoriaId);
+    if (categoriaId) {
+      if (categoriaId === 'SemCategoria') out = out.filter((t) => !t.category_id);
+      else out = out.filter((t) => t.category_id === categoriaId);
+    }
     if (fonte.id) {
       out = out.filter((t) => t.source_kind === fonte.kind && t.source_id === fonte.id);
     }
@@ -344,8 +349,16 @@ export default function FinancasMensal() {
           <div>
             <span className="mb-1 block text-xs text-emerald-100/90">Categoria</span>
             <CategoryPicker
-              value={categoriaId === 'Todas' ? null : categoriaId}
-              onChange={(v) => setCategoriaId(v ?? 'Todas')}
+              // Em Radix, "sem seleção" deve ser undefined (não "")
+              value={categoriaId ?? undefined}
+              onChange={(v) => {
+                // Nunca propagar "" para o Select
+                if (!v) return setCategoriaId(undefined);
+                // Normaliza tokens especiais
+                if (v === 'Todas') return setCategoriaId(undefined);
+                if (v === 'SemCategoria') return setCategoriaId('SemCategoria');
+                return setCategoriaId(v);
+              }}
               placeholder="Todas"
               ariaLabel="Categoria"
               showAll
