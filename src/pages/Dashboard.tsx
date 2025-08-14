@@ -114,7 +114,7 @@ export default function Dashboard() {
           }
         >
           <div className="flex items-center gap-3">
-            <div className="h-2 w-full rounded bg-white/10">
+            <div className="h-2 w-full rounded bg-black/10 dark:bg-white/10">
               <div
                 className="h-2 rounded bg-emerald-500"
                 style={{ width: `${metas.progresso * 100}%` }}

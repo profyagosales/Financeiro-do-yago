@@ -221,12 +221,13 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-lg p-0">
+        <DialogHeader className="p-4 pb-0">
           <DialogTitle>{initialData ? 'Editar Transação' : 'Nova Transação'}</DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-4 py-2">
+        <div className="overflow-y-auto max-h-[70vh] p-4">
+          <div className="grid gap-4">
           {/* Data & Valor */}
           <div className="grid gap-1">
             <Label>Data</Label>
@@ -375,13 +376,16 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
             )}
           </div>
         </div>
+        </div>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={onClose} disabled={loading}>Cancelar</Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Salvando…' : 'Salvar'}
-          </Button>
-        </DialogFooter>
+        <div className="sticky bottom-0 bg-background/80 backdrop-blur p-4 border-t">
+          <DialogFooter>
+            <Button variant="ghost" onClick={onClose} disabled={loading}>Cancelar</Button>
+            <Button onClick={handleSubmit} disabled={loading}>
+              {loading ? 'Salvando…' : 'Salvar'}
+            </Button>
+          </DialogFooter>
+        </div>
       </DialogContent>
 
       {/* Dialog: Nova categoria rápida */}

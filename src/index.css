@@ -11,7 +11,7 @@
 :root {
   /* Colors */
   --color-primary: #009579;
-  --color-secondary: #1E88E5;
+  --color-secondary: #1e88e5;
   --color-neutral: #64748b;
   --color-success: #22c55e;
   --color-warning: #f6be23;
@@ -19,8 +19,9 @@
   --color-surface: #ffffff;
 
   /* Typography */
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   --font-display: "Sora Variable", var(--font-sans);
 
   /* Spacing */
@@ -36,14 +37,19 @@
   --radius-card: 1.75rem;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-  --shadow-card: 0 8px 20px rgba(0,0,0,0.08);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Preferência de tema */
-:root { color-scheme: light; }
-.dark { color-scheme: dark; --color-surface: #1e293b; }
+:root {
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
+  --color-surface: #1e293b;
+}
 
 /* Tokens (mantém compatível com shadcn) */
 @layer base {
@@ -75,11 +81,11 @@
     --chart-4: 12 90% 60%;
     --chart-5: 338 78% 62%;
     /* Named chart tokens */
-    --chart-blue: 217 91% 60%;      /* ~blue-500 */
-    --chart-emerald: 160 84% 39%;   /* ~emerald-500 */
-    --chart-rose: 346 77% 57%;      /* ~rose-500 */
-    --chart-violet: 251 89% 68%;    /* ~violet-500 */
-    --chart-amber: 38 92% 58%;      /* ~amber-500 */
+    --chart-blue: 217 91% 60%; /* ~blue-500 */
+    --chart-emerald: 160 84% 39%; /* ~emerald-500 */
+    --chart-rose: 346 77% 57%; /* ~rose-500 */
+    --chart-violet: 251 89% 68%; /* ~violet-500 */
+    --chart-amber: 38 92% 58%; /* ~amber-500 */
     /* Axes & grid */
     --chart-grid: 215 20% 88%;
     --chart-grid-strong: 215 16% 80%;
@@ -88,8 +94,9 @@
     --chart-tooltip-bg: 0 0% 100%;
     --chart-tooltip-fg: 222.2 47.4% 11.2%;
 
-    --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
-      "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+    --font-sans:
+      "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+      Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
       "Segoe UI Emoji", "Segoe UI Symbol";
     --font-display: "Sora Variable", var(--font-sans);
   }
@@ -122,15 +129,30 @@
     --chart-tooltip-fg: 210 40% 98%;
   }
 
-  * { @apply border-border; }
-  html, body, #root { height: 100%; }
-  html { font-family: var(--font-sans); }
-  body { @apply bg-background text-foreground antialiased; }
-  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  * {
+    @apply border-border;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  html {
+    font-family: var(--font-sans);
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
   *:focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
-    box-shadow: 0 0 0 2px hsl(var(--ring)/0.4);
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.4);
   }
 }
 
@@ -140,8 +162,8 @@ body::after {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -1;           /* <- garante que não cobre o app */
-  pointer-events: none;  /* <- nunca intercepta cliques */
+  z-index: -1; /* <- garante que não cobre o app */
+  pointer-events: none; /* <- nunca intercepta cliques */
 }
 
 /* Canvas base (sem grid; visual limpo) */
@@ -163,14 +185,29 @@ body::before {
 /* Gradientes radiais nas bordas */
 body::after {
   background:
-    radial-gradient(800px 400px at -10% -10%, hsla(var(--primary), .18), transparent 60%),
-    radial-gradient(900px 500px at 110% -10%, hsla(220, 90%, 60%, .12), transparent 60%),
-    radial-gradient(700px 400px at 50% 120%, hsla(280, 70%, 60%, .10), transparent 60%);
+    radial-gradient(
+      800px 400px at -10% -10%,
+      hsla(var(--primary), 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 110% -10%,
+      hsla(220, 90%, 60%, 0.12),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px 400px at 50% 120%,
+      hsla(280, 70%, 60%, 0.1),
+      transparent 60%
+    );
   filter: saturate(1.1);
 }
 
 /* Cards “glass” utilitário opcional */
 @layer utilities {
+  .sidebar-header {
+    @apply bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white;
+  }
   .glass {
     @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-sm;
   }
@@ -189,24 +226,40 @@ body::after {
   }
   .kpi-icon {
     @apply size-10 rounded-xl flex items-center justify-center text-white shadow-md;
-    background: linear-gradient(135deg, hsl(var(--primary)/.95), hsl(var(--primary)/.7));
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.95),
+      hsl(var(--primary) / 0.7)
+    );
   }
-  .kpi-title { @apply text-sm text-muted-foreground; }
-  .kpi-value { @apply text-2xl sm:text-3xl font-semibold tracking-tight; }
+  .kpi-title {
+    @apply text-sm text-muted-foreground;
+  }
+  .kpi-value {
+    @apply text-2xl sm:text-3xl font-semibold tracking-tight;
+  }
 }
 
 /* Ajuste fino para sidebar */
-:root { --sidebar-border: 1px; }
+:root {
+  --sidebar-border: 1px;
+}
 
 /* === Charts (Recharts) theming — usa tokens acima === */
-.recharts-cartesian-grid line { stroke: hsl(var(--chart-grid)); }
+.recharts-cartesian-grid line {
+  stroke: hsl(var(--chart-grid));
+}
 .recharts-xAxis .recharts-cartesian-axis-line,
-.recharts-yAxis .recharts-cartesian-axis-line { stroke: transparent; }
-.recharts-cartesian-axis-tick-line { stroke: transparent; }
+.recharts-yAxis .recharts-cartesian-axis-line {
+  stroke: transparent;
+}
+.recharts-cartesian-axis-tick-line {
+  stroke: transparent;
+}
 .recharts-tooltip-wrapper .recharts-default-tooltip {
   border-radius: 12px !important;
   border: 1px solid hsl(var(--border)) !important;
   background: hsl(var(--chart-tooltip-bg)) !important;
   color: hsl(var(--chart-tooltip-fg)) !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,.08) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
 }
