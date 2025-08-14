@@ -118,3 +118,19 @@ export function WishlistPriceHistoryLine({ points = [], isLoading = false, heigh
     </div>
   );
 }
+
+export type WishlistChartsProps = {
+  items?: WishlistItem[];
+  points?: PricePoint[];
+  isLoading?: boolean;
+};
+
+export default function WishlistCharts({ items = [], points = [], isLoading = false }: WishlistChartsProps) {
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      <WishlistCategoryDonut items={items} isLoading={isLoading} />
+      <WishlistPriceHistoryLine points={points} isLoading={isLoading} />
+    </div>
+  );
+}
+
