@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import MenuSuggestions from "./layout/MenuSuggestions";
 
 import {
   Home,
@@ -135,28 +136,31 @@ export function Sidebar() {
         </NavItem>
       </nav>
 
-      <div className="mx-3 mb-3 mt-auto rounded-xl border border-white/10 p-3 bg-background/40 backdrop-blur">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-emerald-600 text-white grid place-items-center text-sm">
-            {initials}
-          </div>
-          <div className="text-sm">
-            <div className="font-medium">{displayName}</div>
-            <div className="text-muted-foreground text-xs">online</div>
-          </div>
-          <div className="ms-auto">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="rounded-lg p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50">
-                <ChevronDown className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <a href="/perfil">Perfil</a>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={signOut}>Sair</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+      <div className="mt-auto">
+        <MenuSuggestions />
+        <div className="mx-3 mb-3 mt-3 rounded-xl border border-white/10 p-3 bg-background/40 backdrop-blur">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-emerald-600 text-white grid place-items-center text-sm">
+              {initials}
+            </div>
+            <div className="text-sm">
+              <div className="font-medium">{displayName}</div>
+              <div className="text-muted-foreground text-xs">online</div>
+            </div>
+            <div className="ms-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger className="rounded-lg p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50">
+                  <ChevronDown className="h-4 w-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <a href="/perfil">Perfil</a>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut}>Sair</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
