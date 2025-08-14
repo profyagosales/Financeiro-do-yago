@@ -155,7 +155,7 @@ export default function FinancasAnual() {
               <TrendingUp size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-200">Entradas</span>
+              <span className="text-sm text-neutral-300/80">Entradas</span>
               <AnimatedNumber value={kpis.income} />
             </div>
           </div>
@@ -167,7 +167,7 @@ export default function FinancasAnual() {
               <TrendingDown size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-200">Saídas</span>
+              <span className="text-sm text-neutral-300/80">Saídas</span>
               <AnimatedNumber value={kpis.expense} />
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function FinancasAnual() {
               <Coins size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-200">Saldo</span>
+              <span className="text-sm text-neutral-300/80">Saldo</span>
               <AnimatedNumber value={kpis.balance} />
             </div>
           </div>
@@ -191,9 +191,9 @@ export default function FinancasAnual() {
               <CalendarRange size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-200">Mês com maior despesa</span>
+              <span className="text-sm text-neutral-300/80">Mês com maior despesa</span>
               <AnimatedNumber value={worstMonth?.expense || 0} />
-              <span className="text-xs text-slate-500 dark:text-slate-200">{worstLabel || '—'}</span>
+              <span className="text-xs text-neutral-300/80">{worstLabel || '—'}</span>
             </div>
           </div>
         </MotionCard>
@@ -202,14 +202,22 @@ export default function FinancasAnual() {
       {/* Gráficos */}
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
-            <h3 className="font-medium mb-3">Saldo mensal</h3>
+          <div className="rounded-xl border border-white/10 bg-white dark:bg-slate-900 p-4">
+            <h3 className="font-medium mb-3 text-foreground">Saldo mensal</h3>
             <div className="h-[320px]">
               <ResponsiveContainer>
                 <AreaChart data={curveData}>
-                  <XAxis dataKey="mes" />
-                  <YAxis />
+                  <XAxis dataKey="mes" tick={{ fill: 'hsl(var(--neutral-300))', opacity: 0.8 }} />
+                  <YAxis tick={{ fill: 'hsl(var(--neutral-300))', opacity: 0.8 }} />
                   <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--background))',
+                      borderColor: 'hsl(var(--border))',
+                      borderRadius: '0.5rem',
+                      color: 'hsl(var(--foreground))',
+                    }}
+                    labelStyle={{ color: 'hsl(var(--foreground))' }}
+                    itemStyle={{ color: 'hsl(var(--foreground))' }}
                     formatter={(v: number) =>
                       (Number(v) || 0).toLocaleString('pt-BR', {
                         style: 'currency',
@@ -217,7 +225,14 @@ export default function FinancasAnual() {
                       })
                     }
                   />
-                  <Area type="monotone" dataKey="saldo" stroke="#10b981" fill="#10b98133" />
+                  <Area
+                    type="monotone"
+                    dataKey="saldo"
+                    stroke="#10b981"
+                    strokeOpacity={0.8}
+                    fill="#10b981"
+                    fillOpacity={0.2}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -232,14 +247,14 @@ export default function FinancasAnual() {
       {error && <p className="text-red-600">{error}</p>}
 
       {/* Tabela por mês */}
-      <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
+      <div className="rounded-xl border border-white/10 bg-white dark:bg-slate-900 p-4">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Mês</TableHead>
-              <TableHead className="text-right">Entradas</TableHead>
-              <TableHead className="text-right">Saídas</TableHead>
-              <TableHead className="text-right">Saldo</TableHead>
+              <TableHead className="text-neutral-200">Mês</TableHead>
+              <TableHead className="text-right text-neutral-200">Entradas</TableHead>
+              <TableHead className="text-right text-neutral-200">Saídas</TableHead>
+              <TableHead className="text-right text-neutral-200">Saldo</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
@@ -250,7 +265,7 @@ export default function FinancasAnual() {
               const linkMes = `${year}-${String(m.month).padStart(2, '0')}`;
               return (
                 <TableRow key={m.month}>
-                  <TableCell>{label}</TableCell>
+                  <TableCell className="text-neutral-300/80">{label}</TableCell>
                   <TableCell className="text-right">
                     {(Number(m.income) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </TableCell>
