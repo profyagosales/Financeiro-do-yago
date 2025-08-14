@@ -5,6 +5,7 @@ import AvatarMenu from './AvatarMenu';
 import NavItem from './NavItem';
 import MobileNavDrawer from './MobileNavDrawer';
 
+
 import { Logo } from '@/components/Logo';
 import { Settings } from '@/components/icons';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -22,7 +23,7 @@ export default function Topbar() {
           <span className="ml-2 text-xl font-semibold">FY</span>
         </NavLink>
         <MobileNavDrawer />
-        <nav className="ml-6 hidden items-center gap-2 text-white lg:flex">
+        <nav className="ml-6 flex items-center gap-2 text-white">
           {navRoutes.map((item) => (
             <NavItem key={item.to} to={item.to} variant={item.variant}>
               {item.label}
