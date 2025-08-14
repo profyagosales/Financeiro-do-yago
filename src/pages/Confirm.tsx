@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
+import { toast } from "@/components/ui/Toasts";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Confirm() {

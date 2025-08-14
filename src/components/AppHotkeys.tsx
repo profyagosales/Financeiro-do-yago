@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+
+import { toast } from "@/components/ui/Toasts";
 
 const map: Record<string, string> = {
   d: "/homeoverview",

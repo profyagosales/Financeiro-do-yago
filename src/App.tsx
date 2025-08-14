@@ -1,8 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-// Use o Toaster direto do sonner para ter 'richColors' tipado
-import { Toaster } from 'sonner';
 
+import { Toaster } from '@/components/ui/Toasts';
 import AppHotkeys from '@/components/AppHotkeys';
 import RouteLoader from '@/components/RouteLoader';
 import AppShell from '@/components/AppShell';
@@ -61,7 +60,7 @@ function AppRoutes() {
   if (!user)
     return (
       <Suspense fallback={<RouteLoader />}>
-        <Toaster richColors position="top-right" />
+        <Toaster position="top-right" />
         <Routes>
           {/* rotas públicas para e-mails do Supabase */}
           <Route path="/confirm" element={<Confirm />} />
@@ -78,6 +77,7 @@ function AppRoutes() {
     <AppShell topbar={<Topbar />}>
       {/* ⬇️ Atalhos globais (g d, g f, g i, g m, g c, Shift+/? para ajuda) */}
       <AppHotkeys />
+      <Toaster position="top-right" />
 
       <Suspense fallback={<RouteLoader />}>
 

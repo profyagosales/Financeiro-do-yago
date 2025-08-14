@@ -1,8 +1,8 @@
 import { useMemo, useState, type CSSProperties } from 'react';
 import dayjs from 'dayjs';
-import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
+import { toast } from '@/components/ui/Toasts';
 import MilesHeader, { type MilesProgram } from '@/components/miles/MilesHeader';
 import { BRANDS } from '@/components/miles/brandConfig';
 import { MotionCard } from '@/components/ui/MotionCard';

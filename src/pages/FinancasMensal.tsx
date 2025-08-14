@@ -2,8 +2,8 @@ import dayjs from 'dayjs';
 import { CalendarRange, Clock, Coins, Copy, Download, Plus, Search, TrendingDown, TrendingUp } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { toast } from 'sonner';
 
+import { toast } from '@/components/ui/Toasts';
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import DailyBars from "@/components/charts/DailyBars";
 import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";

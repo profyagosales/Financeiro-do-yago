@@ -1,7 +1,7 @@
 import { useMemo, useState, useId } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
-import { toast } from "sonner";
 
+import { toast } from "@/components/ui/Toasts";
 import {
   Select,
   SelectContent,

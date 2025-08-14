@@ -14,8 +14,8 @@ import {
   Plus,
 } from "lucide-react";
 import dayjs from "dayjs";
-import { toast } from "sonner";
 
+import { toast } from "@/components/ui/Toasts";
 import { Wallet } from "@/components/icons";
 import { exportTransactionsPDF } from "@/utils/pdf";
 import {

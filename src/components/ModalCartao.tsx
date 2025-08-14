@@ -1,8 +1,6 @@
-
-
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
 
+import { toast } from "@/components/ui/Toasts";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

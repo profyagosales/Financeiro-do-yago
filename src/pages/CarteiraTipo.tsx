@@ -1,8 +1,8 @@
 // src/pages/CarteiraTipo.tsx
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 import { Plus, MoreHorizontal, Pencil, Trash2, Coins } from "lucide-react";
 
+import { toast } from "@/components/ui/Toasts";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/PageHeader";
