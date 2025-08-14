@@ -9,7 +9,7 @@ function getInitialTheme(): "light" | "dark" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-export function ThemeToggle({ className = "" }: { className?: string }) {
+export function ThemeToggle({ className = "", onClick, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const [theme, setTheme] = React.useState<"light" | "dark">(getInitialTheme);
 
   React.useEffect(() => {
@@ -22,9 +22,16 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
   return (
     <button
       type="button"
-      onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
-      aria-label="Alternar tema"
-      className={["nav-pill nav-ghost h-9 w-9 justify-center", className].join(" ")}
+      {...props}
+      onClick={(e) => {
+        setTheme((t) => (t === "dark" ? "light" : "dark"));
+        onClick?.(e);
+      }}
+      aria-label={props["aria-label"] ?? "Alternar tema"}
+      className={[
+        "rounded-lg p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
+        className,
+      ].join(" ")}
     >
       <Sun className="h-4 w-4 block dark:hidden" />
       <Moon className="h-4 w-4 hidden dark:block" />

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState } from "react";
 import {
   Download,
@@ -134,11 +135,6 @@ export default function FinancasResumo() {
     { title: "Transações do mês", icon: <ListTodo className="size-5" />, value: totalTrans, fmt: (n: number) => String(n) },
     { title: "A receber", icon: <CalendarClock className="size-5" />, value: toReceive, fmt: formatCurrency },
   ];
-
-
-  return (
-    <div className="space-y-6 pb-24">
-      <PageHeader title="Finanças — Resumo" subtitle="Visão consolidada das suas finanças." />
 
   return (
     <div className="space-y-6">
@@ -342,7 +338,7 @@ export default function FinancasResumo() {
           ) : (
             <EmptyState title="Nenhuma conta" />
           )}
-        </div>
+        </WidgetCard>
         <div className="col-span-12 rounded-2xl shadow/soft bg-background/60 backdrop-blur border border-white/10 dark:border-white/5 p-4">
           <h3 className="mb-3 font-medium">Transações recentes</h3>
           {transLoading ? (
