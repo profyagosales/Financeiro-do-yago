@@ -10,6 +10,7 @@ import { Logo } from '@/components/Logo';
 import { Settings } from '@/components/icons';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { navRoutes } from '@/routes/nav';
+import PeriodSelector from '@/components/dashboard/PeriodSelector';
 
 export default function Topbar() {
   return (
@@ -31,6 +32,7 @@ export default function Topbar() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2 text-white">
+          <PeriodSelector />
           <ThemeToggle />
           <NavLink
             to="/configuracoes"
