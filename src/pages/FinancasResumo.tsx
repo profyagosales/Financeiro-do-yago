@@ -3,7 +3,6 @@ import { Plus, Download, Coins, TrendingUp, TrendingDown, PieChart, CalendarCloc
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
 import PageHeader from "@/components/PageHeader";
-import KPIStrip from "@/components/dashboard/KPIStrip";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { WidgetCard, WidgetHeader, WidgetFooterAction } from "@/components/dashboard/WidgetCard";
 import DailyBars from "@/components/charts/DailyBars";
@@ -20,6 +19,7 @@ import { exportTransactionsPDF } from "@/utils/pdf";
 import { formatCurrency } from "@/lib/utils";
 import { getMonthlyAggregates, getLast12MonthsAggregates, getUpcomingBills, getBudgetUsage } from "@/lib/finance";
 import type { UITransaction } from "@/components/TransactionsTable";
+import { KpiCard } from "@/components/financas";
 
 export default function FinancasResumo() {
   const { month, year } = usePeriod();
@@ -77,46 +77,26 @@ export default function FinancasResumo() {
       title: "Saldo",
       icon: <Coins className="size-5" />,
       value: monthlyAgg.balance,
-      colorFrom: "hsl(var(--chart-emerald))",
-      colorTo: "hsl(var(--chart-emerald))",
-      spark: [0, monthlyAgg.balance],
-      sparkColor: "#10b981",
     },
     {
       title: "Entradas",
       icon: <TrendingUp className="size-5" />,
       value: monthlyAgg.income,
-      colorFrom: "hsl(var(--chart-blue))",
-      colorTo: "hsl(var(--chart-blue))",
-      spark: [0, monthlyAgg.income],
-      sparkColor: "#2563eb",
     },
     {
       title: "Saídas",
       icon: <TrendingDown className="size-5" />,
       value: monthlyAgg.expense,
-      colorFrom: "hsl(var(--chart-rose))",
-      colorTo: "hsl(var(--chart-rose))",
-      spark: [0, monthlyAgg.expense],
-      sparkColor: "#dc2626",
     },
     {
       title: "Orçamento",
       icon: <PieChart className="size-5" />,
       value: budgetUsage.reduce((s, b) => s + b.spent, 0),
-      colorFrom: "hsl(var(--chart-amber))",
-      colorTo: "hsl(var(--chart-amber))",
-      spark: [0, budgetUsage.reduce((s, b) => s + b.spent, 0)],
-      sparkColor: "#f59e0b",
     },
     {
       title: "Contas a vencer",
       icon: <CalendarClock className="size-5" />,
       value: upcomingBills.reduce((s, b) => s + b.valor, 0),
-      colorFrom: "hsl(var(--chart-violet))",
-      colorTo: "hsl(var(--chart-violet))",
-      spark: [0, upcomingBills.reduce((s, b) => s + b.valor, 0)],
-      sparkColor: "#8b5cf6",
     },
   ];
 
@@ -135,7 +115,11 @@ export default function FinancasResumo() {
         </Button>
       </div>
 
-      <KPIStrip items={kpiItems} />
+      <div className="grid items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        {kpiItems.map((k) => (
+          <KpiCard key={k.title} {...k} />
+        ))}
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <WidgetCard className="glass-card">
