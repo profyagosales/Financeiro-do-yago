@@ -271,7 +271,7 @@ export default function CategoryPicker({
                 <Input
                   id={colorHexId}
                   aria-label="Código da cor"
-                  value={color ?? ""}
+                  value={String(color ?? "TokenSemVazio")}
                   onChange={(e) => setColor(e.target.value)}
                   placeholder="#RRGGBB"
                   className="font-mono"

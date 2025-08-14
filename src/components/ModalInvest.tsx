@@ -191,7 +191,7 @@ export default function ModalInvest({ open, onClose, initial, defaultType, onSub
             <div className="grid gap-1.5">
               <Label>Ticker/Símbolo (opcional)</Label>
               <Input
-                value={f.symbol ?? ""}
+                value={String(f.symbol ?? "TokenSemVazio")}
                 onChange={(e) => set("symbol", e.target.value)}
                 placeholder="MXRF11, PETR4, BTC…"
               />
@@ -231,7 +231,7 @@ export default function ModalInvest({ open, onClose, initial, defaultType, onSub
             </div>
             <div className="grid gap-1.5">
               <Label>Corretora (opcional)</Label>
-              <Input value={f.broker ?? ""} onChange={(e) => set("broker", e.target.value)} />
+              <Input value={String(f.broker ?? "TokenSemVazio")} onChange={(e) => set("broker", e.target.value)} />
             </div>
             <div className="grid gap-1.5">
               <Label>Data</Label>
@@ -242,7 +242,7 @@ export default function ModalInvest({ open, onClose, initial, defaultType, onSub
           <div className="grid gap-1.5">
             <Label>Observação (opcional)</Label>
             <Input
-              value={f.note ?? ""}
+              value={String(f.note ?? "TokenSemVazio")}
               onChange={(e) => set("note", e.target.value)}
               placeholder="Ex.: aporte mensal, compra fracionada…"
             />

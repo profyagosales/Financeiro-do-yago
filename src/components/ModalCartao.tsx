@@ -131,7 +131,7 @@ export default function ModalCartao({ open, onClose, onCreated }: ModalCartaoPro
                   {accounts.map((a) => (
                     <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
                   ))}
-                  <SelectItem value="">(Nenhuma)</SelectItem>
+                  <SelectItem value="Todas">(Nenhuma)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
