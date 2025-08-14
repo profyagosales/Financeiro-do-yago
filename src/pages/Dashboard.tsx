@@ -32,6 +32,11 @@ import FilterBar from "@/components/FilterBar";
 import { usePeriod } from "@/state/periodFilter";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { useTransactions, getYearSummary } from "@/hooks/useTransactions";
+import { useInvestments } from "@/hooks/useInvestments";
+import { useGoals } from "@/hooks/useGoals";
+import { useMiles } from "@/hooks/useMiles";
+import { getUpcoming, type Bill } from "@/hooks/useBills";
 
 // ---------------------------------- helpers
 const brl = (n: number) =>
@@ -92,52 +97,45 @@ function Sparkline({ data, color = "#10b981" }: { data: number[]; color?: string
 
 // ---------------------------------- page
 export default function Dashboard() {
-  // MOCKs – depois plugamos hooks reais
-  const kpis = { saldoMes: 7532, entradasMes: 12400, saidasMes: 4868, investidoTotal: 36250 };
+  const { mode, month, year } = usePeriod();
 
-  const base = [
-    { m: "Jan", in: 3600, out: 1900 },
-    { m: "Fev", in: 4100, out: 2100 },
-    { m: "Mar", in: 3800, out: 1800 },
-    { m: "Abr", in: 4600, out: 2400 },
-    { m: "Mai", in: 4200, out: 2000 },
-    { m: "Jun", in: 3900, out: 2200 },
-    { m: "Jul", in: 4300, out: 2100 },
-    { m: "Ago", in: 4700, out: 2300 },
-    { m: "Set", in: 5200, out: 2600 },
-    { m: "Out", in: 5400, out: 2500 },
-    { m: "Nov", in: 5600, out: 2700 },
-    { m: "Dez", in: 6000, out: 2900 },
-  ];
-  const fluxo = useMemo(() => {
+  const { data: txs, kpis: txKpis, loading: txLoading } = useTransactions(year, month);
+  const { rows: invRows, kpis: invKpis, byType: carteira, loading: invLoading } = useInvestments();
+  const { data: goals, loading: goalsLoading } = useGoals();
+  const { saldoTotal: milesSaldo, loading: milesLoading } = useMiles();
+
+  const [fluxo, setFluxo] = useState<Array<{ m: string; in: number; out: number; saldo: number }>>([]);
+  useEffect(() => {
+    void getYearSummary(year)
+      .then((s) => {
+        const arr = s.months.map((m) => ({
+          m: monthShortPtBR(m.month),
+          in: m.income,
+          out: m.expense,
+          saldo: m.balance,
+        }));
+        setFluxo(arr);
+      })
+      .catch(() => setFluxo([]));
+  }, [year]);
+
+  const sparkIn = useMemo(() => txs.filter(t => t.amount > 0).slice(-8).map(t => t.amount), [txs]);
+  const sparkOut = useMemo(() => txs.filter(t => t.amount < 0).slice(-8).map(t => Math.abs(t.amount)), [txs]);
+  const sparkSaldo = useMemo(() => {
+    const arr: number[] = [];
     let acc = 0;
-    return base.map((d) => {
-      acc += d.in - d.out;
-      return { ...d, saldo: acc };
-    });
-  },
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- base is static
-  []);
+    txs.slice(-8).forEach(t => { acc += t.amount; arr.push(acc); });
+    return arr;
+  }, [txs]);
 
-  const sparkIn = base.slice(-8).map((d) => d.in);
-  const sparkOut = base.slice(-8).map((d) => d.out);
-  const sparkSaldo = fluxo.slice(-8).map((d) => d.saldo);
   const sparkInv = useMemo(() => {
-    let inv = 30000;
-    return base.slice(-8).map((d) => {
-      inv += Math.max(0, d.in - d.out) * 0.35;
-      return inv;
+    let total = 0;
+    return invRows.slice(-8).map(r => {
+      total += r.quantity * r.price + (r.fees || 0);
+      return total;
     });
-  },
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- base is static
-  []);
+  }, [invRows]);
 
-  const carteira = [
-    { name: "Renda fixa", value: 14800 },
-    { name: "FIIs", value: 8200 },
-    { name: "Ações", value: 9800 },
-    { name: "Cripto", value: 1450 },
-  ];
   const cores = [
     "hsl(var(--chart-emerald))",
     "hsl(var(--chart-violet))",
@@ -145,30 +143,38 @@ export default function Dashboard() {
     "hsl(var(--chart-amber))",
   ];
 
-  const contasAVencer = [
-    { nome: "Internet", vencimento: "2025-08-12", valor: 129.9 },
-    { nome: "Luz", vencimento: "2025-08-14", valor: 220.5 },
-    { nome: "Cartão Nubank", vencimento: "2025-08-16", valor: 830.0 },
-  ];
+  const [contasAVencer, setContasAVencer] = useState<Bill[]>([]);
+  const [billsLoading, setBillsLoading] = useState(true);
+  useEffect(() => {
+    setBillsLoading(true);
+    void getUpcoming(month, year)
+      .then((rows) => setContasAVencer(rows))
+      .finally(() => setBillsLoading(false));
+  }, [month, year]);
 
-  const aportesRecentes = [
-    { data: "2025-08-03", tipo: "Renda fixa", ativo: "Tesouro Selic 2029", qtd: 1, preco: 550 },
-    { data: "2025-08-02", tipo: "FIIs", ativo: "MXRF11", qtd: 100, preco: 10.15 },
-    { data: "2025-08-01", tipo: "Ações", ativo: "PETR4", qtd: 20, preco: 38.4 },
-    { data: "2025-07-28", tipo: "Cripto", ativo: "BTC", qtd: 0.005, preco: 355000 },
-  ];
+  const metas = useMemo(() => goals.slice(0, 3).map(g => ({ t: g.title, pct: Math.round(g.progress_pct) })), [goals]);
 
-  const { mode, month, year } = usePeriod();
-    const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
+  const aportesRecentes = useMemo(() => invRows.slice(0, 5).map(r => ({
+    data: r.date,
+    tipo: r.type,
+    ativo: r.symbol || r.name,
+    qtd: r.quantity,
+    preco: r.price,
+  })), [invRows]);
+
+  const kpis = useMemo(() => ({
+    saldoMes: txKpis.saldo,
+    entradasMes: txKpis.entradas,
+    saidasMes: txKpis.saidas,
+    investidoTotal: invKpis.total,
+  }), [txKpis, invKpis]);
+
+  const loading = txLoading || invLoading || goalsLoading || milesLoading || billsLoading;
+
+  const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
 
   const container = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0, transition: { staggerChildren: 0.06 } } };
   const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
-
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(t);
-  }, []);
 
   if (loading) {
     return (
@@ -371,15 +377,15 @@ export default function Dashboard() {
             ) : (
               <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
                 {contasAVencer.map((c) => (
-                  <li key={c.nome + c.vencimento} className="flex items-center gap-3 py-3">
-                    <BrandIcon name={c.nome} />
+                  <li key={c.id} className="flex items-center gap-3 py-3">
+                    <BrandIcon name={c.description} />
                     <div className="min-w-0">
-                      <div className="font-medium truncate">{c.nome}</div>
+                      <div className="font-medium truncate">{c.description}</div>
                       <div className="text-xs text-muted-foreground">
-                        vence em {new Date(c.vencimento).toLocaleDateString("pt-BR")}
+                        vence em {new Date(c.due_date).toLocaleDateString("pt-BR")}
                       </div>
                     </div>
-                    <div className="ml-auto font-medium">{brl(c.valor)}</div>
+                    <div className="ml-auto font-medium">{brl(c.amount)}</div>
                   </li>
                 ))}
               </ul>
@@ -391,28 +397,28 @@ export default function Dashboard() {
         <motion.div variants={item}>
           <Card className="h-full">
             <CardHeader title="Metas em andamento" subtitle="Progresso geral" />
-            <div className="space-y-4">
-              {[
-                { t: "Reserva de emergência", pct: 62 },
-                { t: "Viagem 2026", pct: 18 },
-                { t: "Curso/Mestrado", pct: 44 },
-              ].map((g) => (
-                <div key={g.t}>
-                  <div className="mb-1 flex justify-between text-sm">
-                    <span className="text-zinc-600 dark:text-zinc-300">{g.t}</span>
-                    <span className="font-medium">{g.pct}%</span>
+            {metas.length === 0 ? (
+              <EmptyState icon={<Target className="h-6 w-6" />} title="Sem metas" />
+            ) : (
+              <div className="space-y-4">
+                {metas.map((g) => (
+                  <div key={g.t}>
+                    <div className="mb-1 flex justify-between text-sm">
+                      <span className="text-zinc-600 dark:text-zinc-300">{g.t}</span>
+                      <span className="font-medium">{g.pct}%</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-zinc-200/70 dark:bg-zinc-800/70">
+                      <motion.div
+                        className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${g.pct}%` }}
+                        transition={{ duration: 0.9, ease: "easeOut" }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-zinc-200/70 dark:bg-zinc-800/70">
-                    <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${g.pct}%` }}
-                      transition={{ duration: 0.9, ease: "easeOut" }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
             <CardFooterAction to="/metas" label="Ir para Metas & Projetos" />
           </Card>
         </motion.div>
@@ -462,16 +468,16 @@ export default function Dashboard() {
       {/* ACESSOS RÁPIDOS ---------------------------------------- */}
       <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" variants={container}>
         <motion.div variants={item}>
-          <QuickLink to="/financas/mensal" icon={<CalendarRange className="h-5 w-5" />} title="Finanças do mês" desc="Entradas, saídas e extratos" />
+          <QuickLink to="/financas/mensal" icon={<CalendarRange className="h-5 w-5" />} title="Finanças do mês" desc={`Saldo ${brl(kpis.saldoMes)}`} />
         </motion.div>
         <motion.div variants={item}>
-          <QuickLink to="/investimentos" icon={<Landmark className="h-5 w-5" />} title="Resumo de investimentos" desc="Distribuição e aportes" />
+          <QuickLink to="/investimentos" icon={<Landmark className="h-5 w-5" />} title="Resumo de investimentos" desc={brl(kpis.investidoTotal)} />
         </motion.div>
         <motion.div variants={item}>
-          <QuickLink to="/metas" icon={<Target className="h-5 w-5" />} title="Metas e projetos" desc="Progresso e cronograma" />
+          <QuickLink to="/metas" icon={<Target className="h-5 w-5" />} title="Metas e projetos" desc={`${goals.length} metas`} />
         </motion.div>
         <motion.div variants={item}>
-          <QuickLink to="/milhas/livelo" icon={<Plane className="h-5 w-5" />} title="Milhas e pontos" desc="Livelo, Latam Pass, Azul" />
+          <QuickLink to="/milhas/livelo" icon={<Plane className="h-5 w-5" />} title="Milhas e pontos" desc={`${milesSaldo.toLocaleString('pt-BR')} pts`} />
         </motion.div>
       </motion.div>
     </motion.div>
