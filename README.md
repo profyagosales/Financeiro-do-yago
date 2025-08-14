@@ -6,7 +6,7 @@
 
 ## Sobre o projeto
 
-Aplicação web progressiva (PWA) para organização financeira pessoal. Desenvolvida com **React**, **TypeScript**, **Vite** e integração com **Supabase** para autenticação e persistência de dados.
+Aplicação web progressiva (PWA) para organização financeira pessoal. Desenvolvida com **React**, **TypeScript**, **Vite** e integração com **Supabase** para autenticação e persistência de dados. A interface usa navegação por barra superior (TopNav), sem barra lateral.
 
 ### Capturas de tela
 
