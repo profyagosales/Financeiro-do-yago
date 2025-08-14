@@ -31,7 +31,12 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency } from "@/lib/utils";
 import MetasSummary from "@/components/MetasSummary";
-import KPIStrip from "@/components/dashboard/KPIStrip";
+import InsightCard from "@/components/dashboard/InsightCard";
+import ForecastChart from "@/components/dashboard/ForecastChart";
+import RecurrenceList from "@/components/dashboard/RecurrenceList";
+import BalanceForecast from "@/components/dashboard/BalanceForecast";
+import AlertList from "@/components/dashboard/AlertList";
+
 
 // Garantir decorativos não interativos
 // className nos decorativos: "pointer-events-none select-none -z-10 opacity-25"
@@ -143,12 +148,25 @@ export default function Dashboard() {
     { data: "2025-07-28", tipo: "Cripto", ativo: "BTC", qtd: 0.005, preco: 355000 },
   ];
 
+  const insightMessage = "Você economizou 15% a mais este mês.";
+  const forecastData = base.slice(-6).map((d) => ({ month: d.m, in: d.in, out: d.out }));
+  const recurrences = [
+    { name: "Aluguel", amount: 1500 },
+    { name: "Academia", amount: 90 },
+    { name: "Internet", amount: 120 },
+  ];
+  const alerts = [
+    { message: "Conta de luz vence em 3 dias" },
+    { message: "Orçamento de lazer excedido" },
+  ];
+
   const { mode, month, year } = usePeriod();
     const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
 
   const container = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0, transition: { staggerChildren: 0.06 } } };
   const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
 
+  const [activeWidget, setActiveWidget] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1000);
@@ -172,22 +190,90 @@ export default function Dashboard() {
   }
 
   return (
-    <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
-      {/* HERO --------------------------------------------------- */}
-      <motion.div variants={item}>
-        <HeroSection title="Finanças do Yago" />
+
+    <>
+      <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
+        {/* HERO --------------------------------------------------- */}
+        <motion.div variants={item}>
+          <HeroHeader />
+        </motion.div>
+
+
+        {/* FILTRO CENTRALIZADO ------------------------------------ */}
+        <motion.div variants={item} className="flex justify-center">
+          <div className="w-full max-w-xl">
+            <FilterBar />
+          </div>
+        </motion.div>
+
+        {/* KPIs --------------------------------------------------- */}
+        <motion.div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4" variants={container}>
+        <motion.div variants={item}>
+          <KpiCard
+            title="Saldo do mês"
+            icon={<Wallet className="size-5" />}
+            colorFrom="hsl(var(--chart-emerald))"
+            colorTo="hsl(var(--chart-emerald)/.7)"
+            value={kpis.saldoMes}
+            spark={sparkSaldo}
+            sparkColor="hsl(var(--chart-emerald))"
+          />
+        </motion.div>
+        <motion.div variants={item}>
+          <KpiCard
+            title="Entradas"
+            icon={<TrendingUp className="size-5" />}
+            colorFrom="hsl(var(--chart-blue))"
+            colorTo="hsl(var(--chart-blue)/.7)"
+            value={kpis.entradasMes}
+            trend="up"
+            spark={sparkIn}
+            sparkColor="hsl(var(--chart-blue))"
+          />
+        </motion.div>
+        <motion.div variants={item}>
+          <KpiCard
+            title="Saídas"
+            icon={<CreditCard className="size-5" />}
+            colorFrom="hsl(var(--chart-rose))"
+            colorTo="hsl(var(--chart-amber))"
+            value={kpis.saidasMes}
+            trend="down"
+            spark={sparkOut}
+            sparkColor="hsl(var(--chart-rose))"
+          />
+        </motion.div>
+        <motion.div variants={item}>
+          <KpiCard
+            title="Investido total"
+            icon={<PiggyBank className="size-5" />}
+            colorFrom="hsl(var(--chart-violet))"
+            colorTo="hsl(var(--chart-blue))"
+            value={kpis.investidoTotal}
+            spark={sparkInv}
+            sparkColor="hsl(var(--chart-violet))"
+          />
+        </motion.div>
+
       </motion.div>
 
-      {/* FILTRO CENTRALIZADO ------------------------------------ */}
-      <motion.div variants={item} className="flex justify-center">
-        <div className="w-full max-w-xl">
-          <FilterBar />
-        </div>
-      </motion.div>
-
-      {/* KPIs --------------------------------------------------- */}
-      <motion.div variants={item}>
-        <KPIStrip metrics={mockData} />
+      {/* WIDGETS ----------------------------------------------- */}
+      <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={container}>
+        <motion.div variants={item}>
+          <InsightCard message={insightMessage} onClick={() => setActiveWidget('insight')} />
+        </motion.div>
+        <motion.div variants={item}>
+          <ForecastChart data={forecastData} onClick={() => setActiveWidget('forecast')} />
+        </motion.div>
+        <motion.div variants={item}>
+          <RecurrenceList items={recurrences} onClick={() => setActiveWidget('recurrence')} />
+        </motion.div>
+        <motion.div variants={item}>
+          <BalanceForecast current={kpis.saldoMes} forecast={kpis.saldoMes + 1000} onClick={() => setActiveWidget('balance')} />
+        </motion.div>
+        <motion.div variants={item}>
+          <AlertList alerts={alerts} onClick={() => setActiveWidget('alerts')} />
+        </motion.div>
       </motion.div>
 
       {/* GRÁFICOS ---------------------------------------------- */}
@@ -381,6 +467,26 @@ export default function Dashboard() {
       </motion.div>
 
     </motion.div>
+    {activeWidget && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        onClick={() => setActiveWidget(null)}
+      >
+        <div
+          className="rounded-xl bg-white p-4 shadow-lg dark:bg-zinc-900"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <p className="mb-2 font-semibold">Widget: {activeWidget}</p>
+          <button
+            className="mt-2 rounded bg-emerald-600 px-3 py-1 text-sm text-white"
+            onClick={() => setActiveWidget(null)}
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    )}
+  </>
   );
 }
 
