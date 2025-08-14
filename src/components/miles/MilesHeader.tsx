@@ -6,7 +6,7 @@ import liveloLogo from '@/assets/logos/livelo.svg';
 
 export type MilesProgram = 'livelo' | 'latampass' | 'azul';
 
-const PROGRAM: Record<MilesProgram, { label: string; logo: string; gradient: string }> = {
+export const brandConfig: Record<MilesProgram, { label: string; logo: string; gradient: string }> = {
   livelo: {
     label: 'Livelo',
     logo: liveloLogo,
@@ -33,7 +33,7 @@ export default function MilesHeader({
   subtitle?: string;
   children?: ReactNode;
 }) {
-  const cfg = PROGRAM[program];
+  const cfg = brandConfig[program];
   return (
     <header className={`mb-6 rounded-xl bg-gradient-to-r ${cfg.gradient} text-white`}>
       <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-5">
