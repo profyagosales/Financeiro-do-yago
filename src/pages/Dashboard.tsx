@@ -25,7 +25,7 @@ import {
 
 import BrandIcon from "@/components/BrandIcon";
 import FilterBar from "@/components/FilterBar";
-import HeroSection from "@/components/dashboard/HeroSection";
+import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { usePeriod } from "@/state/periodFilter";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -161,7 +161,7 @@ export default function Dashboard() {
   ];
 
   const { mode, month, year } = usePeriod();
-    const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
+  const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
 
   const container = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0, transition: { staggerChildren: 0.06 } } };
   const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
@@ -190,6 +190,17 @@ export default function Dashboard() {
   }
 
   return (
+    <motion.div
+      key={`${mode}-${month}-${year}`}
+      className="space-y-6"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      {/* HERO --------------------------------------------------- */}
+      <motion.div variants={item}>
+        <HeroHeader />
+      </motion.div>
 
     <>
       <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
@@ -198,16 +209,17 @@ export default function Dashboard() {
           <HeroHeader />
         </motion.div>
 
+      {/* SELECTOR TOP-RIGHT ------------------------------------- */}
+      <motion.div variants={item} className="flex justify-end">
+        <PeriodSelector />
+      </motion.div>
 
-        {/* FILTRO CENTRALIZADO ------------------------------------ */}
-        <motion.div variants={item} className="flex justify-center">
-          <div className="w-full max-w-xl">
-            <FilterBar />
-          </div>
-        </motion.div>
+      {/* KPIs --------------------------------------------------- */}
+      <motion.div
+        className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4"
+        variants={container}
+      >
 
-        {/* KPIs --------------------------------------------------- */}
-        <motion.div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4" variants={container}>
         <motion.div variants={item}>
           <KpiCard
             title="Saldo do mês"
