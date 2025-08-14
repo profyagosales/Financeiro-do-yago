@@ -481,7 +481,7 @@ export default function Dashboard() {
 // ---------------------------------- partials
 function HeroHeader() {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 p-6 text-white shadow-lg">
+    <div className="relative overflow-hidden rounded-2xl border-b border-white/10 bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white backdrop-blur-sm shadow-lg">
       {/* logo + título, sem descrição */}
       <div className="relative flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
@@ -617,17 +617,17 @@ function CardFooterAction({ to, label }: { to: string; label: string }) {
 
 function QuickLink({ to, icon, title, desc }: { to: string; icon: ReactNode; title: string; desc: string }) {
   return (
-    <Card>
-      <div className="mb-2 flex items-center gap-3">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 ring-1 ring-emerald-500/30">
+    <Card className="border-none bg-gradient-to-br from-emerald-600 to-teal-600 p-4 text-white shadow-sm transition-transform hover:scale-[1.01]">
+      <div className="mb-3 flex items-center gap-3">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white ring-1 ring-white/30">
           {icon}
         </span>
         <span className="font-semibold">{title}</span>
       </div>
-      <div className="mb-4 text-sm text-zinc-500">{desc}</div>
+      <div className="mb-4 text-sm text-white/80">{desc}</div>
       <Link
         to={to}
-        className="inline-block rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow transition hover:bg-emerald-700"
+        className="inline-block rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white ring-1 ring-white/30 transition hover:bg-white/30"
       >
         Abrir
       </Link>
