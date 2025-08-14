@@ -30,6 +30,7 @@ const ListaCompras = lazy(() => import('./pages/ListaCompras'));
 
 const Configuracoes = lazy(() => import('./pages/Configuracoes'));
 const Login         = lazy(() => import('./pages/Login'));
+const Confirm       = lazy(() => import('./pages/Confirm'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 
 /* ────────────────────────────────────────────── */
@@ -55,7 +56,8 @@ function AppRoutes() {
     return (
       <Suspense fallback={<RouteLoader />}>
         <Routes>
-          {/* rota para redefinição de senha via e-mail do Supabase */}
+          {/* rotas públicas para e-mails do Supabase */}
+          <Route path="/confirm" element={<Confirm />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           {/* rota explícita de login */}
           <Route path="/login" element={<Login />} />
