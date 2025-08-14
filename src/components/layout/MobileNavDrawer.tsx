@@ -52,7 +52,7 @@ export default function MobileNavDrawer() {
                   animate={{ x: 0 }}
                   exit={{ x: "-100%" }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col bg-background/80 backdrop-blur-xl shadow-xl"
+                  className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col rounded-r-2xl border-r border-white/40 bg-white/70 backdrop-blur shadow-xl dark:border-white/10 dark:bg-white/5"
                 >
                   <nav className="flex-1 overflow-y-auto p-4 space-y-2">
                     {defaultNavItems.map((item) => {

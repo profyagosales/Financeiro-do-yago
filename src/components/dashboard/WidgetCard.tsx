@@ -1,10 +1,21 @@
 import { ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 import type { PropsWithChildren } from "react";
 import { Link } from "react-router-dom";
 
 // Generic card used by dashboard widgets.
 export function WidgetCard({ className, children }: PropsWithChildren<{ className?: string }>) {
-  return <div className={`card-surface p-5 sm:p-6 ${className ?? ""}`}>{children}</div>;
+  return (
+    <motion.div
+      className={`card-surface p-5 sm:p-6 ${className ?? ""}`}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -16 }}
+      whileHover={{ y: -4 }}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 export function WidgetHeader({ title, subtitle }: { title: string; subtitle?: string }) {
