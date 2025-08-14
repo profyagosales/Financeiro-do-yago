@@ -2,12 +2,13 @@ import { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-
+import MilesHeader, { type MilesProgram } from '@/components/MilesHeader';
 import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
 import ModalMilesMovement, { type MilesMovement } from '@/components/ModalMilesMovement';
+import MilesPendingList from '@/components/miles/MilesPendingList';
 import liveloLogo from '@/assets/logos/livelo.svg';
 import latamLogo from '@/assets/logos/latampass.svg';
 import azulLogo from '@/assets/logos/azul.svg';
@@ -15,6 +16,7 @@ import azulLogo from '@/assets/logos/azul.svg';
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
+export default function MilhasLivelo({ program = 'livelo' }: { program?: MilesProgram }) {
 type Program = 'livelo' | 'latam' | 'azul';
 
 const CONFIG: Record<Program, { title: string; gradient: string; logo: string }> = {
@@ -88,6 +90,10 @@ export default function MilhasLivelo({ program = 'livelo' }: { program?: Program
 
   return (
     <div className="space-y-6">
+      <MilesHeader program={program} subtitle="Saldo, expiração e movimentos">
+        <Button onClick={()=>{ setEdit(null); setOpen(true); }}>Novo movimento</Button>
+      </MilesHeader>
+      <MilesPendingList program={program} />
       <PageHeader
         title={cfg.title}
         subtitle="Saldo, a receber e expiração"

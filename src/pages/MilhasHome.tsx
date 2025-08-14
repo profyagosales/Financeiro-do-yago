@@ -3,6 +3,7 @@ import { Plane } from 'lucide-react';
 
 import PageHeader from '@/components/PageHeader';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import MilesPendingList from '@/components/miles/MilesPendingList';
 
 export default function MilhasHome() {
   const saldoTotal = 12000;
@@ -46,6 +47,8 @@ export default function MilhasHome() {
           </CardContent>
         </Card>
       </div>
+
+      <MilesPendingList />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Link to="/milhas/livelo" className="block">
