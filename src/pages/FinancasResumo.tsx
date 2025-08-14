@@ -9,14 +9,18 @@ import DailyBars from "@/components/charts/DailyBars";
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import AlertList from "@/components/dashboard/AlertList";
 import RecurrenceList from "@/components/dashboard/RecurrenceList";
+import ForecastMiniChart from "@/components/financas/ForecastMiniChart";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SkeletonLine } from "@/components/ui/SkeletonLine";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";
 import { usePeriod } from "@/state/periodFilter";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useBills } from "@/hooks/useBills";
 import { useCategories } from "@/hooks/useCategories";
+import { useRecurrences } from "@/hooks/useRecurrences";
+import { useForecast } from "@/hooks/useForecast";
 import InsightBar from "@/components/financas/InsightBar";
 import { useInsights } from "@/hooks/useInsights";
 import { exportTransactionsPDF } from "@/utils/pdf";
@@ -30,7 +34,9 @@ export default function FinancasResumo() {
   const { data: transacoes, addSmart, list, loading: transLoading } = useTransactions(year, month);
   const { data: contas } = useBills(year, month);
   const { flat: categorias } = useCategories();
+  const { data: recurrences } = useRecurrences();
   const [modalOpen, setModalOpen] = useState(false);
+  const { data: forecastData, balance: forecastBalance } = useForecast(transacoes);
 
   const uiTransacoes: UITransaction[] = useMemo(() => {
     return transacoes.map(t => ({
