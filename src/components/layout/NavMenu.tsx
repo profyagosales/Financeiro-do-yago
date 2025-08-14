@@ -5,8 +5,6 @@ import {
   LayoutDashboard,
   WalletCards,
   TrendingUp,
-  Target,
-  Plane,
   ShoppingCart,
   Heart,
   ChevronDown,

@@ -483,7 +483,7 @@ export default function Dashboard() {
                 </ul>
               </>
             )}
-          </WidgetCard>
+            </Card>
         </motion.div>
       </motion.div>
 
@@ -577,7 +577,7 @@ export default function Dashboard() {
         </motion.div>
         <motion.div variants={item}>
           <InsightCard
-            to="/investimentos"
+            to="/investimentos/resumo"
             icon={<Landmark className="h-5 w-5" />}
             title="Resumo de investimentos"
             desc="Distribuição e aportes"
@@ -639,7 +639,7 @@ function HeroHeader() {
           <Link to="/financas/mensal" className="rounded-xl bg-white/90 px-4 py-2 font-medium text-emerald-700 shadow hover:bg-white transition">
             Ver Finanças
           </Link>
-          <Link to="/investimentos" className="rounded-xl bg-white/15 px-4 py-2 font-medium text-white ring-1 ring-white/30 hover:bg-white/20 transition">
+          <Link to="/investimentos/resumo" className="rounded-xl bg-white/15 px-4 py-2 font-medium text-white ring-1 ring-white/30 hover:bg-white/20 transition">
             Ver Investimentos
           </Link>
         </div>
