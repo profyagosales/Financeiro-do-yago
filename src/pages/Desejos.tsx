@@ -1,9 +1,5 @@
-import * as React from "react";
-import { ShoppingBag, Tag, Flag, PiggyBank } from "lucide-react";
-
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import KPIStrip, { type KpiItem } from "@/components/dashboard/KPIStrip";
 import WishlistNewItemModal, { WishlistItem } from "@/components/wishlist/WishlistNewItemModal";
 import WishlistSimulateModal from "@/components/wishlist/WishlistSimulateModal";
 import WishlistDrawer from "@/components/wishlist/WishlistDrawer";
@@ -45,45 +41,6 @@ export default function Desejos() {
     setItems(prev => [...prev, item]);
   };
 
-  const kpiItems: KpiItem[] = [
-    {
-      title: "Itens",
-      icon: <ShoppingBag className="size-5" />,
-      value: items.length,
-      colorFrom: "#6366f1",
-      colorTo: "#8b5cf6",
-      spark: [2, 3, 4, 5, 4, 6],
-      sparkColor: "#6366f1",
-    },
-    {
-      title: "Em promoção",
-      icon: <Tag className="size-5" />,
-      value: items.filter(i => i.precoAtual < i.precoAlvo).length,
-      colorFrom: "#f59e0b",
-      colorTo: "#f97316",
-      spark: [1, 2, 1, 3, 2, 3],
-      sparkColor: "#f59e0b",
-    },
-    {
-      title: "Prioridade alta",
-      icon: <Flag className="size-5" />,
-      value: items.filter(i => i.prioridade === "Alta").length,
-      colorFrom: "#ef4444",
-      colorTo: "#f97316",
-      spark: [3, 3, 4, 5, 4, 5],
-      sparkColor: "#ef4444",
-    },
-    {
-      title: "Economia potencial",
-      icon: <PiggyBank className="size-5" />,
-      value: items.reduce((s, i) => s + Math.max(0, i.precoAlvo - i.precoAtual), 0),
-      colorFrom: "#10b981",
-      colorTo: "#34d399",
-      spark: [4, 5, 6, 5, 7, 6],
-      sparkColor: "#10b981",
-    },
-  ];
-
   return (
     <div className="space-y-4">
       <WishlistFilters
@@ -95,7 +52,7 @@ export default function Desejos() {
         <h1 className="text-2xl font-bold">🛍️ Desejos</h1>
         <Button onClick={() => setNewOpen(true)}>Novo desejo</Button>
       </div>
-      <KPIStrip items={kpiItems} />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map(item => (
           <Card
