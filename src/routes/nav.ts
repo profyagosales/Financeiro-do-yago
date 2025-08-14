@@ -20,7 +20,7 @@ export const navGroups: NavGroup[] = [
   [
     { label: 'Metas & Projetos', to: '/metas' },
     { label: 'Milhas', to: '/milhas' },
-    { label: 'Desejos', to: '/desejos' },
+    { label: 'Desejos', to: '/desejos' }, // wishlist
     { label: 'Compras', to: '/compras' },
   ],
 ];
@@ -75,7 +75,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { label: 'Metas & Projetos', to: '/metas' },
       { label: 'Milhas', to: '/milhas' },
-      { label: 'Desejos', to: '/desejos' },
+      { label: 'Desejos', to: '/desejos' }, // wishlist
       { label: 'Compras', to: '/compras' },
     ],
   },
