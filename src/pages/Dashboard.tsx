@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode, type PropsWithChildren } from 'react';
 import { Link } from "react-router-dom";
-import { motion, useMotionValue, animate } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -20,20 +20,23 @@ import {
   TrendingUp,
   CreditCard,
   ChevronRight,
-  Landmark,
-  CalendarRange,
-  Target,
-  Plane,
   PieChart as PieChartIcon,
 } from "lucide-react";
 
 import BrandIcon from "@/components/BrandIcon";
 import FilterBar from "@/components/FilterBar";
+import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { usePeriod } from "@/state/periodFilter";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency } from "@/lib/utils";
 import MetasSummary from "@/components/MetasSummary";
+import InsightCard from "@/components/dashboard/InsightCard";
+import ForecastChart from "@/components/dashboard/ForecastChart";
+import RecurrenceList from "@/components/dashboard/RecurrenceList";
+import BalanceForecast from "@/components/dashboard/BalanceForecast";
+import AlertList from "@/components/dashboard/AlertList";
+
 
 // Garantir decorativos não interativos
 // className nos decorativos: "pointer-events-none select-none -z-10 opacity-25"
@@ -44,53 +47,55 @@ function monthShortPtBR(n: number) {
   return arr[Math.max(1, Math.min(12, n)) - 1];
 }
 
-// CountUp (framer-motion)
-function CountUp({ value }: { value: number }) {
-  const mv = useMotionValue(0);
-  const [out, setOut] = useState(0);
-  useEffect(() => {
-    const ctrl = animate(mv, value, { duration: 1.1, ease: "easeOut" });
-    const unsub = mv.on("change", (v) => setOut(v));
-    return () => {
-      ctrl.stop();
-      unsub();
-    };
-  }, [value, mv]);
-  return <span>{formatCurrency(Math.round(out))}</span>;
-}
-
-// Sparkline inline SVG
-function Sparkline({ data, color = "#10b981" }: { data: number[]; color?: string }) {
-  const w = 88, h = 28, pad = 2;
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const norm = (v: number) => (max === min ? 0.5 : (v - min) / (max - min));
-  const pts = data.map((v, i) => {
-    const x = (i / (data.length - 1)) * (w - pad * 2) + pad;
-    const y = h - (norm(v) * (h - pad * 2) + pad);
-    return `${x.toFixed(2)},${y.toFixed(2)}`;
-  });
-  const path = `M ${pts.join(" L ")}`;
-  const last = pts[pts.length - 1]?.split(",") || ["0", "0"];
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="overflow-visible">
-      <defs>
-        <linearGradient id="sparkFill" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.45" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={`${path} L ${w - pad},${h - pad} L ${pad},${h - pad} Z`} fill="url(#sparkFill)" />
-      <path d={path} stroke={color} strokeWidth={2} fill="none" strokeLinecap="round" />
-      <circle cx={Number(last[0])} cy={Number(last[1])} r={2.2} fill={color} />
-    </svg>
-  );
-}
 
 // ---------------------------------- page
 export default function Dashboard() {
   // MOCKs – depois plugamos hooks reais
   const kpis = { saldoMes: 7532, entradasMes: 12400, saidasMes: 4868, investidoTotal: 36250 };
+  const mockData = [
+    {
+      icon: Wallet,
+      label: "Saldo do mês",
+      value: formatCurrency(kpis.saldoMes),
+      comparison: "+12% vs mês anterior",
+      tooltip: "Saldo total após entradas e saídas do mês.",
+    },
+    {
+      icon: TrendingUp,
+      label: "Entradas",
+      value: formatCurrency(kpis.entradasMes),
+      comparison: "+8% vs mês anterior",
+      tooltip: "Entradas de dinheiro no mês.",
+    },
+    {
+      icon: CreditCard,
+      label: "Saídas",
+      value: formatCurrency(kpis.saidasMes),
+      comparison: "-5% vs mês anterior",
+      tooltip: "Saídas de dinheiro no mês.",
+    },
+    {
+      icon: PiggyBank,
+      label: "Investido total",
+      value: formatCurrency(kpis.investidoTotal),
+      comparison: "+2% vs mês anterior",
+      tooltip: "Total aplicado em investimentos.",
+    },
+    {
+      icon: Landmark,
+      label: "Patrimônio líquido",
+      value: formatCurrency(94850),
+      comparison: "+4% vs mês anterior",
+      tooltip: "Valor total dos ativos menos passivos.",
+    },
+    {
+      icon: Plane,
+      label: "Milhas",
+      value: "45k",
+      comparison: "+3% vs mês anterior",
+      tooltip: "Milhas acumuladas em programas de fidelidade.",
+    },
+  ];
 
   const base = [
     { m: "Jan", in: 3600, out: 1900 },
@@ -116,18 +121,6 @@ export default function Dashboard() {
   // eslint-disable-next-line react-hooks/exhaustive-deps -- base is static
   []);
 
-  const sparkIn = base.slice(-8).map((d) => d.in);
-  const sparkOut = base.slice(-8).map((d) => d.out);
-  const sparkSaldo = fluxo.slice(-8).map((d) => d.saldo);
-  const sparkInv = useMemo(() => {
-    let inv = 30000;
-    return base.slice(-8).map((d) => {
-      inv += Math.max(0, d.in - d.out) * 0.35;
-      return inv;
-    });
-  },
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- base is static
-  []);
 
   const carteira = [
     { name: "Renda fixa", value: 14800 },
@@ -155,12 +148,25 @@ export default function Dashboard() {
     { data: "2025-07-28", tipo: "Cripto", ativo: "BTC", qtd: 0.005, preco: 355000 },
   ];
 
+  const insightMessage = "Você economizou 15% a mais este mês.";
+  const forecastData = base.slice(-6).map((d) => ({ month: d.m, in: d.in, out: d.out }));
+  const recurrences = [
+    { name: "Aluguel", amount: 1500 },
+    { name: "Academia", amount: 90 },
+    { name: "Internet", amount: 120 },
+  ];
+  const alerts = [
+    { message: "Conta de luz vence em 3 dias" },
+    { message: "Orçamento de lazer excedido" },
+  ];
+
   const { mode, month, year } = usePeriod();
-    const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
+  const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
 
   const container = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0, transition: { staggerChildren: 0.06 } } };
   const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
 
+  const [activeWidget, setActiveWidget] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1000);
@@ -184,17 +190,28 @@ export default function Dashboard() {
   }
 
   return (
-    <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
+    <motion.div
+      key={`${mode}-${month}-${year}`}
+      className="space-y-6"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* HERO --------------------------------------------------- */}
       <motion.div variants={item}>
         <HeroHeader />
       </motion.div>
 
-      {/* FILTRO CENTRALIZADO ------------------------------------ */}
-      <motion.div variants={item} className="flex justify-center">
-        <div className="w-full max-w-xl">
-          <FilterBar />
-        </div>
+    <>
+      <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
+        {/* HERO --------------------------------------------------- */}
+        <motion.div variants={item}>
+          <HeroHeader />
+        </motion.div>
+
+      {/* SELECTOR TOP-RIGHT ------------------------------------- */}
+      <motion.div variants={item} className="flex justify-end">
+        <PeriodSelector />
       </motion.div>
 
       {/* KPIs --------------------------------------------------- */}
@@ -244,6 +261,26 @@ export default function Dashboard() {
             spark={sparkInv}
             sparkColor="hsl(var(--chart-violet))"
           />
+        </motion.div>
+
+      </motion.div>
+
+      {/* WIDGETS ----------------------------------------------- */}
+      <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={container}>
+        <motion.div variants={item}>
+          <InsightCard message={insightMessage} onClick={() => setActiveWidget('insight')} />
+        </motion.div>
+        <motion.div variants={item}>
+          <ForecastChart data={forecastData} onClick={() => setActiveWidget('forecast')} />
+        </motion.div>
+        <motion.div variants={item}>
+          <RecurrenceList items={recurrences} onClick={() => setActiveWidget('recurrence')} />
+        </motion.div>
+        <motion.div variants={item}>
+          <BalanceForecast current={kpis.saldoMes} forecast={kpis.saldoMes + 1000} onClick={() => setActiveWidget('balance')} />
+        </motion.div>
+        <motion.div variants={item}>
+          <AlertList alerts={alerts} onClick={() => setActiveWidget('alerts')} />
         </motion.div>
       </motion.div>
 
@@ -455,6 +492,26 @@ export default function Dashboard() {
         </motion.div>
       </motion.div>
     </motion.div>
+    {activeWidget && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        onClick={() => setActiveWidget(null)}
+      >
+        <div
+          className="rounded-xl bg-white p-4 shadow-lg dark:bg-zinc-900"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <p className="mb-2 font-semibold">Widget: {activeWidget}</p>
+          <button
+            className="mt-2 rounded bg-emerald-600 px-3 py-1 text-sm text-white"
+            onClick={() => setActiveWidget(null)}
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    )}
+  </>
   );
 }
 
@@ -512,83 +569,6 @@ function LogoFY({ size = 44 }: { size?: number }) {
   );
 }
 
-function KpiCard({
-  title,
-  icon,
-  value,
-  trend,
-  colorFrom,
-  colorTo,
-  spark,
-  sparkColor,
-}: {
-  title: string;
-  icon: ReactNode;
-  value: number;
-  trend?: "up" | "down";
-  colorFrom: string;
-  colorTo: string;
-  spark: number[];
-  sparkColor: string;
-}) {
-  return (
-    <motion.div
-      whileHover={{ y: -2 }}
-      transition={{ type: "spring", stiffness: 220, damping: 18 }}
-      className="kpi relative h-[136px]"
-    >
-      {/* Ícone decorativo sem capturar cliques */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-8 -top-8 -z-10 h-28 w-28 rounded-full opacity-25 blur-2xl"
-        style={{ background: `linear-gradient(135deg, ${colorFrom}, ${colorTo})` }}
-      />
-      <div className="relative z-10 flex flex-col">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <div
-              className="kpi-icon"
-              style={{ background: `linear-gradient(135deg, ${colorFrom}, ${colorTo})` }}
-            >
-              {icon}
-            </div>
-            <div>
-              <p className="kpi-title">{title}</p>
-              <p className="kpi-value">
-                <CountUp value={value} />
-              </p>
-            </div>
-          </div>
-          <div className="shrink-0">
-            <Sparkline data={spark} color={sparkColor} />
-          </div>
-        </div>
-        {trend === "up" ? (
-          <span
-            aria-hidden
-            className="pointer-events-none mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700"
-          >
-            <span aria-hidden className="pointer-events-none opacity-25">
-              ▲
-            </span>
-            bom
-          </span>
-        ) : trend === "down" ? (
-          <span
-            aria-hidden
-            className="pointer-events-none mt-2 inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-1 text-xs font-medium text-rose-700"
-          >
-            <span aria-hidden className="pointer-events-none opacity-25">
-              ▼
-            </span>
-            atenção
-          </span>
-        ) : null}
-      </div>
-    </motion.div>
-  );
-}
-
 function Card({ className, children }: PropsWithChildren<{ className?: string }>) {
   return <div className={`card-surface p-5 sm:p-6 ${className || ""}`}>{children}</div>;
 }
@@ -607,25 +587,5 @@ function CardFooterAction({ to, label }: { to: string; label: string }) {
     <Link to={to} className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:underline">
       {label} <ChevronRight className="size-4" />
     </Link>
-  );
-}
-
-function QuickLink({ to, icon, title, desc }: { to: string; icon: ReactNode; title: string; desc: string }) {
-  return (
-    <Card className="group h-full border-0 bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-[0_2px_12px_-3px_rgba(16,185,129,0.3)] transition hover:scale-[1.01]">
-      <div className="mb-2 flex items-center gap-3">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
-          {icon}
-        </span>
-        <span className="font-semibold">{title}</span>
-      </div>
-      <div className="mb-4 text-sm text-white/80">{desc}</div>
-      <Link
-        to={to}
-        className="inline-block rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/30"
-      >
-        Abrir
-      </Link>
-    </Card>
   );
 }
