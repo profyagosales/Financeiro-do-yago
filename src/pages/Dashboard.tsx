@@ -198,7 +198,7 @@ export default function Dashboard() {
       </motion.div>
 
       {/* KPIs --------------------------------------------------- */}
-      <motion.div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4" variants={container}>
+      <motion.div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-4" variants={container}>
         <motion.div variants={item}>
           <KpiCard
             title="Saldo do mês"
@@ -248,11 +248,11 @@ export default function Dashboard() {
       </motion.div>
 
       {/* GRÁFICOS ---------------------------------------------- */}
-      <motion.div className="grid items-stretch gap-6 xl:grid-cols-3" variants={container}>
+      <motion.div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3" variants={container}>
         <motion.div variants={item} className="xl:col-span-2">
-          <Card className="h-full">
+          <Card className="h-full overflow-x-auto">
             <CardHeader title={fluxoTitle} subtitle="Entradas, saídas e saldo acumulado" />
-            <div className="h-[220px]">
+            <div className="h-[220px] min-w-[320px]">
               {fluxo.length === 0 ? (
                 <EmptyState icon={<Wallet className="h-8 w-8" />} title="Sem dados" />
               ) : (
@@ -301,13 +301,13 @@ export default function Dashboard() {
         </motion.div>
 
         <motion.div variants={item}>
-          <Card className="h-full">
+          <Card className="h-full overflow-x-auto">
             <CardHeader title="Distribuição da carteira" subtitle="Por classe de ativos" />
             {carteira.length === 0 ? (
               <EmptyState icon={<PieChartIcon className="h-8 w-8" />} title="Sem dados" />
             ) : (
               <>
-                <div className="h-[220px]">
+                <div className="h-[220px] min-w-[320px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <defs>
@@ -361,14 +361,14 @@ export default function Dashboard() {
       </motion.div>
 
       {/* LISTAS ------------------------------------------------- */}
-      <motion.div className="grid items-stretch gap-6 xl:grid-cols-3" variants={container}>
+      <motion.div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3" variants={container}>
         <motion.div variants={item}>
-          <Card className="h-full">
+          <Card className="h-full overflow-x-auto">
             <CardHeader title="Próximas contas a vencer" subtitle="Próximos 10 dias" />
             {contasAVencer.length === 0 ? (
               <EmptyState icon={<CreditCard className="h-6 w-6" />} title="Nenhuma conta a vencer" />
             ) : (
-              <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
+              <ul className="min-w-[320px] divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
                 {contasAVencer.map((c) => (
                   <li key={c.nome + c.vencimento} className="flex items-center gap-3 py-3">
                     <BrandIcon name={c.nome} />
@@ -388,18 +388,20 @@ export default function Dashboard() {
         </motion.div>
 
         <motion.div variants={item}>
-          <Card className="h-full">
+          <Card className="h-full overflow-x-auto">
             <CardHeader title="Metas em andamento" subtitle="Progresso geral" />
-            <MetasSummary />
+            <div className="min-w-[320px]">
+              <MetasSummary />
+            </div>
             <CardFooterAction to="/metas" label="Ir para Metas & Projetos" />
           </Card>
         </motion.div>
 
         <motion.div variants={item}>
-          <Card className="h-full">
+          <Card className="h-full overflow-x-auto">
             <CardHeader title="Aportes recentes" subtitle="Últimas 5 operações" />
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full min-w-[480px] text-sm">
                 <thead className="text-zinc-500">
                   <tr>
                     <th className="w-6 py-2"></th>
@@ -438,7 +440,7 @@ export default function Dashboard() {
       </motion.div>
 
       {/* ACESSOS RÁPIDOS ---------------------------------------- */}
-      <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" variants={container}>
+      <motion.div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" variants={container}>
         <motion.div variants={item}>
           <QuickLink to="/financas/mensal" icon={<CalendarRange className="h-5 w-5" />} title="Finanças do mês" desc="Entradas, saídas e extratos" />
         </motion.div>
@@ -461,12 +463,12 @@ function HeroHeader() {
   return (
     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white backdrop-blur-sm border-b border-white/10 shadow-lg">
       {/* logo + título, sem descrição */}
-      <div className="relative flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <LogoFY size={44} />
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Finanças do Yago</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Finanças do Yago</h1>
         </div>
-        <div className="mt-1 flex gap-2 md:mt-0">
+        <div className="mt-1 flex gap-2 sm:mt-0">
           <Link to="/financas/mensal" className="rounded-xl bg-white/90 px-4 py-2 font-medium text-emerald-700 shadow hover:bg-white transition">
             Ver Finanças
           </Link>
