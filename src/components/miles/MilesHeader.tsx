@@ -1,28 +1,8 @@
 import type { ReactNode } from 'react';
 
-import azulLogo from '@/assets/logos/azul.svg';
-import latamLogo from '@/assets/logos/latampass.svg';
-import liveloLogo from '@/assets/logos/livelo.svg';
+import { BRANDS, type MilesProgram } from './brandConfig';
 
-export type MilesProgram = 'livelo' | 'latampass' | 'azul';
-
-const PROGRAM: Record<MilesProgram, { label: string; logo: string; gradient: string }> = {
-  livelo: {
-    label: 'Livelo',
-    logo: liveloLogo,
-    gradient: 'from-fuchsia-600 via-pink-500 to-rose-500',
-  },
-  latampass: {
-    label: 'LATAM Pass',
-    logo: latamLogo,
-    gradient: 'from-red-600 via-rose-600 to-purple-600',
-  },
-  azul: {
-    label: 'Azul',
-    logo: azulLogo,
-    gradient: 'from-sky-600 via-cyan-600 to-blue-600',
-  },
-};
+export type { MilesProgram } from './brandConfig';
 
 export default function MilesHeader({
   program,
@@ -33,12 +13,13 @@ export default function MilesHeader({
   subtitle?: string;
   children?: ReactNode;
 }) {
-  const cfg = PROGRAM[program];
+  const cfg = BRANDS[program];
+  const Logo = cfg.Logo;
   return (
     <header className={`mb-6 rounded-xl bg-gradient-to-r ${cfg.gradient} text-white`}>
       <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-5">
         <div className="flex min-w-0 items-center gap-3">
-          <img src={cfg.logo} alt={cfg.label} className="h-7 w-auto shrink-0" />
+          <Logo className="h-7 w-7 shrink-0" />
           <div className="min-w-0">
             <h1 className="text-xl font-semibold">Milhas — {cfg.label}</h1>
             {subtitle ? (

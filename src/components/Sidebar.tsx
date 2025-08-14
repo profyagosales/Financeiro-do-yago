@@ -163,7 +163,7 @@ export function Sidebar() {
         ].join(" ")}
       >
         <div className="flex h-full flex-col">
-          <div className="m-2 flex items-center rounded-2xl sidebar-header p-4">
+          <div className="m-3 flex items-center rounded-2xl sidebar-header p-5 ring-1 ring-white/10">
             <Logo size="lg" />
             {!collapsed && <span className="ml-2 text-xl font-semibold">FY</span>}
             <div className="ml-auto flex items-center gap-2">
@@ -186,7 +186,7 @@ export function Sidebar() {
             </div>
           </div>
 
-          <nav ref={navRef} className="flex-1 overflow-y-auto px-2 py-4">
+          <nav ref={navRef} className="flex-1 overflow-y-auto scrollbar-none px-3 py-6">
             {sections.map((section) => (
               <div key={section.label} className="mt-4 first:mt-0">
                 {!collapsed && (
