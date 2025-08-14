@@ -36,7 +36,7 @@ export default function FinancasResumo() {
   const { flat: categorias } = useCategories();
   const { data: recurrences } = useRecurrences();
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: forecastData, balance: forecastBalance } = useForecast(transacoes);
+  const { data: forecastData } = useForecast();
 
   const uiTransacoes: UITransaction[] = useMemo(() => {
     return transacoes.map(t => ({
