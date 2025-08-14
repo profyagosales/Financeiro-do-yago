@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { useAuth } from '@/contexts/AuthContext';
 import type { MilesProgram } from '@/components/miles/MilesHeader';
 
 export type MilesPending = {
@@ -37,7 +38,22 @@ const MOCK: MilesPending[] = [
 ];
 
 export default function MilesPendingList({ program }: { program?: MilesProgram }) {
-  const itens = useMemo(() => MOCK.filter((m) => !program || m.program === program), [program]);
+  const { user } = useAuth();
+  const [itens, setItens] = useState<MilesPending[]>([]);
+
+  const load = useCallback(() => {
+    if (!user?.id) {
+      setItens([]);
+      return;
+    }
+
+    setItens(MOCK.filter((m) => !program || m.program === program));
+  }, [user?.id, program]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
   const colSpan = program ? 3 : 4;
 
   return (
