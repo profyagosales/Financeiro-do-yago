@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import MobileNavDrawer from "./layout/MobileNavDrawer";
 
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -66,7 +67,8 @@ export default function TopNav() {
           <Logo size="lg" />
           <span className="ml-2 text-xl font-semibold">FY</span>
         </NavLink>
-        <nav className="ml-6 flex items-center gap-2">
+        <MobileNavDrawer />
+        <nav className="ml-6 hidden items-center gap-2 lg:flex">
           <NavLink to="/dashboard" className={({ isActive }) => (isActive ? activeLink : baseLink)}>
             Visão geral
           </NavLink>
