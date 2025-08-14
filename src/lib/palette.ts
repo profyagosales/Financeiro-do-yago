@@ -32,8 +32,8 @@ export const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export const SERIES_COLORS = {
-  income:  '#3b82f6', // blue-500
-  expense: '#ef4444', // red-500
+  income:  'hsl(var(--chart-blue))',
+  expense: 'hsl(var(--chart-rose))',
 };
 
 // Map category name or id to a deterministic color

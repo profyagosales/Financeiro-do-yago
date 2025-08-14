@@ -1,73 +1,53 @@
-import type { Transaction } from '@/data/transactions';
-import type { Bill } from '@/hooks/useBills';
+import type { Transaction } from "@/hooks/useTransactions";
+import type { Bill } from "@/hooks/useBills";
+import type { Category } from "@/hooks/useCategories";
 
-// Helper to get short month names in pt-BR
-const monthShort = (n: number) => {
-  const arr = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-  return arr[Math.max(1, Math.min(12, n)) - 1];
-};
-
-export function getMonthlyAggregates(transactions: Transaction[], month: number, year: number) {
-  const monthStr = `${year}-${String(month).padStart(2, '0')}`;
-  let income = 0;
-  let expense = 0;
-  for (const t of transactions) {
-    if (t.month === monthStr) {
-      if (t.type === 'income') income += t.value;
-      else expense += t.value;
-    }
-  }
+// Aggregate income, expenses and balance for a list of transactions.
+export function getMonthlyAggregates(trans: Transaction[]) {
+  const income = trans.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const expense = trans.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
   return { income, expense, balance: income - expense };
 }
 
-export function getLast12MonthsAggregates(
-  transactions: Transaction[],
-  endMonth: number,
-  endYear: number,
-) {
-  const result: { m: string; in: number; out: number; saldo: number }[] = [];
+// Returns aggregates for the last 12 months based on transaction dates.
+export function getLast12MonthsAggregates(trans: Transaction[]) {
+  const now = new Date();
+  const months: Array<{ key: string; income: number; expense: number }> = [];
   for (let i = 11; i >= 0; i--) {
-    const date = new Date(endYear, endMonth - 1, 1);
-    date.setMonth(date.getMonth() - i);
-    const m = date.getMonth() + 1;
-    const y = date.getFullYear();
-    const agg = getMonthlyAggregates(transactions, m, y);
-    result.push({ m: monthShort(m), in: agg.income, out: agg.expense, saldo: agg.balance });
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = d.toISOString().slice(0, 7); // YYYY-MM
+    months.push({ key, income: 0, expense: 0 });
   }
-  return result;
+  const map = new Map(months.map(m => [m.key, m]));
+  trans.forEach(t => {
+    const key = (t.date || '').slice(0, 7);
+    const item = map.get(key);
+    if (!item) return;
+    if (t.amount >= 0) item.income += t.amount; else item.expense += Math.abs(t.amount);
+  });
+  return months;
 }
 
-export function getUpcomingBills(bills: Bill[], { days = 7 }: { days?: number }) {
+// Returns bills that are still unpaid and due in the future.
+export function getUpcomingBills(bills: Bill[]) {
   const today = new Date();
-  const limit = new Date();
-  limit.setDate(today.getDate() + days);
   return bills
-    .filter((b) => {
-      const due = new Date(b.due_date);
-      return !b.paid && due >= today && due <= limit;
-    })
-    .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime());
+    .filter(b => !b.paid && new Date(b.due_date) >= today)
+    .sort((a, b) => a.due_date.localeCompare(b.due_date));
 }
 
-export interface BudgetMonth {
-  transactions: Transaction[];
-  budget?: number | null;
+// Computes spending per category for the current month.
+export function getBudgetUsage(categories: Category[], trans: Transaction[]) {
+  const expenseByCat = new Map<string, number>();
+  trans.forEach(t => {
+    if (t.amount < 0) {
+      const key = t.category_id || 'uncat';
+      expenseByCat.set(key, (expenseByCat.get(key) || 0) + Math.abs(t.amount));
+    }
+  });
+  return categories.map(c => ({
+    category: c.name,
+    spent: expenseByCat.get(c.id) || 0,
+  }));
 }
 
-export function getBudgetUsage(currentMonth: BudgetMonth) {
-  const { transactions, budget } = currentMonth;
-  if (!budget) return null;
-  const spent = transactions
-    .filter((t) => t.type === 'expense')
-    .reduce((sum, t) => sum + t.value, 0);
-  const remaining = budget - spent;
-  const percent = budget === 0 ? 0 : Math.min(100, (spent / budget) * 100);
-  return { budget, spent, remaining, percent };
-}
-
-export default {
-  getMonthlyAggregates,
-  getLast12MonthsAggregates,
-  getUpcomingBills,
-  getBudgetUsage,
-};

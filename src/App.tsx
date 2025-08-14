@@ -10,9 +10,8 @@ import AppTopbar from '@/components/AppTopbar';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { PeriodProvider } from '@/contexts/PeriodContext';
 /* ---------- lazy imports de páginas ---------- */
-// Renomeamos o antigo "Dashboard" (focado em finanças) para FinancasResumo
 const FinancasResumo = lazy(() => import('./pages/FinancasResumo'));
-// Novo dashboard geral com cartões-resumo de módulos (finanças, investimentos, metas, milhas, listas)
+// Visão geral com cartões-resumo dos módulos
 const Dashboard      = lazy(() => import('./pages/HomeOverview'));
 const FinancasMensal = lazy(() => import('./pages/FinancasMensal'));
 const FinancasAnual  = lazy(() => import('./pages/FinancasAnual'));
@@ -86,12 +85,17 @@ function AppRoutes() {
         <Routes>
             {/* Dashboard */}
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/home" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
             {/* Finanças */}
             <Route path="/financas/resumo" element={<FinancasResumo />} />
             <Route path="/financas/mensal" element={<FinancasMensal />} />
             <Route path="/financas/anual"  element={<FinancasAnual />} />
+            <Route
+              path="/resumo-financas"
+              element={<Navigate to="/financas/resumo" replace />}
+            />
 
             {/* Investimentos */}
             <Route path="/investimentos/resumo" element={<Investimentos />} />

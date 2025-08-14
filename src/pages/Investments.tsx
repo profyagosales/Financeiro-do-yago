@@ -29,7 +29,13 @@ type Investment = {
   note: string | null;
   created_at: string;
 };
-const COLORS = ["#0ea5e9", "#10b981", "#6366f1", "#f59e0b", "#ef4444"];
+const COLORS = [
+  "hsl(var(--chart-blue))",
+  "hsl(var(--chart-emerald))",
+  "hsl(var(--chart-violet))",
+  "hsl(var(--chart-amber))",
+  "hsl(var(--chart-rose))",
+];
 const BRL = (v: number | null | undefined) =>
   (v ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const monthKey = (d: string | Date) => {
@@ -114,6 +120,7 @@ export default function InvestmentsResumo() {
         title="Investimentos"
         subtitle="Acompanhe seus aportes e a distribuição por classe. (Resumo geral)"
         icon={<PieIcon className="h-5 w-5" />}
+        gradient="from-emerald-600 to-teal-600"
       />
 
       {/* Filtros topo */}
@@ -136,17 +143,17 @@ export default function InvestmentsResumo() {
 
       {/* KPIs */}
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        <Card className="shadow-sm">
+        <Card className="glass-card">
           <CardHeader className="pb-2"><CardDescription>Total investido</CardDescription>
             <CardTitle className="text-2xl">{BRL(kpis.invested)}</CardTitle>
           </CardHeader>
         </Card>
-        <Card className="shadow-sm">
+        <Card className="glass-card">
           <CardHeader className="pb-2"><CardDescription>Operações no período</CardDescription>
             <CardTitle className="text-2xl">{kpis.ops}</CardTitle>
           </CardHeader>
         </Card>
-        <Card className="shadow-sm">
+        <Card className="glass-card">
           <CardHeader className="pb-2"><CardDescription>Ativos diferentes</CardDescription>
             <CardTitle className="text-2xl">{kpis.ativos}</CardTitle>
           </CardHeader>
@@ -155,7 +162,7 @@ export default function InvestmentsResumo() {
 
       {/* Gráficos */}
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <Card className="shadow-sm">
+        <Card className="glass-card">
           <CardHeader><CardTitle>Distribuição por classe</CardTitle></CardHeader>
           <CardContent className="h-[300px]">
             {byType.length === 0 ? (
@@ -174,7 +181,7 @@ export default function InvestmentsResumo() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm">
+        <Card className="glass-card">
           <CardHeader><CardTitle>Aportes nos últimos 12 meses</CardTitle></CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -183,7 +190,7 @@ export default function InvestmentsResumo() {
                 <XAxis dataKey="month" tickMargin={8} />
                 <YAxis tickFormatter={(v) => (v / 1000).toFixed(0) + "k"} />
                 <Tooltip formatter={(v: unknown) => BRL(Number(v))} />
-                <Bar dataKey="valor" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="valor" fill="hsl(var(--chart-blue))" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -191,7 +198,7 @@ export default function InvestmentsResumo() {
       </div>
 
       {!loading && items.length === 0 && (
-        <Card className="mt-6 p-6">
+        <Card className="glass-card mt-6 p-6">
           <CardTitle className="text-base">Nenhum dado ainda</CardTitle>
           <CardDescription>Cadastre seus aportes nas páginas de Carteira (Renda fixa, FIIs, Ações, Cripto).</CardDescription>
         </Card>
