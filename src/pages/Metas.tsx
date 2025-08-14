@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   Plus,
-  Target,
   CalendarDays,
   TrendingUp,
   PiggyBank,
@@ -17,6 +16,7 @@ import {
   Search,
 } from "lucide-react";
 
+import { Target } from "@/components/icons";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/PageHeader";

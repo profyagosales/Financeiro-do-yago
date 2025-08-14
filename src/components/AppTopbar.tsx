@@ -1,17 +1,23 @@
 import { NavLink } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
-import AvatarMenu from './AvatarMenu';
-import NavItem from './NavItem';
-import MobileNavDrawer from './MobileNavDrawer';
-
+import AvatarMenu from './layout/AvatarMenu';
+import NavItem from './layout/NavItem';
 
 import { Logo } from '@/components/Logo';
 import { Settings } from '@/components/icons';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { navRoutes } from '@/routes/nav';
+import { navRoutes, NavRoute } from '@/routes/nav';
 
-export default function Topbar() {
+function getNavItem(item: NavRoute) {
+  return (
+    <NavItem key={item.to} to={item.to} variant={item.variant}>
+      {item.label}
+    </NavItem>
+  );
+}
+
+export default function AppTopbar() {
   return (
     <header className="topbar-glass sticky top-0 z-50 border-b border-white/10 bg-gradient-to-r from-emerald-600/80 to-teal-600/80 backdrop-blur">
       <div className="mx-auto flex h-16 items-center px-4">
@@ -22,13 +28,8 @@ export default function Topbar() {
           <Logo size="lg" />
           <span className="ml-2 text-xl font-semibold">FY</span>
         </NavLink>
-        <MobileNavDrawer />
         <nav className="ml-6 flex items-center gap-2 text-white">
-          {navRoutes.map((item) => (
-            <NavItem key={item.to} to={item.to} variant={item.variant}>
-              {item.label}
-            </NavItem>
-          ))}
+          {navRoutes.map(getNavItem)}
         </nav>
         <div className="ml-auto flex items-center gap-2 text-white">
           <ThemeToggle />

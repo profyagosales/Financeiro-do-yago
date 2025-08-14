@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUpDown,
-  Wallet,
   CreditCard,
   Upload,
   Download,
@@ -17,6 +16,7 @@ import {
 import dayjs from "dayjs";
 import { toast } from "sonner";
 
+import { Wallet } from "@/components/icons";
 import { exportTransactionsPDF } from "@/utils/pdf";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow

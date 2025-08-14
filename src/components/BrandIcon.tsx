@@ -4,16 +4,16 @@ import {
   Wifi,
   Zap,
   Droplet,
-  ShoppingCart,
   Car,
   Film,
-  Home,
   Stethoscope,
   Smartphone,
   CreditCard,
   Landmark,
   ReceiptText,
 } from "lucide-react";
+
+import { Home, ShoppingCart } from "@/components/icons";
 
 /**
  * Componente de ícone de marca/categoria.

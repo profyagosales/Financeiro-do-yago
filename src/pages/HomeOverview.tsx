@@ -2,16 +2,12 @@ import { motion } from "framer-motion";
 import {
   CalendarRange,
   CreditCard,
-  Heart,
   Landmark,
   PieChart as PieChartIcon,
   PiggyBank,
-  Plane,
-  ShoppingCart,
-  Target,
   TrendingUp,
-  Wallet,
 } from "lucide-react";
+import { Heart, Plane, ShoppingCart, Target, Wallet } from "@/components/icons";
 import { useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { Link } from "react-router-dom";
 import {
