@@ -12,8 +12,6 @@ import {
   Plane,
 } from "lucide-react";
 
-import Hero from "@/components/dashboard/Hero";
-import QuickLinks, { type QuickLink } from "@/components/overview/QuickLinks";
 import PageHeader from "@/components/PageHeader";
 import KPIStrip, { type KpiItem } from "@/components/dashboard/KPIStrip";
 import ForecastChart, { type FluxoItem } from "@/components/dashboard/ForecastChart";
