@@ -25,6 +25,8 @@ import {
   Target,
   Plane,
   PieChart as PieChartIcon,
+  ArrowUpRight,
+  ArrowDownRight,
 } from "lucide-react";
 
 import BrandIcon from "@/components/BrandIcon";
@@ -583,19 +585,15 @@ function KpiCard({
         </div>
       </div>
       {trend === "up" ? (
-        <span
+        <ArrowUpRight
           aria-hidden
-          className="pointer-events-none absolute right-2 top-2 z-0 text-6xl leading-none text-emerald-600 opacity-25"
-        >
-          ▲
-        </span>
+          className="pointer-events-none absolute right-2 top-2 z-0 h-12 w-12 text-emerald-600 opacity-25"
+        />
       ) : trend === "down" ? (
-        <span
+        <ArrowDownRight
           aria-hidden
-          className="pointer-events-none absolute right-2 top-2 z-0 text-6xl leading-none text-rose-600 opacity-25"
-        >
-          ▼
-        </span>
+          className="pointer-events-none absolute right-2 top-2 z-0 h-12 w-12 text-rose-600 opacity-25"
+        />
       ) : null}
     </motion.div>
   );
