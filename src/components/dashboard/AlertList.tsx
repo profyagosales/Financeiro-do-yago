@@ -1,26 +1,34 @@
-import WidgetCard from './WidgetCard';
+import { CreditCard } from "lucide-react";
 
-interface Alert {
-  message: string;
-}
+import BrandIcon from "@/components/BrandIcon";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { formatCurrency } from "@/lib/utils";
 
-interface AlertListProps {
-  alerts: Alert[];
-  onClick?: () => void;
-}
+export type AlertItem = {
+  nome: string;
+  vencimento: string;
+  valor: number;
+};
 
-export default function AlertList({ alerts, ...rest }: AlertListProps) {
+// Renders a list of upcoming payments/alerts.
+export default function AlertList({ items }: { items: AlertItem[] }) {
+  if (items.length === 0) {
+    return <EmptyState icon={<CreditCard className="h-6 w-6" />} title="Nenhuma conta a vencer" />;
+  }
   return (
-    <WidgetCard title="Alertas" {...rest}>
-      {alerts.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Nenhum alerta</p>
-      ) : (
-        <ul className="space-y-1 text-sm">
-          {alerts.map((a, i) => (
-            <li key={i}>{a.message}</li>
-          ))}
-        </ul>
-      )}
-    </WidgetCard>
+    <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
+      {items.map((c) => (
+        <li key={c.nome + c.vencimento} className="flex items-center gap-3 py-3">
+          <BrandIcon name={c.nome} />
+          <div className="min-w-0">
+            <div className="truncate font-medium">{c.nome}</div>
+            <div className="text-xs text-muted-foreground">
+              vence em {new Date(c.vencimento).toLocaleDateString("pt-BR")}
+            </div>
+          </div>
+          <div className="ml-auto font-medium">{formatCurrency(c.valor)}</div>
+        </li>
+      ))}
+    </ul>
   );
 }

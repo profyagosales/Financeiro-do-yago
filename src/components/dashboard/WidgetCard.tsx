@@ -1,28 +1,29 @@
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from "react";
+import { Link } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
 
-import { cn } from '@/lib/utils';
-
-interface WidgetCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string;
+// Generic card used by dashboard widgets.
+export function WidgetCard({ className, children }: PropsWithChildren<{ className?: string }>) {
+  return <div className={`card-surface p-5 sm:p-6 ${className ?? ""}`}>{children}</div>;
 }
 
-export default function WidgetCard({
-  title,
-  children,
-  className,
-  ...rest
-}: PropsWithChildren<WidgetCardProps>) {
+export function WidgetHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <div
-      className={cn(
-        'rounded-xl p-4 shadow-sm bg-gradient-to-br from-white/80 to-white/60 dark:from-zinc-900/80 dark:to-zinc-900/60 backdrop-blur-sm',
-        rest.onClick && 'cursor-pointer transition hover:shadow-md',
-        className
-      )}
-      {...rest}
-    >
-      {title && <h3 className="mb-2 font-semibold">{title}</h3>}
-      {children}
+    <div className="mb-3">
+      <h3 className="text-lg font-semibold">{title}</h3>
+      {subtitle && <p className="text-sm text-zinc-500">{subtitle}</p>}
     </div>
+  );
+}
+
+export function WidgetFooterAction({ to, label }: { to: string; label: string }) {
+  return (
+    <Link
+      to={to}
+      className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:underline"
+    >
+      {label}
+      <ChevronRight className="size-4" />
+    </Link>
   );
 }

@@ -2,33 +2,43 @@ import { useEffect, useMemo, useState, type ReactNode, type PropsWithChildren } 
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ResponsiveContainer,
-  ComposedChart,
-  Area,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
   PieChart,
   Pie,
   Cell,
-  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 import {
   Wallet,
   PiggyBank,
   TrendingUp,
   CreditCard,
-  ChevronRight,
   PieChart as PieChartIcon,
+  CalendarRange,
+  Landmark,
+  Target,
+  Plane,
+  ChevronRight,
 } from "lucide-react";
 
-import BrandIcon from "@/components/BrandIcon";
 import FilterBar from "@/components/FilterBar";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { usePeriod } from "@/state/periodFilter";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Skeleton } from "@/components/ui/Skeleton";
+import HeroSection from "@/components/dashboard/HeroSection";
+import KPIStrip, { type KpiItem } from "@/components/dashboard/KPIStrip";
+import ForecastChart from "@/components/dashboard/ForecastChart";
+import AlertList from "@/components/dashboard/AlertList";
+import InsightCard from "@/components/dashboard/InsightCard";
+import {
+  WidgetCard,
+  WidgetHeader,
+  WidgetFooterAction,
+} from "@/components/dashboard/WidgetCard";
+import { useOverviewData } from "@/hooks/useOverviewData";
+import { usePeriod } from "@/state/periodFilter";
 import { formatCurrency } from "@/lib/utils";
 import MetasSummary from "@/components/MetasSummary";
 import InsightCard from "@/components/dashboard/InsightCard";
@@ -40,12 +50,26 @@ import AlertList from "@/components/dashboard/AlertList";
 
 // Garantir decorativos não interativos
 // className nos decorativos: "pointer-events-none select-none -z-10 opacity-25"
-// conteúdo dos cards: "relative z-10"
+
 
 function monthShortPtBR(n: number) {
-  const arr = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+  const arr = [
+    "Jan",
+    "Fev",
+    "Mar",
+    "Abr",
+    "Mai",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Set",
+    "Out",
+    "Nov",
+    "Dez",
+  ];
   return arr[Math.max(1, Math.min(12, n)) - 1];
 }
+
 
 
 // ---------------------------------- page
@@ -161,9 +185,13 @@ export default function Dashboard() {
   ];
 
   const { mode, month, year } = usePeriod();
+
   const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
 
-  const container = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0, transition: { staggerChildren: 0.06 } } };
+  const container = {
+    hidden: { opacity: 0, y: 6 },
+    show: { opacity: 1, y: 0, transition: { staggerChildren: 0.06 } },
+  };
   const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
 
   const [activeWidget, setActiveWidget] = useState<string | null>(null);
@@ -189,18 +217,62 @@ export default function Dashboard() {
     );
   }
 
+  const kpiItems: KpiItem[] = [
+    {
+      title: "Saldo do mês",
+      icon: <Wallet className="size-5" />,
+      colorFrom: "hsl(var(--chart-emerald))",
+      colorTo: "hsl(var(--chart-emerald)/.7)",
+      value: kpis.saldoMes,
+      spark: sparkSaldo,
+      sparkColor: "hsl(var(--chart-emerald))",
+    },
+    {
+      title: "Entradas",
+      icon: <TrendingUp className="size-5" />,
+      colorFrom: "hsl(var(--chart-blue))",
+      colorTo: "hsl(var(--chart-blue)/.7)",
+      value: kpis.entradasMes,
+      trend: "up",
+      spark: sparkIn,
+      sparkColor: "hsl(var(--chart-blue))",
+    },
+    {
+      title: "Saídas",
+      icon: <CreditCard className="size-5" />,
+      colorFrom: "hsl(var(--chart-rose))",
+      colorTo: "hsl(var(--chart-amber))",
+      value: kpis.saidasMes,
+      trend: "down",
+      spark: sparkOut,
+      sparkColor: "hsl(var(--chart-rose))",
+    },
+    {
+      title: "Investido total",
+      icon: <PiggyBank className="size-5" />,
+      colorFrom: "hsl(var(--chart-violet))",
+      colorTo: "hsl(var(--chart-blue))",
+      value: kpis.investidoTotal,
+      spark: sparkInv,
+      sparkColor: "hsl(var(--chart-violet))",
+    },
+  ];
+
   return (
     <motion.div
+
       key={`${mode}-${month}-${year}`}
       className="space-y-6"
       variants={container}
       initial="hidden"
       animate="show"
     >
+
       {/* HERO --------------------------------------------------- */}
       <motion.div variants={item}>
-        <HeroHeader />
+        <HeroSection />
       </motion.div>
+
 
     <>
       <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
@@ -341,7 +413,10 @@ export default function Dashboard() {
           <Card className="h-full overflow-x-auto">
             <CardHeader title="Distribuição da carteira" subtitle="Por classe de ativos" />
             {carteira.length === 0 ? (
-              <EmptyState icon={<PieChartIcon className="h-8 w-8" />} title="Sem dados" />
+              <EmptyState
+                icon={<PieChartIcon className="h-8 w-8" />}
+                title="Sem dados"
+              />
             ) : (
               <>
                 <div className="h-[220px] min-w-[320px]">
@@ -349,7 +424,14 @@ export default function Dashboard() {
                     <PieChart>
                       <defs>
                         {cores.map((c, i) => (
-                          <linearGradient id={`g${i}`} x1="0" x2="1" y1="0" y2="1" key={i}>
+                          <linearGradient
+                            id={`g${i}`}
+                            x1="0"
+                            x2="1"
+                            y1="0"
+                            y2="1"
+                            key={i}
+                          >
                             <stop offset="0%" stopColor={c} stopOpacity={0.9} />
                             <stop offset="100%" stopColor={c} stopOpacity={0.6} />
                           </linearGradient>
@@ -376,8 +458,11 @@ export default function Dashboard() {
                       </Pie>
                       <Tooltip
                         formatter={(v: number) => formatCurrency(v)}
-                        contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.06)' }}
-                        wrapperStyle={{ outline: 'none' }}
+                        contentStyle={{
+                          borderRadius: 12,
+                          border: "1px solid rgba(0,0,0,0.06)",
+                        }}
+                        wrapperStyle={{ outline: "none" }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -385,58 +470,55 @@ export default function Dashboard() {
                 <ul className="mt-3 grid grid-cols-2 gap-2 text-sm">
                   {carteira.map((c, i) => (
                     <li key={c.name} className="flex items-center gap-2">
-                      <span className="inline-block h-2 w-2 rounded-full" style={{ background: cores[i] }} />
+                      <span
+                        className="inline-block h-2 w-2 rounded-full"
+                        style={{ background: cores[i] }}
+                      />
                       <span className="text-muted-foreground">{c.name}</span>
-                      <span className="ml-auto font-medium">{formatCurrency(c.value)}</span>
+                      <span className="ml-auto font-medium">
+                        {formatCurrency(c.value)}
+                      </span>
                     </li>
                   ))}
                 </ul>
               </>
             )}
-          </Card>
+          </WidgetCard>
         </motion.div>
       </motion.div>
 
-      {/* LISTAS ------------------------------------------------- */}
-      <motion.div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3" variants={container}>
+      <motion.div className="grid items-stretch gap-6 xl:grid-cols-3" variants={container}>
         <motion.div variants={item}>
-          <Card className="h-full overflow-x-auto">
-            <CardHeader title="Próximas contas a vencer" subtitle="Próximos 10 dias" />
-            {contasAVencer.length === 0 ? (
-              <EmptyState icon={<CreditCard className="h-6 w-6" />} title="Nenhuma conta a vencer" />
-            ) : (
-              <ul className="min-w-[320px] divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
-                {contasAVencer.map((c) => (
-                  <li key={c.nome + c.vencimento} className="flex items-center gap-3 py-3">
-                    <BrandIcon name={c.nome} />
-                    <div className="min-w-0">
-                      <div className="font-medium truncate">{c.nome}</div>
-                      <div className="text-xs text-muted-foreground">
-                        vence em {new Date(c.vencimento).toLocaleDateString("pt-BR")}
-                      </div>
-                    </div>
-                    <div className="ml-auto font-medium">{formatCurrency(c.valor)}</div>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <CardFooterAction to="/financas/mensal" label="Ver Finanças" />
-          </Card>
+          <WidgetCard className="h-full">
+            <WidgetHeader
+              title="Próximas contas a vencer"
+              subtitle="Próximos 10 dias"
+            />
+            <AlertList items={contasAVencer} />
+            <WidgetFooterAction to="/financas/mensal" label="Ver Finanças" />
+          </WidgetCard>
         </motion.div>
 
         <motion.div variants={item}>
-          <Card className="h-full overflow-x-auto">
-            <CardHeader title="Metas em andamento" subtitle="Progresso geral" />
-            <div className="min-w-[320px]">
-              <MetasSummary />
-            </div>
-            <CardFooterAction to="/metas" label="Ir para Metas & Projetos" />
-          </Card>
+          <WidgetCard className="h-full">
+            <WidgetHeader
+              title="Metas em andamento"
+              subtitle="Progresso geral"
+            />
+            <MetasSummary />
+            <WidgetFooterAction
+              to="/metas"
+              label="Ir para Metas & Projetos"
+            />
+          </WidgetCard>
         </motion.div>
 
         <motion.div variants={item}>
-          <Card className="h-full overflow-x-auto">
-            <CardHeader title="Aportes recentes" subtitle="Últimas 5 operações" />
+          <WidgetCard className="h-full">
+            <WidgetHeader
+              title="Aportes recentes"
+              subtitle="Últimas 5 operações"
+            />
             <div className="overflow-x-auto">
               <table className="w-full min-w-[480px] text-sm">
                 <thead className="text-zinc-500">
@@ -452,7 +534,10 @@ export default function Dashboard() {
                   {aportesRecentes.length === 0 ? (
                     <tr>
                       <td colSpan={5}>
-                        <EmptyState icon={<TrendingUp className="h-6 w-6" />} title="Sem aportes" />
+                        <EmptyState
+                          icon={<TrendingUp className="h-6 w-6" />}
+                          title="Sem aportes"
+                        />
                       </td>
                     </tr>
                   ) : (
@@ -461,34 +546,58 @@ export default function Dashboard() {
                         <td className="py-2">
                           <BrandIcon name={`${r.ativo} ${r.tipo}`} />
                         </td>
-                        <td className="py-2">{new Date(r.data).toLocaleDateString("pt-BR")}</td>
+                        <td className="py-2">
+                          {new Date(r.data).toLocaleDateString("pt-BR")}
+                        </td>
                         <td className="py-2">{r.ativo}</td>
                         <td className="py-2">{r.tipo}</td>
-                        <td className="py-2 text-right font-medium">{formatCurrency(r.preco * (r.qtd || 1))}</td>
+                        <td className="py-2 text-right font-medium">
+                          {formatCurrency(r.preco * (r.qtd || 1))}
+                        </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
             </div>
-            <CardFooterAction to="/investimentos" label="Abrir Investimentos" />
-          </Card>
+          </WidgetCard>
         </motion.div>
       </motion.div>
+
 
       {/* ACESSOS RÁPIDOS ---------------------------------------- */}
       <motion.div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" variants={container}>
         <motion.div variants={item}>
-          <QuickLink to="/financas/mensal" icon={<CalendarRange className="h-5 w-5" />} title="Finanças do mês" desc="Entradas, saídas e extratos" />
+          <InsightCard
+            to="/financas/mensal"
+            icon={<CalendarRange className="h-5 w-5" />}
+            title="Finanças do mês"
+            desc="Entradas, saídas e extratos"
+          />
         </motion.div>
         <motion.div variants={item}>
-          <QuickLink to="/investimentos" icon={<Landmark className="h-5 w-5" />} title="Resumo de investimentos" desc="Distribuição e aportes" />
+          <InsightCard
+            to="/investimentos"
+            icon={<Landmark className="h-5 w-5" />}
+            title="Resumo de investimentos"
+            desc="Distribuição e aportes"
+          />
         </motion.div>
         <motion.div variants={item}>
-          <QuickLink to="/metas" icon={<Target className="h-5 w-5" />} title="Metas e projetos" desc="Progresso e cronograma" />
+          <InsightCard
+            to="/metas"
+            icon={<Target className="h-5 w-5" />}
+            title="Metas e projetos"
+            desc="Progresso e cronograma"
+          />
         </motion.div>
         <motion.div variants={item}>
-          <QuickLink to="/milhas/livelo" icon={<Plane className="h-5 w-5" />} title="Milhas e pontos" desc="Livelo, Latam Pass, Azul" />
+          <InsightCard
+            to="/milhas/livelo"
+            icon={<Plane className="h-5 w-5" />}
+            title="Milhas e pontos"
+            desc="Livelo, Latam Pass, Azul"
+          />
         </motion.div>
       </motion.div>
     </motion.div>
@@ -514,6 +623,7 @@ export default function Dashboard() {
   </>
   );
 }
+
 
 // ---------------------------------- partials
 function HeroHeader() {
