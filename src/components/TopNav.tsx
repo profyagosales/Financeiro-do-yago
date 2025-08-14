@@ -3,6 +3,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, Settings } from "lucide-react";
 
 import { ThemeToggle } from "./ui/ThemeToggle";
+import AlertsDrawer from "./financas/AlertsDrawer";
 import { Logo } from "./Logo";
 import {
   DropdownMenu,
@@ -96,6 +97,7 @@ export default function TopNav() {
           })}
         </nav>
         <div className="ml-auto flex items-center gap-2">
+          <AlertsDrawer />
           <ThemeToggle />
           <NavLink
             to="/configuracoes"
