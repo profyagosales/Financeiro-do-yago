@@ -20,15 +20,12 @@ import {
   TrendingUp,
   CreditCard,
   ChevronRight,
-  Landmark,
-  CalendarRange,
-  Target,
-  Plane,
   PieChart as PieChartIcon,
 } from "lucide-react";
 
 import BrandIcon from "@/components/BrandIcon";
 import FilterBar from "@/components/FilterBar";
+import HeroSection from "@/components/dashboard/HeroSection";
 import { usePeriod } from "@/state/periodFilter";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -187,7 +184,7 @@ export default function Dashboard() {
     <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
       {/* HERO --------------------------------------------------- */}
       <motion.div variants={item}>
-        <HeroHeader />
+        <HeroSection title="Finanças do Yago" />
       </motion.div>
 
       {/* FILTRO CENTRALIZADO ------------------------------------ */}
@@ -437,76 +434,7 @@ export default function Dashboard() {
         </motion.div>
       </motion.div>
 
-      {/* ACESSOS RÁPIDOS ---------------------------------------- */}
-      <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" variants={container}>
-        <motion.div variants={item}>
-          <QuickLink to="/financas/mensal" icon={<CalendarRange className="h-5 w-5" />} title="Finanças do mês" desc="Entradas, saídas e extratos" />
-        </motion.div>
-        <motion.div variants={item}>
-          <QuickLink to="/investimentos" icon={<Landmark className="h-5 w-5" />} title="Resumo de investimentos" desc="Distribuição e aportes" />
-        </motion.div>
-        <motion.div variants={item}>
-          <QuickLink to="/metas" icon={<Target className="h-5 w-5" />} title="Metas e projetos" desc="Progresso e cronograma" />
-        </motion.div>
-        <motion.div variants={item}>
-          <QuickLink to="/milhas/livelo" icon={<Plane className="h-5 w-5" />} title="Milhas e pontos" desc="Livelo, Latam Pass, Azul" />
-        </motion.div>
-      </motion.div>
     </motion.div>
-  );
-}
-
-// ---------------------------------- partials
-function HeroHeader() {
-  return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white backdrop-blur-sm border-b border-white/10 shadow-lg">
-      {/* logo + título, sem descrição */}
-      <div className="relative flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
-          <LogoFY size={44} />
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Finanças do Yago</h1>
-        </div>
-        <div className="mt-1 flex gap-2 md:mt-0">
-          <Link to="/financas/mensal" className="rounded-xl bg-white/90 px-4 py-2 font-medium text-emerald-700 shadow hover:bg-white transition">
-            Ver Finanças
-          </Link>
-          <Link to="/investimentos" className="rounded-xl bg-white/15 px-4 py-2 font-medium text-white ring-1 ring-white/30 hover:bg-white/20 transition">
-            Ver Investimentos
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Logo “FY” estilizada em SVG
-function LogoFY({ size = 44 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 64 64"
-      role="img"
-      aria-label="Logo Finanças do Yago"
-      className="rounded-xl shadow-md"
-    >
-      <defs>
-        <linearGradient id="fy-bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#10b981" />
-          <stop offset="100%" stopColor="#6366f1" />
-        </linearGradient>
-        <linearGradient id="fy-txt" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="100%" stopColor="#e5e7eb" />
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" width="64" height="64" rx="14" fill="url(#fy-bg)" />
-      <circle cx="50" cy="14" r="18" fill="#fff" opacity="0.15" />
-      <g transform="translate(12,16)" fill="url(#fy-txt)">
-        <path d="M4 0h22v6H10v6h12v6H4z" />
-        <path d="M34 0l-6 9 6 9h-8l-4-6-4 6h-8l6-9-6-9h8l4 6 4-6z" />
-      </g>
-    </svg>
   );
 }
 
@@ -605,25 +533,5 @@ function CardFooterAction({ to, label }: { to: string; label: string }) {
     <Link to={to} className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:underline">
       {label} <ChevronRight className="size-4" />
     </Link>
-  );
-}
-
-function QuickLink({ to, icon, title, desc }: { to: string; icon: ReactNode; title: string; desc: string }) {
-  return (
-    <Card className="group h-full border-0 bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-[0_2px_12px_-3px_rgba(16,185,129,0.3)] transition hover:scale-[1.01]">
-      <div className="mb-2 flex items-center gap-3">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
-          {icon}
-        </span>
-        <span className="font-semibold">{title}</span>
-      </div>
-      <div className="mb-4 text-sm text-white/80">{desc}</div>
-      <Link
-        to={to}
-        className="inline-block rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/30"
-      >
-        Abrir
-      </Link>
-    </Card>
   );
 }
