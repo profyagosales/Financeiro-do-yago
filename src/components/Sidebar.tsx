@@ -132,7 +132,10 @@ export function Sidebar() {
         ].join(" ")}
       >
         <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-800">
-          <Logo className="h-7 w-7" />
+          {/* Logo não aceita className; envolve em uma div */}
+          <div className="h-7 w-7">
+            <Logo />
+          </div>
           {!collapsed && (
             <div className="flex flex-col">
               <span className="text-xs uppercase tracking-widest text-emerald-400/90">Financeiro</span>

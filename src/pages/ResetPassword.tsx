@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -15,7 +15,15 @@ export default function ResetPassword() {
   useEffect(() => {
     (async () => {
       try {
-        const { error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
+        // Compat: usa getSessionFromUrl quando disponível, senão fallback
+        const authAny = supabase.auth as any;
+        const getFromUrl = authAny.getSessionFromUrl?.bind(authAny);
+        const exchange = authAny.exchangeCodeForSession?.bind(authAny);
+        const { error } = getFromUrl
+          ? await getFromUrl({ storeSession: true })
+          : exchange
+          ? await exchange(window.location.href)
+          : { error: null };
         if (error) throw error;
         setPhase("form");
       } catch (err) {

@@ -18,10 +18,8 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function Login() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { loginWithPassword, signUpWithPassword } = useAuth() as {
-    loginWithPassword: (e: string, p: string) => Promise<void>;
-    signUpWithPassword: (e: string, p: string) => Promise<void>;
-  };
+  // Valor realmente exposto pelo AuthContext (sem cast forçado incorreto)
+  const { loginWithPassword, signUpWithPassword } = useAuth();
 
   type Mode = 'login' | 'signup' | 'check-email';
   const [mode, setMode] = useState<Mode>('login');
@@ -32,6 +30,7 @@ export default function Login() {
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [capsOn, setCapsOn] = useState(false);
   const pwdRef = useRef<HTMLInputElement | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   // Se voltamos de um reset de senha bem sucedido, informe o usuário.
   useEffect(() => {
@@ -93,10 +92,12 @@ export default function Login() {
     try {
       if (mode === 'login') {
         await loginWithPassword(trimmed, password);
+        formRef.current?.reset?.();
         toast.success('Bem‑vindo 👋');
         navigate('/');
       } else if (mode === 'signup') {
         await signUpWithPassword(trimmed, password);
+        formRef.current?.reset?.();
         setMode('check-email');
         toast.success('Conta criada! Se necessário, confirme o e‑mail para continuar.');
       }
@@ -136,6 +137,7 @@ export default function Login() {
 
       <div className="relative grid min-h-screen place-items-center p-4">
         <form
+          ref={formRef}
           onSubmit={onSubmit}
           className="w-full max-w-md rounded-3xl border border-emerald-900/5 bg-white/70 backdrop-blur-xl p-6 shadow-xl"
         >

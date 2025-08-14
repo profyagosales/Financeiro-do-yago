@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -12,7 +12,15 @@ export default function Confirm() {
     (async () => {
       try {
         // Lê os tokens do hash da URL e salva a sessão no storage
-        const { error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
+        // Shim de compat: algumas versões antigas não tinham a assinatura tipada
+        const authAny = supabase.auth as any;
+        const getFromUrl = authAny.getSessionFromUrl?.bind(authAny);
+        const exchange = authAny.exchangeCodeForSession?.bind(authAny);
+        const { error } = getFromUrl
+        ? await getFromUrl({ storeSession: true })
+        : exchange
+        ? await exchange(window.location.href)
+        : { error: null };
         if (error) throw error;
         setState("ok");
         toast.success("E-mail confirmado! Faça login.");
