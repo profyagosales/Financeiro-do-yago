@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
@@ -104,19 +104,23 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
   };
 
   return (
-    <div className="space-y-6">
-      <MilesHeader program={program} subtitle={`Saldo, expiração e movimentos - ${BRANDS.livelo.label}`}>
-        <Button
-          onClick={() => {
-            setEdit(null);
-            setOpen(true);
-          }}
-        >
-          Novo movimento
-        </Button>
-      </MilesHeader>
+    <div
+      className="min-h-full bg-gradient-to-b from-[var(--brand-soft)] to-transparent dark:from-[var(--brand-softDark)] dark:to-transparent"
+      style={{ '--brand-soft': BRANDS[program].soft, '--brand-softDark': BRANDS[program].softDark } as CSSProperties}
+    >
+      <div className="space-y-6">
+        <MilesHeader program={program} subtitle={`Saldo, expiração e movimentos - ${BRANDS[program].label}`}>
+          <Button
+            onClick={() => {
+              setEdit(null);
+              setOpen(true);
+            }}
+          >
+            Novo movimento
+          </Button>
+        </MilesHeader>
 
-      <MilesPendingList program={program} />
+        <MilesPendingList program={program} />
 
       {/* KPIs */}
       <section className="grid gap-4 sm:grid-cols-4">
@@ -226,6 +230,7 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
         initial={edit ?? undefined}
         onSubmit={addOrUpdate}
       />
+      </div>
     </div>
   );
 }
