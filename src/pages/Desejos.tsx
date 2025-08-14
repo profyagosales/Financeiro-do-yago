@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import WishlistCard from "@/components/wishlist/WishlistCard";
 import WishlistNewItemModal, { WishlistItem } from "@/components/wishlist/WishlistNewItemModal";
 import WishlistDrawer from "@/components/wishlist/WishlistDrawer";
+import WishlistFilters from "@/components/wishlist/WishlistFilters";
 
 export default function Desejos() {
   const [items, setItems] = React.useState<WishlistItem[]>([
@@ -47,6 +48,11 @@ export default function Desejos() {
 
   return (
     <div className="space-y-4">
+      <WishlistFilters
+        onPeriodChange={() => {}}
+        onStatusChange={() => {}}
+        onCategoryChange={() => {}}
+      />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">🛍️ Desejos</h1>
         <Button onClick={() => setNewOpen(true)}>Novo desejo</Button>

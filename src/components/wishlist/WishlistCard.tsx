@@ -38,7 +38,9 @@ export default function WishlistCard({
 
   return (
     <Card className={cn("overflow-hidden flex flex-col", className)} {...props}>
-      {item.imagem && <img src={item.imagem} alt="" className="h-40 w-full object-cover" />}
+      {item.imagem && (
+        <img src={item.imagem} alt={item.titulo} className="h-40 w-full object-cover" />
+      )}
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-sm font-medium line-clamp-1">{item.titulo}</h3>
