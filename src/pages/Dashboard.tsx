@@ -32,10 +32,7 @@ import FilterBar from "@/components/FilterBar";
 import { usePeriod } from "@/state/periodFilter";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
-
-// ---------------------------------- helpers
-const brl = (n: number) =>
-  (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+import { formatCurrency } from "@/lib/utils";
 
 function monthShortPtBR(n: number) {
   const arr = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
@@ -43,7 +40,7 @@ function monthShortPtBR(n: number) {
 }
 
 // CountUp (framer-motion)
-function CountUp({ value, prefix = "R$ " }: { value: number; prefix?: string }) {
+function CountUp({ value }: { value: number }) {
   const mv = useMotionValue(0);
   const [out, setOut] = useState(0);
   useEffect(() => {
@@ -54,12 +51,7 @@ function CountUp({ value, prefix = "R$ " }: { value: number; prefix?: string }) 
       unsub();
     };
   }, [value, mv]);
-  return (
-    <span>
-      {prefix}
-      {Math.round(out).toLocaleString("pt-BR")}
-    </span>
-  );
+  return <span>{formatCurrency(Math.round(out))}</span>;
 }
 
 // Sparkline inline SVG
@@ -275,14 +267,16 @@ export default function Dashboard() {
                     <CartesianGrid vertical={false} strokeDasharray="2 4" />
                     <XAxis dataKey="m" tickMargin={8} axisLine={false} tickLine={false} />
                     <YAxis
-                      tickFormatter={(v) => brl(Number(v)).replace("R$", "")}
+                      tickFormatter={(v) =>
+                        formatCurrency(Number(v)).replace(/^R\$\s?/, "")
+                      }
                       width={64}
                       tickMargin={8}
                       axisLine={false}
                       tickLine={false}
                     />
                     <Tooltip
-                      formatter={(v: unknown) => brl(Number(v))}
+                      formatter={(v: unknown) => formatCurrency(Number(v))}
                       contentStyle={{
                         borderRadius: 12,
                         border: '1px solid hsl(var(--border))',
@@ -339,7 +333,7 @@ export default function Dashboard() {
                         ))}
                       </Pie>
                       <Tooltip
-                        formatter={(v: number) => brl(v)}
+                        formatter={(v: number) => formatCurrency(v)}
                         contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.06)' }}
                         wrapperStyle={{ outline: 'none' }}
                       />
@@ -351,7 +345,7 @@ export default function Dashboard() {
                     <li key={c.name} className="flex items-center gap-2">
                       <span className="inline-block h-2 w-2 rounded-full" style={{ background: cores[i] }} />
                       <span className="text-muted-foreground">{c.name}</span>
-                      <span className="ml-auto font-medium">{brl(c.value)}</span>
+                      <span className="ml-auto font-medium">{formatCurrency(c.value)}</span>
                     </li>
                   ))}
                 </ul>
@@ -379,7 +373,7 @@ export default function Dashboard() {
                         vence em {new Date(c.vencimento).toLocaleDateString("pt-BR")}
                       </div>
                     </div>
-                    <div className="ml-auto font-medium">{brl(c.valor)}</div>
+                    <div className="ml-auto font-medium">{formatCurrency(c.valor)}</div>
                   </li>
                 ))}
               </ul>
@@ -447,7 +441,7 @@ export default function Dashboard() {
                         <td className="py-2">{new Date(r.data).toLocaleDateString("pt-BR")}</td>
                         <td className="py-2">{r.ativo}</td>
                         <td className="py-2">{r.tipo}</td>
-                        <td className="py-2 text-right font-medium">{brl(r.preco * (r.qtd || 1))}</td>
+                        <td className="py-2 text-right font-medium">{formatCurrency(r.preco * (r.qtd || 1))}</td>
                       </tr>
                     ))
                   )}
