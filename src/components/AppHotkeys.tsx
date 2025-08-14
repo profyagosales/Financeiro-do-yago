@@ -5,7 +5,7 @@ import { toast } from "sonner";
 const map: Record<string, string> = {
   d: "/dashboard",
   f: "/financas/mensal",
-  i: "/investimentos",
+  i: "/investimentos/resumo",
   m: "/metas",
   c: "/configuracoes",
 };
@@ -25,7 +25,7 @@ export function AppHotkeys() {
         e.preventDefault();
         toast.message("Atalhos", {
           description:
-            "N: nova transação • /: buscar • F: Finanças • M: Milhas • g d: Visão geral • g f: Finanças • g i: Investimentos • g m: Metas • g c: Configurações",
+            "N: nova transação • /: buscar • F: Finanças • M: Milhas • g d: Visão geral • g f: Finanças • g i: Investimentos (Resumo) • g m: Metas • g c: Configurações",
         });
         return;
       }
