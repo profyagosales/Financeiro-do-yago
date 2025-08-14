@@ -141,7 +141,10 @@ export default function CategoryPicker({
 
   return (
     <div className={`flex w-full items-center gap-2 ${className}`}>
-      <Select value={value ?? undefined} onValueChange={(v) => onChange(v || null)}>
+      <Select
+        value={value ?? undefined}
+        onValueChange={(v) => onChange(v)}
+      >
         <SelectTrigger
           aria-label={ariaLabel ?? placeholder}
           className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
@@ -149,7 +152,13 @@ export default function CategoryPicker({
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent className="max-h-80 rounded-xl">
-          {showAll && <SelectItem value="">Todas</SelectItem>}
+          {showAll && (
+            // Nunca use value="" em Radix Select
+            <SelectItem value="Todas">Todas</SelectItem>
+          )}
+          {/* Opção "Sem categoria" */}
+          {/* Token estável para representar ausência de categoria */}
+          <SelectItem value="SemCategoria">Sem categoria</SelectItem>
           {options.map((opt) => (
             <SelectItem key={opt.id} value={opt.id}>
               <span className="inline-flex items-center gap-2">
