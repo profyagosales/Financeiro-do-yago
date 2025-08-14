@@ -52,6 +52,7 @@ const BRAND_MAP: Record<string, string> = {
 
   // Aéreas
   latam: "simple-icons:latamairlines",
+  latampass: "simple-icons:latamairlines",
   gol: "simple-icons:gol",
   azul: "simple-icons:azul",
 
