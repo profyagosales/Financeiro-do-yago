@@ -443,9 +443,9 @@ export default function Dashboard() {
                 </ul>
               </>
             )}
-            </Card>
+              </WidgetCard>
+          </motion.div>
         </motion.div>
-      </motion.div>
 
       <motion.div className="grid items-stretch gap-6 xl:grid-cols-3" variants={container}>
         <motion.div variants={item}>
@@ -455,7 +455,7 @@ export default function Dashboard() {
               subtitle="Próximos 10 dias"
             />
             <AlertList items={contasAVencer} />
-            <WidgetFooterAction to="/financas/mensal" label="Ver Finanças" />
+            <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
           </WidgetCard>
         </motion.div>
 
@@ -467,8 +467,8 @@ export default function Dashboard() {
             />
             <MetasSummary />
             <WidgetFooterAction
-              to="/metas"
-              label="Ir para Metas & Projetos"
+              to="/financas/anual"
+              label="Ver detalhes"
             />
           </WidgetCard>
         </motion.div>
@@ -520,6 +520,7 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
+            <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
           </WidgetCard>
         </motion.div>
       </motion.div>
