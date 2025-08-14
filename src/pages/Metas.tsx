@@ -613,7 +613,7 @@ export default function Metas() {
                   type="number"
                   inputMode="decimal"
                   placeholder="opcional"
-                  value={goalForm.expected_rate ?? ""}
+                  value={String(goalForm.expected_rate ?? "TokenSemVazio")}
                   onChange={(e) =>
                     setGoalForm((s) => ({
                       ...s,
