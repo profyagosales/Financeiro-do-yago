@@ -217,7 +217,7 @@ export default function HomeOverview() {
         >
           {/* HERO --------------------------------------------------- */}
           <motion.div variants={item}>
-            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-600/40 to-teal-600/40 p-8 text-white shadow-lg backdrop-blur-sm">
+            <div className="hero-gradient relative overflow-hidden rounded-2xl border border-white/15 p-8 text-neutral-100 shadow-lg">
               <div className="grid gap-8 md:grid-cols-2 md:items-center">
                 <div className="flex flex-col items-center gap-4 text-center md:items-start md:text-left">
                   <Logo size="lg" />
@@ -228,11 +228,11 @@ export default function HomeOverview() {
                     <motion.div key={title} variants={item}>
                       <Link
                         to={href}
-                        className="group block rounded-xl border border-white/20 bg-white/10 p-4 transition hover:-translate-y-0.5 hover:ring-2 hover:ring-white/40"
+                        className="glass group block rounded-xl p-4 shadow-sm transition hover:scale-[1.01]"
                       >
-                        <Icon className="mb-2 h-6 w-6" />
-                        <div className="font-medium">{title}</div>
-                        <div className="text-sm text-white/80">{subtitle}</div>
+                        <Icon className="mb-2 h-6 w-6 text-neutral-200" />
+                        <div className="font-medium tracking-wide text-neutral-200">{title}</div>
+                        <div className="text-sm tracking-wide text-neutral-400">{subtitle}</div>
                       </Link>
                     </motion.div>
                   ))}
@@ -569,7 +569,7 @@ export default function HomeOverview() {
         >
           <p className="mb-2 font-semibold">Widget: {activeWidget}</p>
           <button
-            className="mt-2 rounded bg-emerald-600 px-3 py-1 text-sm text-white"
+            className="mt-2 rounded bg-emerald-600 px-3 py-1 text-sm text-neutral-100"
             onClick={() => setActiveWidget(null)}
           >
             Fechar
