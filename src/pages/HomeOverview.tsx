@@ -24,12 +24,15 @@ import {
 
 import { Logo } from "@/components/Logo";
 import MetasSummary from "@/components/MetasSummary";
-import AlertList from "@/components/dashboard/AlertList";
 import BalanceForecast from "@/components/dashboard/BalanceForecast";
-import ForecastChart from "@/components/dashboard/ForecastChart";
-import InsightCard from "@/components/dashboard/InsightCard";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
-import RecurrenceList from "@/components/dashboard/RecurrenceList";
+import InsightBar from "@/components/dashboard/InsightBar";
+import ForecastMiniChart from "@/components/dashboard/ForecastMiniChart";
+import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
+import RecurrenceWidget from "@/components/dashboard/RecurrenceWidget";
+import AlertList from "@/components/dashboard/AlertList";
+import InsightCard from "@/components/dashboard/InsightCard";
+import { KpiCard } from "@/components/dashboard/KPIStrip";
 import {
   WidgetCard,
   WidgetFooterAction,
@@ -39,6 +42,10 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatCurrency } from "@/lib/utils";
 import { usePeriod } from "@/state/periodFilter";
+import { useInsights } from "@/hooks/useInsights";
+import { useForecast } from "@/hooks/useForecast";
+import { useRecurrences } from "@/hooks/useRecurrences";
+import { useAlerts } from "@/hooks/useAlerts";
 
 
 // Garantir decorativos não interativos
@@ -94,6 +101,17 @@ export default function HomeOverview() {
   // eslint-disable-next-line react-hooks/exhaustive-deps -- base is static
   []);
 
+  const sparkIn = base.slice(-8).map((d) => d.in);
+  const sparkOut = base.slice(-8).map((d) => d.out);
+  const sparkSaldo = fluxo.slice(-8).map((d) => d.saldo);
+  const sparkInv = useMemo(() => {
+    let inv = 30000;
+    return base.slice(-8).map((d) => {
+      inv += Math.max(0, d.in - d.out) * 0.35;
+      return inv;
+    });
+  }, []);
+
 
   const carteira = [
     { name: "Renda fixa", value: 14800 },
@@ -121,17 +139,10 @@ export default function HomeOverview() {
     { data: "2025-07-28", tipo: "Cripto", ativo: "BTC", qtd: 0.005, preco: 355000 },
   ];
 
-  const insightMessage = "Você economizou 15% a mais este mês.";
-  const forecastData = base.slice(-6).map((d) => ({ month: d.m, in: d.in, out: d.out }));
-  const recurrences = [
-    { name: "Aluguel", amount: 1500 },
-    { name: "Academia", amount: 90 },
-    { name: "Internet", amount: 120 },
-  ];
-  const alerts = [
-    { message: "Conta de luz vence em 3 dias" },
-    { message: "Orçamento de lazer excedido" },
-  ];
+  const { data: insights, isLoading: insightsLoading } = useInsights();
+  const { data: forecastData, isLoading: forecastLoading } = useForecast();
+  const { data: recurrences, isLoading: recurrencesLoading } = useRecurrences();
+  const { data: alerts, isLoading: alertsLoading } = useAlerts();
 
   const shortcuts = [
     {
@@ -182,7 +193,6 @@ export default function HomeOverview() {
   };
   const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
 
-  const [activeWidget, setActiveWidget] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1000);
@@ -300,19 +310,19 @@ export default function HomeOverview() {
       {/* WIDGETS ----------------------------------------------- */}
       <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={container}>
         <motion.div variants={item}>
-          <InsightCard message={insightMessage} onClick={() => setActiveWidget('insight')} />
+          <InsightBar items={insights} isLoading={insightsLoading} />
         </motion.div>
         <motion.div variants={item}>
-          <ForecastChart data={forecastData} onClick={() => setActiveWidget('forecast')} />
+          <ForecastMiniChart data={forecastData} isLoading={forecastLoading} />
         </motion.div>
         <motion.div variants={item}>
-          <RecurrenceList items={recurrences} onClick={() => setActiveWidget('recurrence')} />
+          <RecurrenceWidget items={recurrences} isLoading={recurrencesLoading} />
         </motion.div>
         <motion.div variants={item}>
-          <BalanceForecast current={kpis.saldoMes} forecast={kpis.saldoMes + 1000} onClick={() => setActiveWidget('balance')} />
+          <BalanceForecast current={kpis.saldoMes} forecast={kpis.saldoMes + 1000} />
         </motion.div>
         <motion.div variants={item}>
-          <AlertList alerts={alerts} onClick={() => setActiveWidget('alerts')} />
+          <AlertsDrawer alerts={alerts} isLoading={alertsLoading} />
         </motion.div>
       </motion.div>
 
@@ -558,25 +568,6 @@ export default function HomeOverview() {
         </motion.div>
       </motion.div>
     </motion.div>
-    {activeWidget && (
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-        onClick={() => setActiveWidget(null)}
-      >
-        <div
-          className="rounded-xl bg-white p-4 shadow-lg dark:bg-zinc-900"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <p className="mb-2 font-semibold">Widget: {activeWidget}</p>
-          <button
-            className="mt-2 rounded bg-emerald-600 px-3 py-1 text-sm text-white"
-            onClick={() => setActiveWidget(null)}
-          >
-            Fechar
-          </button>
-        </div>
-      </div>
-    )}
   </>
   );
 }

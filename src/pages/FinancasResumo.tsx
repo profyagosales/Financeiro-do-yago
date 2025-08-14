@@ -3,12 +3,15 @@ import { Plus, Download, Coins, TrendingUp, TrendingDown, PieChart, CalendarCloc
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
 import PageHeader from "@/components/PageHeader";
-import KPIStrip from "@/components/dashboard/KPIStrip";
+import { KpiCard, type KpiItem } from "@/components/dashboard/KPIStrip";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { WidgetCard, WidgetHeader, WidgetFooterAction } from "@/components/dashboard/WidgetCard";
 import DailyBars from "@/components/charts/DailyBars";
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import AlertList from "@/components/dashboard/AlertList";
+import ForecastMiniChart from "@/components/dashboard/ForecastMiniChart";
+import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
+import RecurrenceWidget from "@/components/dashboard/RecurrenceWidget";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";
@@ -16,6 +19,9 @@ import { usePeriod } from "@/state/periodFilter";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useBills } from "@/hooks/useBills";
 import { useCategories } from "@/hooks/useCategories";
+import { useForecast } from "@/hooks/useForecast";
+import { useRecurrences } from "@/hooks/useRecurrences";
+import { useAlerts } from "@/hooks/useAlerts";
 import { exportTransactionsPDF } from "@/utils/pdf";
 import { formatCurrency } from "@/lib/utils";
 import { getMonthlyAggregates, getLast12MonthsAggregates, getUpcomingBills, getBudgetUsage } from "@/lib/finance";
@@ -27,6 +33,9 @@ export default function FinancasResumo() {
   const { data: contas } = useBills(year, month);
   const { flat: categorias } = useCategories();
   const [modalOpen, setModalOpen] = useState(false);
+  const { data: forecastData, isLoading: forecastLoading } = useForecast();
+  const { data: recurrences, isLoading: recurrencesLoading } = useRecurrences();
+  const { data: alerts, isLoading: alertsLoading } = useAlerts();
 
   const uiTransacoes: UITransaction[] = useMemo(() => {
     return transacoes.map(t => ({
@@ -72,7 +81,7 @@ export default function FinancasResumo() {
     setModalOpen(false);
   };
 
-  const kpiItems = [
+  const kpiItems: KpiItem[] = [
     {
       title: "Saldo",
       icon: <Coins className="size-5" />,
@@ -135,7 +144,11 @@ export default function FinancasResumo() {
         </Button>
       </div>
 
-      <KPIStrip items={kpiItems} />
+      <div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-5">
+        {kpiItems.map((k) => (
+          <KpiCard key={k.title} {...k} />
+        ))}
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <WidgetCard className="glass-card">
@@ -246,18 +259,9 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
-          <WidgetHeader title="Alertas" />
-          {upcomingBills.length > 0 ? (
-            <AlertList items={upcomingBills} />
-          ) : (
-            <EmptyState
-              title="Nenhum alerta"
-              action={<Button size="sm" onClick={() => setModalOpen(true)}>Nova transação</Button>}
-            />
-          )}
-          <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
-        </WidgetCard>
+        <ForecastMiniChart data={forecastData} isLoading={forecastLoading} />
+        <RecurrenceWidget items={recurrences} isLoading={recurrencesLoading} />
+        <AlertsDrawer alerts={alerts} isLoading={alertsLoading} />
       </div>
 
       <ModalTransacao open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleSubmit} />
