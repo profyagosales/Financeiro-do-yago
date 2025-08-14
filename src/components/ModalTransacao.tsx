@@ -214,7 +214,8 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
 
   // Quando usuário escolhe uma categoria no picker (id), refletimos nome e id no form
   const onCategoryPicked = useCallback((id: string | null) => {
-    if (!id) {
+    // Normaliza ausência de categoria para null
+    if (!id || id === 'SemCategoria') {
       setForm(prev => ({ ...prev, category_id: null, category: 'Outros' }));
       return;
     }
@@ -243,10 +244,12 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
 
   // Quando escolher fonte (conta/cartão)
   const onSourcePicked = useCallback((s: SourceValue) => {
+    // Token 'all' representa ausência de fonte selecionada
+    const id = s.id === 'all' ? null : s.id;
     let label: string | null = null;
-    if (s.kind === 'account' && s.id) label = findAccount(s.id)?.name || null;
-    if (s.kind === 'card' && s.id) label = cardsById.get(s.id)?.name || null;
-    setForm(prev => ({ ...prev, source_kind: s.kind, source_id: s.id ?? null, source_label: label }));
+    if (s.kind === 'account' && id) label = findAccount(id)?.name || null;
+    if (s.kind === 'card' && id) label = cardsById.get(id)?.name || null;
+    setForm(prev => ({ ...prev, source_kind: s.kind, source_id: id, source_label: label }));
   }, [cardsById, findAccount]);
 
   return (
@@ -301,7 +304,8 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
             <div className="grid gap-1">
               <Label>Categoria</Label>
               <CategoryPicker
-                value={form.category_id ?? null}
+                // Nunca passe string vazia para value
+                value={form.category_id ?? undefined}
                 onChange={onCategoryPicked}
                 kind={form.type}
                 allowCreate
@@ -325,7 +329,8 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
             <div className="grid gap-1">
               <Label>Fonte de pagamento</Label>
               <SourcePicker
-                value={{ kind: form.source_kind ?? 'account', id: form.source_id ?? null }}
+                // Use token 'all' para representar ausência de seleção
+                value={{ kind: form.source_kind ?? 'account', id: form.source_id ?? 'all' }}
                 onChange={onSourcePicked}
                 allowCreate
               />
