@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { motion, useSpring, useTransform } from 'framer-motion';
 
-export function AnimatedNumber({ value, currency=true }:{ value:number; currency?:boolean }) {
+import { cn } from '@/lib/utils';
+
+export function AnimatedNumber({ value, currency=true, className='' }:{ value:number; currency?:boolean; className?:string }) {
   const spring = useSpring(0, { stiffness: 120, damping: 20 });
   useEffect(() => {
     spring.set(value);
@@ -14,7 +16,7 @@ export function AnimatedNumber({ value, currency=true }:{ value:number; currency
   );
 
   return (
-    <motion.span className="font-numeric font-semibold text-2xl">
+    <motion.span className={cn('font-numeric font-semibold text-2xl', className)}>
       {text}
     </motion.span>
   );

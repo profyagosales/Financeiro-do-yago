@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 // Hero section displayed at the top of the dashboard.
 // This component contains only presentational markup and
 // can be replaced by a more feature rich version later on.
-export default function HeroSection() {
+export default function Hero() {
   return (
     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white backdrop-blur-sm border-b border-white/10 shadow-lg">
       <div className="relative flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
