@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 
+import { useMiles } from "./useMiles";
+
 import { supabase } from "@/lib/supabaseClient";
 import { exportTransactionsPDF } from "@/utils/pdf";
 
@@ -32,6 +34,19 @@ export type TransactionInput = {
   // Extra (futuro)
   notes?: string | null;
   attachment_url?: string | null;
+};
+
+export type ShoppingItem = {
+  id: string;
+  title: string;
+  estimated_price?: number | null;
+  price?: number | null;
+  category_id?: string | null;
+  wishlist_category_id?: string | null;
+  accumulates_miles?: boolean;
+  miles_program?: string | null;
+  miles_qty?: number | null;
+  miles_expected_at?: string | null;
 };
 
 // ===== Helpers de data (seguro em UTC) =====================================
@@ -153,6 +168,7 @@ export function useTransactions(year?: any, month?: any) {
   const [data, setData] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { recordPending } = useMiles();
 
   const { y, m, start, end } = useMemo(() => monthBoundsISO(year, month), [year, month]);
 
@@ -275,6 +291,44 @@ export function useTransactions(year?: any, month?: any) {
     return inserted;
   }, [create, bulkCreate]);
 
+  const createFromShoppingItem = useCallback(
+    async (item: ShoppingItem, pricePaid?: number) => {
+      const value = Math.abs(pricePaid ?? item.price ?? item.estimated_price ?? 0);
+      if (!value) throw new Error('Preço inválido');
+      const row: Omit<Transaction, 'id'> = {
+        date: new Date().toISOString().slice(0, 10),
+        description: item.title,
+        amount: -value,
+        category_id: item.wishlist_category_id ?? item.category_id ?? null,
+        account_id: null,
+        card_id: null,
+        installment_no: null,
+        installment_total: null,
+        parent_installment_id: null,
+      };
+      const t = await create(row);
+      if (
+        item.accumulates_miles &&
+        item.miles_program &&
+        item.miles_qty &&
+        item.miles_expected_at
+      ) {
+        try {
+          await recordPending({
+            transaction_id: t.id,
+            program: item.miles_program,
+            qty: item.miles_qty,
+            expected_at: item.miles_expected_at,
+          });
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+      return t;
+    },
+    [create, recordPending]
+  );
+
   // ----- Filtros locais (UI) -----------------------------------------------
 
   /** Obtém uma transação pelo id a partir do cache atual (ou undefined). */
@@ -395,6 +449,7 @@ export function useTransactions(year?: any, month?: any) {
     exportTransactionsPDF,
     // alto nível
     addSmart,
+    createFromShoppingItem,
     filterLocal,
     kpis,
   } as const;
