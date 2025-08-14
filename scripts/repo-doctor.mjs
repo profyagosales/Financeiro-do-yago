@@ -203,7 +203,7 @@ fixSelectEmptyValues(rd("src/components/SourcePicker.tsx"), "Todas", "all");
   const checks = [
     ["TopNav", "src/components/TopNav.tsx"],
     ["PeriodContext shim", "src/contexts/PeriodContext.tsx"],
-    ["Dashboard", "src/pages/Dashboard.tsx"],
+    ["Dashboard", "src/pages/HomeOverview.tsx"],
     ["FinancasMensal", "src/pages/FinancasMensal.tsx"],
     ["FinancasAnual", "src/pages/FinancasAnual.tsx"],
     ["TransactionsTable", "src/components/TransactionsTable.tsx"],
