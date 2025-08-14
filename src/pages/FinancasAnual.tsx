@@ -139,7 +139,7 @@ export default function FinancasAnual() {
               <TrendingUp size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-300">Entradas</span>
+              <span className="text-sm text-slate-500 dark:text-slate-200">Entradas</span>
               <AnimatedNumber value={kpis.income} />
             </div>
           </div>
@@ -151,7 +151,7 @@ export default function FinancasAnual() {
               <TrendingDown size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-300">Saídas</span>
+              <span className="text-sm text-slate-500 dark:text-slate-200">Saídas</span>
               <AnimatedNumber value={kpis.expense} />
             </div>
           </div>
@@ -163,7 +163,7 @@ export default function FinancasAnual() {
               <Coins size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-300">Saldo</span>
+              <span className="text-sm text-slate-500 dark:text-slate-200">Saldo</span>
               <AnimatedNumber value={kpis.balance} />
             </div>
           </div>
@@ -175,9 +175,9 @@ export default function FinancasAnual() {
               <CalendarRange size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-slate-500 dark:text-slate-300">Mês com maior despesa</span>
+              <span className="text-sm text-slate-500 dark:text-slate-200">Mês com maior despesa</span>
               <AnimatedNumber value={worstMonth?.expense || 0} />
-              <span className="text-xs text-slate-500 dark:text-slate-300">{worstLabel || '—'}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-200">{worstLabel || '—'}</span>
             </div>
           </div>
         </MotionCard>

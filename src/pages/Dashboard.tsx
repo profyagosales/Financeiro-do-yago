@@ -554,7 +554,7 @@ function KpiCard({
       {/* Ícone decorativo sem capturar cliques */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-8 -top-8 z-0 h-28 w-28 rounded-full opacity-25 blur-2xl"
+        className="pointer-events-none absolute -right-8 -top-8 -z-10 h-28 w-28 rounded-full opacity-25 blur-2xl"
         style={{ background: `linear-gradient(135deg, ${colorFrom}, ${colorTo})` }}
       />
       <div className="relative z-10 flex flex-col">

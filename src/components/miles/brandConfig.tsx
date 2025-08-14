@@ -1,4 +1,4 @@
-import React from "react";
+import type { ReactElement } from "react";
 
 export type MilesProgram = 'livelo' | 'latampass' | 'azul';
 
@@ -37,7 +37,7 @@ export function AzulLogo({ className = "h-6 w-6" }: { className?: string }) {
   );
 }
 
-export const BRANDS: Record<MilesProgram, { label: string; gradient: string; soft: string; softDark: string; Logo: (props: { className?: string }) => JSX.Element }> = {
+export const BRANDS: Record<MilesProgram, { label: string; gradient: string; soft: string; softDark: string; Logo: (props: { className?: string }) => ReactElement }> = {
   livelo: {
     label: 'Livelo',
     gradient: 'from-[#7A1FA2] to-[#FF2D8D] dark:from-[#7A1FA2CC] dark:to-[#FF2D8D99]',
