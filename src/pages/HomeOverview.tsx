@@ -3,6 +3,7 @@ import { TrendingUp, Wallet, Target, Plane, Heart, ShoppingCart } from "lucide-r
 
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
+import ListsSummaryCard from "@/components/ListsSummaryCard";
 const hubCard = "group flex items-center gap-4 p-6 border-0 bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-[0_2px_12px_-3px_rgba(16,185,129,0.3)] transition hover:scale-[1.01]";
 
 export default function HomeOverview() {
@@ -68,6 +69,7 @@ export default function HomeOverview() {
           </Card>
         </Link>
       </div>
+      <ListsSummaryCard />
     </div>
   );
 }
