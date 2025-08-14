@@ -557,8 +557,9 @@ function KpiCard({
       transition={{ type: "spring", stiffness: 220, damping: 18 }}
       className="kpi relative h-[136px]"
     >
+      {/* Ícone decorativo sem capturar cliques */}
       <div
-        className="absolute -right-8 -top-8 h-28 w-28 rounded-full opacity-30 blur-2xl"
+        className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full opacity-20 blur-2xl"
         style={{ background: `linear-gradient(135deg, ${colorFrom}, ${colorTo})` }}
       />
       <div className="flex items-start justify-between gap-3">
