@@ -199,6 +199,25 @@ export default function HomeOverview() {
   ];
 
   const { mode, month, year } = usePeriod();
+  const insights = useInsights(
+    { year, month },
+    {
+      transactions: [],
+      categories: [],
+      bills: contasAVencer.map((c, i) => ({
+        id: String(i),
+        description: c.nome,
+        amount: c.valor,
+        due_date: c.vencimento,
+        paid: false,
+        account_id: null,
+        card_id: null,
+        category_id: null,
+      })),
+      goals: [],
+      miles: [],
+    }
+  );
 
   const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
 
