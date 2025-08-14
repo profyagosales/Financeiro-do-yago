@@ -4,9 +4,9 @@ import { motion } from 'framer-motion'
 
 import { cn } from "@/lib/utils";
 
-export type Breadcrumb = { label: string; href?: string };
+type Breadcrumb = { label: string; href?: string };
 
-export type PageHeaderProps = {
+type PageHeaderProps = {
   title: string;
   subtitle?: string;
   icon?: ReactNode;
@@ -70,4 +70,4 @@ const PageHeader = (props: PageHeaderProps) => {
 };
 
 export default PageHeader;
-// Tipos já exportados junto do componente; evitar export duplicado
+export type { Breadcrumb, PageHeaderProps };
