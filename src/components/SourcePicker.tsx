@@ -11,7 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { CreditCard as CardModel } from "@/hooks/useCreditCards";
 
-export type SourceValue = { kind: "account" | "card"; id: string | null };
+// Evite value=""
+// Garanta que o estado controlado use "all" para representar "todas"
+
+export type SourceValue = { kind: "account" | "card"; id: string | "all" };
 
 export default function SourcePicker({
   value,
@@ -58,7 +61,7 @@ export default function SourcePicker({
     typeof n === "number" ? n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "";
 
   const cardHint = useMemo(() => {
-    if (!showCardHints || kind !== "card" || !selectedId) return null;
+    if (!showCardHints || kind !== "card" || !selectedId || selectedId === "all") return null;
     const cc: CardModel | undefined = cardsById.get(selectedId);
     if (!cc) return null;
     const cyc = cardCycleFor(cc);
@@ -76,7 +79,7 @@ export default function SourcePicker({
           className={`px-3 py-2 text-sm transition-colors ${kind === "account" ? "bg-emerald-600 text-white" : "text-zinc-700 dark:text-zinc-200"}`}
           onClick={() => {
             setKind("account");
-            onChange({ kind: "account", id: null });
+            onChange({ kind: "account", id: "all" });
           }}
           title="Usar conta como fonte"
         >
@@ -87,7 +90,7 @@ export default function SourcePicker({
           className={`px-3 py-2 text-sm transition-colors ${kind === "card" ? "bg-emerald-600 text-white" : "text-zinc-700 dark:text-zinc-200"}`}
           onClick={() => {
             setKind("card");
-            onChange({ kind: "card", id: null });
+            onChange({ kind: "card", id: "all" });
           }}
           title="Usar cartão como fonte"
         >
@@ -98,11 +101,9 @@ export default function SourcePicker({
       {/* Picker por tipo */}
       {kind === "account" ? (
         <Select
-          // Nunca passe "" para value. Use undefined para indicar falta de seleção.
-          value={selectedId ?? undefined}
-          onValueChange={(v) =>
-            onChange({ kind: "account", id: !v || v === "Todas" ? null : v })
-          }
+          // Nunca passe "" para value. Use token "all" para representar todas
+          value={selectedId}
+          onValueChange={(v) => onChange({ kind: "account", id: v })}
         >
           <SelectTrigger
             aria-label={ariaLabel ?? placeholder}
@@ -112,7 +113,7 @@ export default function SourcePicker({
           </SelectTrigger>
           <SelectContent className="rounded-xl max-h-72">
             {/* Token explícito para "todas" evita value="" */}
-            <SelectItem value="Todas">Todas</SelectItem>
+            <SelectItem value="all">Todas</SelectItem>
             {accounts.map((a) => (
               // Garanta que value nunca seja string vazia
               <SelectItem key={a.id} value={a.id}>
@@ -129,11 +130,10 @@ export default function SourcePicker({
         </Select>
       ) : (
         <>
-          <Select
-            value={selectedId ?? undefined}
-            onValueChange={(v) =>
-              onChange({ kind: "card", id: !v || v === "Todas" ? null : v })
-            }
+        <Select
+            // Nunca passe "" para value. Use token "all" para representar todas
+            value={selectedId}
+            onValueChange={(v) => onChange({ kind: "card", id: v })}
           >
           <SelectTrigger
             aria-label={ariaLabel ?? placeholder}
@@ -142,7 +142,7 @@ export default function SourcePicker({
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent className="rounded-xl max-h-72">
-            <SelectItem value="Todas">Todas</SelectItem>
+            <SelectItem value="all">Todas</SelectItem>
             {cards.map((c) => (
               <SelectItem key={c.id} value={c.id}>
                   <span className="inline-flex items-center gap-2">

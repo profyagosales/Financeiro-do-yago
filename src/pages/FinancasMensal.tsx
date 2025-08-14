@@ -4,15 +4,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import CategoryDonut from '@/components/charts/CategoryDonut';
-import DailyBars from '@/components/charts/DailyBars';
-import { ModalTransacao, type BaseData } from '@/components/ModalTransacao';
-import PageHeader from '@/components/PageHeader';
-import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
-import CategoryPicker from '@/components/CategoryPicker';
-import { Skeleton } from '@/components/ui/Skeleton';
-import { EmptyState } from '@/components/ui/EmptyState';
-import TransactionsTable, { type UITransaction } from '@/components/TransactionsTable';
+import CategoryDonut from "@/components/charts/CategoryDonut";
+import DailyBars from "@/components/charts/DailyBars";
+import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";
+import CategoryPicker from "@/components/CategoryPicker";
+import { Skeleton } from "@/components/ui/Skeleton";
+import EmptyState from "@/components/ui/EmptyState";
+import SourcePicker, { type SourceValue } from "@/components/SourcePicker";
+import PageHeader from "@/components/PageHeader";
+import TransactionsTable, { type UITransaction } from "@/components/TransactionsTable";
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -48,14 +48,15 @@ export default function FinancasMensal() {
   const initialCategoriaId = searchParams.get('cat');
   const initialBusca = searchParams.get('q') ?? '';
   const initialFonte: SourceValue = (() => {
-    const f = searchParams.get('fonte');
+    const f = searchParams.get("fonte");
     if (f) {
-      const [kind, id] = f.split(':');
-      if ((kind === 'account' || kind === 'card') && id) {
+      const [kind, id] = f.split(":");
+      if ((kind === "account" || kind === "card") && id) {
         return { kind, id } as SourceValue;
       }
     }
-    return { kind: 'account', id: null };
+    // "all" representa sem filtro no SourcePicker
+    return { kind: "account", id: "all" } as SourceValue;
   })();
 
   const [mesAtual, setMesAtual] = useState(initialMes);
@@ -70,8 +71,9 @@ export default function FinancasMensal() {
     const params = new URLSearchParams();
     params.set('mes', mesAtual);
     params.set('ano', mesAtual.slice(0, 4));
-    if (categoriaId) params.set('cat', categoriaId);
-    if (fonte.id) params.set('fonte', `${fonte.kind}:${fonte.id}`);
+    if (categoriaId) params.set("cat", categoriaId);
+    if (fonte.id && fonte.id !== "all")
+      params.set("fonte", `${fonte.kind}:${fonte.id}`);
     if (busca) params.set('q', busca);
     setSearchParams(params, { replace: true });
   }, [mesAtual, categoriaId, fonte, busca, setSearchParams]);
@@ -83,9 +85,9 @@ export default function FinancasMensal() {
 
   const limparFiltros = () => {
     setCategoriaId(undefined);
-    setFonte({ kind: 'account', id: null });
-    setBusca('');
-    setBuscaInput('');
+    setFonte({ kind: "account", id: "all" });
+    setBusca("");
+    setBuscaInput("");
   };
 
   // ===== modal (criar/editar) =====

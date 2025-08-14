@@ -1,11 +1,23 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Pencil, Trash2, ChevronLeft, ChevronRight, ArrowUpDown, Wallet, CreditCard,
-  Upload, Download, Copy, CheckSquare, Square, Plus
-} from 'lucide-react';
-import dayjs from 'dayjs';
-import { toast } from 'sonner';
+  Pencil,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+  Wallet,
+  CreditCard,
+  Upload,
+  Download,
+  Copy,
+  CheckSquare,
+  Square,
+  Plus,
+} from "lucide-react";
+import dayjs from "dayjs";
+import { toast } from "sonner";
 
+import { exportTransactionsPDF } from "@/utils/pdf";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/table';
@@ -205,36 +217,22 @@ export default function TransactionsTable({
   };
 
   // ======= Import / Export / Duplicar =======
-  const toCSVSelected = (ids: number[]) => {
-    const sel = ordered.filter(r => ids.includes(r.id));
-    if (!sel.length) return '';
-    const header = ['id','date','description','value','type','category','source_kind','source_id','installment_no','installment_total'].join(',');
-    const lines = sel.map((r) => [
-      r.id,
-      r.date,
-      JSON.stringify(r.description ?? ''),
-      r.value,
-      r.type,
-      JSON.stringify(r.category ?? ''),
-      r.source_kind ?? '',
-      JSON.stringify(r.source_id ?? ''),
-      String(r.installment_no ?? r.installment_number ?? ''),
-      String(r.installment_total ?? r.installments_total ?? ''),
-    ].join(','));
-    return [header, ...lines].join('\n');
-  };
-
   const exportSelected = () => {
     const ids = Array.from(selected);
-    if (!ids.length) { toast.info('Selecione algo para exportar.'); return; }
-    if (onExportSelected) { onExportSelected(ids); return; }
-    const csv = toCSVSelected(ids);
-    if (!csv) { toast.info('Nada para exportar.'); return; }
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `transacoes-selecionadas-${dayjs().format('YYYYMMDD-HHmm')}.csv`;
-    a.click(); URL.revokeObjectURL(url);
+    if (!ids.length) {
+      toast.info("Selecione algo para exportar.");
+      return;
+    }
+    if (onExportSelected) {
+      onExportSelected(ids);
+      return;
+    }
+    const rows = ordered.filter((r) => ids.includes(r.id));
+    if (!rows.length) {
+      toast.info("Nada para exportar.");
+      return;
+    }
+    exportTransactionsPDF(rows, {}, dayjs().format("YYYY-MM"));
   };
 
   const onClickImport = () => fileRef.current?.click();

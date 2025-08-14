@@ -66,5 +66,4 @@ const PageHeader = (props: PageHeaderProps) => {
 };
 
 export default PageHeader;
-// já exportado acima; remover duplicidade para evitar conflito TS
-// export type { Breadcrumb, PageHeaderProps };
+// Tipos já exportados junto do componente; evitar export duplicado
