@@ -588,14 +588,20 @@ function KpiCard({
             aria-hidden
             className="pointer-events-none mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700"
           >
-            ▲ bom
+            <span aria-hidden className="pointer-events-none opacity-25">
+              ▲
+            </span>
+            bom
           </span>
         ) : trend === "down" ? (
           <span
             aria-hidden
             className="pointer-events-none mt-2 inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-1 text-xs font-medium text-rose-700"
           >
-            ▼ atenção
+            <span aria-hidden className="pointer-events-none opacity-25">
+              ▼
+            </span>
+            atenção
           </span>
         ) : null}
       </div>
