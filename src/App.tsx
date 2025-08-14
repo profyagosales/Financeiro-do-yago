@@ -6,7 +6,7 @@ import { Toaster } from 'sonner';
 import AppHotkeys from '@/components/AppHotkeys';
 import RouteLoader from '@/components/RouteLoader';
 import AppShell from '@/components/AppShell';
-import AppTopbar from '@/components/AppTopbar';
+import Topbar from '@/components/layout/Topbar';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { PeriodProvider } from '@/contexts/PeriodContext';
 /* ---------- lazy imports de páginas ---------- */
@@ -46,8 +46,6 @@ export default function App() {
     <AuthProvider>
       <PeriodProvider>
         <Router>
-          {/* Toaster global */}
-          <Toaster richColors position="top-right" />
           <AppRoutes />
         </Router>
       </PeriodProvider>
@@ -63,6 +61,7 @@ function AppRoutes() {
   if (!user)
     return (
       <Suspense fallback={<RouteLoader />}>
+        <Toaster richColors position="top-right" />
         <Routes>
           {/* rotas públicas para e-mails do Supabase */}
           <Route path="/confirm" element={<Confirm />} />
@@ -76,7 +75,7 @@ function AppRoutes() {
     );
 
   return (
-    <AppShell topbar={<AppTopbar />}>
+    <AppShell topbar={<Topbar />}>
       {/* ⬇️ Atalhos globais (g d, g f, g i, g m, g c, Shift+/? para ajuda) */}
       <AppHotkeys />
 
