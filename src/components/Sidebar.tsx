@@ -9,8 +9,6 @@ import {
   Building2,
   CandlestickChart,
   Coins,
-  Target,
-  Plane,
   Gift,
   ShoppingCart,
   Settings,
@@ -50,7 +48,7 @@ const sections: Section[] = [
   {
     label: "Investimentos",
     items: [
-      { type: "item", label: "Resumo", to: "/investimentos", icon: PiggyBank },
+      { type: "item", label: "Resumo", to: "/investimentos/resumo", icon: PiggyBank },
       {
         type: "group",
         label: "Carteira",
@@ -67,10 +65,8 @@ const sections: Section[] = [
   {
     label: "Planejamento",
     items: [
-      { type: "item", label: "Metas & Projetos", to: "/metas", icon: Target },
-      { type: "item", label: "Milhas", to: "/milhas", icon: Plane },
-      { type: "item", label: "Lista de Desejos", to: "/lista-desejos", icon: Gift },
-      { type: "item", label: "Lista de Compras", to: "/lista-compras", icon: ShoppingCart },
+      { type: "item", label: "Desejos", to: "/desejos", icon: Gift },
+      { type: "item", label: "Compras", to: "/compras", icon: ShoppingCart },
     ],
   },
 ];
