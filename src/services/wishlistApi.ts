@@ -67,8 +67,31 @@ export async function getWishlistProgress() {
   return data as unknown;
 }
 
+export interface MoveToShoppingResult {
+  transaction_id?: number;
+  miles?: {
+    program: string;
+    amount: number;
+    expected_at: string;
+  } | null;
+  [key: string]: unknown;
+}
+
 export async function moveToShoppingList(args: { item_id: string; quantity?: number }) {
   const { data, error } = await supabase.rpc('wishlist_move_to_shopping', args);
   if (error) throw error;
-  return data as unknown;
+  const result = data as MoveToShoppingResult;
+  if (result?.transaction_id && result.miles) {
+    try {
+      await supabase.from('miles_movements').insert({
+        transaction_id: result.transaction_id,
+        program: result.miles.program,
+        amount: result.miles.amount,
+        expected_at: result.miles.expected_at,
+      });
+    } catch (e) {
+      console.warn('Failed to insert miles movement', e);
+    }
+  }
+  return result;
 }
