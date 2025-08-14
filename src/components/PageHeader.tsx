@@ -21,8 +21,8 @@ const PageHeader = (props: PageHeaderProps) => {
   return (
     <div
       className={cn(
-        "mb-6 rounded-xl text-white",
-        gradient ? `bg-gradient-to-r ${gradient}` : "bg-gradient-to-r from-emerald-900 to-teal-700"
+        "mb-6 rounded-xl text-white backdrop-blur-sm border-b border-white/10",
+        gradient ? `bg-gradient-to-r ${gradient}` : "bg-gradient-to-r from-emerald-600 to-teal-600"
       )}
     >
       <div className="container mx-auto px-4 py-5 flex items-center justify-between gap-4">
