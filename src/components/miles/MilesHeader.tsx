@@ -1,25 +1,25 @@
 import type { ReactNode } from 'react';
 
-import azulLogo from '@/assets/logos/azul.svg';
-import latamLogo from '@/assets/logos/latampass.svg';
-import liveloLogo from '@/assets/logos/livelo.svg';
+import AzulLogo from '@/assets/logos/azul.svg';
+import LatamPassLogo from '@/assets/logos/latampass.svg';
+import LiveloLogo from '@/assets/logos/livelo.svg';
 
 export type MilesProgram = 'livelo' | 'latampass' | 'azul';
 
-const PROGRAM: Record<MilesProgram, { label: string; logo: string; gradient: string }> = {
+export const BRAND: Record<MilesProgram, { label: string; logo: string; gradient: string }> = {
   livelo: {
     label: 'Livelo',
-    logo: liveloLogo,
+    logo: LiveloLogo,
     gradient: 'from-fuchsia-600 via-pink-500 to-rose-500',
   },
   latampass: {
     label: 'LATAM Pass',
-    logo: latamLogo,
+    logo: LatamPassLogo,
     gradient: 'from-red-600 via-rose-600 to-purple-600',
   },
   azul: {
     label: 'Azul',
-    logo: azulLogo,
+    logo: AzulLogo,
     gradient: 'from-sky-600 via-cyan-600 to-blue-600',
   },
 };
@@ -33,7 +33,7 @@ export default function MilesHeader({
   subtitle?: string;
   children?: ReactNode;
 }) {
-  const cfg = PROGRAM[program];
+  const cfg = BRAND[program];
   return (
     <header className={`mb-6 rounded-xl bg-gradient-to-r ${cfg.gradient} text-white`}>
       <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-5">
