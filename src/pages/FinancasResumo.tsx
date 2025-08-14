@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SkeletonLine } from "@/components/ui/SkeletonLine";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";
 import { usePeriod } from "@/state/periodFilter";
 import { useTransactions } from "@/hooks/useTransactions";
@@ -53,6 +54,7 @@ export default function FinancasResumo() {
       card_id: t.card_id ?? null,
       installment_no: t.installment_no ?? null,
       installment_total: t.installment_total ?? null,
+      origin: t.origin ?? null,
     }));
   }, [transacoes, categorias]);
 
@@ -63,6 +65,14 @@ export default function FinancasResumo() {
   const insights = useInsights(
     { year, month },
     { transactions: transacoes, categories: categorias, bills: contas, goals: [], miles: [] }
+  );
+
+  const wishlistImpact = useMemo(
+    () =>
+      transacoes
+        .filter(t => t.amount < 0 && t.origin?.wishlist_item_id)
+        .reduce((s, t) => s + Math.abs(t.amount), 0),
+    [transacoes]
   );
 
   const handlePDF = () => {
@@ -233,6 +243,17 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
+        <WidgetCard className="glass-card">
+          <WidgetHeader title="Impacto de desejos comprados" />
+          {wishlistImpact > 0 ? (
+            <p className="px-4 py-6 text-3xl font-semibold">
+              {formatCurrency(wishlistImpact)}
+            </p>
+          ) : (
+            <EmptyState title="Sem desejos comprados" />
+          )}
+        </WidgetCard>
+
         <RecurrenceList
           className="glass-card"
           items={recurrences.map((r) => ({ name: r.description, amount: r.amount }))}
@@ -244,8 +265,19 @@ export default function FinancasResumo() {
             <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-700/60">
               {uiTransacoes.slice(0, 5).map(t => (
                 <li key={t.id} className="flex justify-between py-2 text-sm">
-                  <span className="truncate pr-2">{t.description}</span>
-                  <span className={t.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}>
+                  <span className="flex items-center gap-2 truncate pr-2">
+                    <span className="truncate">{t.description}</span>
+                    {t.origin?.wishlist_item_id && (
+                      <Badge variant="outline">Origem: Desejo</Badge>
+                    )}
+                  </span>
+                  <span
+                    className={
+                      t.type === "income"
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-rose-600 dark:text-rose-400"
+                    }
+                  >
                     {formatCurrency(t.value * (t.type === "income" ? 1 : -1))}
                   </span>
                 </li>

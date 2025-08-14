@@ -17,6 +17,9 @@ export interface Transaction {
   // campos derivados para filtros rápidos
   month: string;             // "2025-08"
   year: string;              // "2025"
+  origin?: {
+    wishlist_item_id?: number | null;
+  } | null;
 }
 
 //--------------------------------------------------------------

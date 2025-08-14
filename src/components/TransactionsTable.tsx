@@ -59,6 +59,9 @@ export type UITransaction = {
   card_name?: string | null;
   installment_number?: number | null;
   installments_total?: number | null;
+  origin?: {
+    wishlist_item_id?: number | null;
+  } | null;
 };
 
 // util de moeda BRL
@@ -374,7 +377,14 @@ export default function TransactionsTable({
                       />
                     </TableCell>
                     <TableCell className="whitespace-nowrap">{dayjs(t.date).format('DD/MM/YYYY')}</TableCell>
-                    <TableCell className="max-w-[360px] truncate" title={t.description}>{t.description}</TableCell>
+                    <TableCell className="max-w-[360px]">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate" title={t.description}>{t.description}</span>
+                        {t.origin?.wishlist_item_id && (
+                          <Badge variant="outline">Origem: Desejo</Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell className="whitespace-nowrap">{t.category ?? '—'}</TableCell>
                     <TableCell>
                       {(() => {
