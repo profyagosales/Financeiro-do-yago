@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 
 import { supabase } from "@/lib/supabaseClient";
+import { exportTransactionsPDF } from "@/utils/pdf";
 
 // ===== Tipos base (compatíveis com tabela atual) ============================
 export type Transaction = {
@@ -72,18 +73,6 @@ function mapDateToYearMonth(iso: string, targetY: number, targetM1to12: number) 
 function stripInstallmentSuffix(desc: string) {
   // Remove sufixos do tipo " (1/12)" no final da descrição
   return (desc || "").replace(/\s*\(\s*\d+\s*\/\s*\d+\s*\)\s*$/, "").trim();
-}
-function toCSV(rows: Transaction[]) {
-  const head = [
-    "id","date","description","amount","category_id","account_id","card_id","installment_no","installment_total","parent_installment_id",
-  ];
-  const esc = (v: unknown) => {
-    if (v === null || v === undefined) return "";
-    const s = String(v);
-    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-  };
-  const body = rows.map(r => head.map(k => esc((r as Record<string, unknown>)[k])).join(","));
-  return head.join(",") + "\n" + body.join("\n");
 }
 
 export type YearSummary = {
@@ -346,11 +335,6 @@ export function useTransactions(year?: any, month?: any) {
     await bulkCreate(rows);
   }, [data, bulkCreate]);
 
-  /** Exporta linhas selecionadas para CSV (string). */
-  const exportSelectedCSV = useCallback((ids: number[]) => {
-    const rows = !ids?.length ? data : data.filter(d => ids.includes(d.id));
-    return toCSV(rows);
-  }, [data]);
   type LocalFilter = {
     q?: string;                    // busca no description
     categoryId?: string | null;
@@ -408,7 +392,7 @@ export function useTransactions(year?: any, month?: any) {
     // utilidades
     getById,
     duplicateMany,
-    exportSelectedCSV,
+    exportTransactionsPDF,
     // alto nível
     addSmart,
     filterLocal,
