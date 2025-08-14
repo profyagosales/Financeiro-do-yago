@@ -1,5 +1,6 @@
 // src/components/PageHeader.tsx
 import type { ReactNode } from "react";
+import { motion } from 'framer-motion'
 
 import { cn } from "@/lib/utils";
 
@@ -19,11 +20,14 @@ export type PageHeaderProps = {
 const PageHeader = (props: PageHeaderProps) => {
   const { title, subtitle, icon, actions, breadcrumbs, children, gradient, logoSrc } = props;
   return (
-    <div
+    <motion.div
       className={cn(
         "mb-6 rounded-xl text-white backdrop-blur-sm border-b border-white/10",
         gradient ? `bg-gradient-to-r ${gradient}` : "bg-gradient-to-r from-emerald-600 to-teal-600"
       )}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
     >
       <div className="container mx-auto px-4 py-5 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
@@ -61,7 +65,7 @@ const PageHeader = (props: PageHeaderProps) => {
       </div>
 
       {children ? <div className="container mx-auto px-4 pb-4">{children}</div> : null}
-    </div>
+    </motion.div>
   );
 };
 

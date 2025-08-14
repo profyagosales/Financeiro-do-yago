@@ -1,6 +1,7 @@
 // src/components/FilterBar.tsx
 import { useCallback, type KeyboardEvent } from 'react';
-import { CalendarRange, Calendar } from "lucide-react";
+import { CalendarBlank, Calendar } from 'phosphor-react'
+import { motion } from 'framer-motion'
 
 import { usePeriod } from "@/state/periodFilter";
 import {
@@ -72,12 +73,15 @@ export default function FilterBar({ variant = "default", className = "" }: Props
   const gap = variant === "compact" ? "gap-2 sm:gap-2.5" : "gap-2 sm:gap-3";
 
   return (
-    <div
+    <motion.div
       className={`card-surface ${pad} ${gap} mx-auto flex w-full max-w-xl flex-wrap items-center justify-center ${className}`}
       aria-label="Filtro de período"
       role="group"
       onKeyDown={onKeyDown}
       tabIndex={0}
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
     >
       {/* Toggle Mensal/Anual */}
       <div className="inline-flex overflow-hidden rounded-xl border border-white/30 bg-white/70 backdrop-blur shadow-sm dark:border-white/10 dark:bg-zinc-900/50">
@@ -109,7 +113,7 @@ export default function FilterBar({ variant = "default", className = "" }: Props
       {mode === "monthly" && (
         <div className="inline-flex items-center gap-2">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
-            <CalendarRange className="h-4 w-4 text-emerald-600" />
+            <CalendarBlank size={16} className="h-4 w-4 text-emerald-600" />
           </span>
           {/* Nunca usar "" como value controlado */}
           <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
@@ -130,7 +134,7 @@ export default function FilterBar({ variant = "default", className = "" }: Props
       {/* Seletor de ano (premium) */}
       <div className="inline-flex items-center gap-2">
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
-          <Calendar className="h-4 w-4 text-emerald-600" />
+          <Calendar size={16} className="h-4 w-4 text-emerald-600" />
         </span>
         {/* Nunca passe "" como value */}
         <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
@@ -146,6 +150,6 @@ export default function FilterBar({ variant = "default", className = "" }: Props
           </SelectContent>
         </Select>
       </div>
-    </div>
+    </motion.div>
   );
 }
