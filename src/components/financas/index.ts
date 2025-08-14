@@ -19,4 +19,5 @@ export type { OrcamentoItem, OrcamentoProgressProps } from './OrcamentoProgress'
 export { default as AlertasList } from './AlertasList';
 export type { Alerta, AlertasListProps } from './AlertasList';
 
-export { default as AlertsDrawer } from './AlertsDrawer';
+export { default as KpiCard } from './KpiCard';
+export type { KpiCardProps } from './KpiCard';

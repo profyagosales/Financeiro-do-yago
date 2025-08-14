@@ -3,12 +3,12 @@ import { Plus, Download, Coins, TrendingUp, TrendingDown, PieChart, CalendarCloc
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
 import PageHeader from "@/components/PageHeader";
-import KPIStrip from "@/components/dashboard/KPIStrip";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { WidgetCard, WidgetHeader, WidgetFooterAction } from "@/components/dashboard/WidgetCard";
 import DailyBars from "@/components/charts/DailyBars";
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import AlertList from "@/components/dashboard/AlertList";
+import RecurrenceList from "@/components/dashboard/RecurrenceList";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";
@@ -16,16 +16,20 @@ import { usePeriod } from "@/state/periodFilter";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useBills } from "@/hooks/useBills";
 import { useCategories } from "@/hooks/useCategories";
+import InsightBar from "@/components/financas/InsightBar";
+import { useInsights } from "@/hooks/useInsights";
 import { exportTransactionsPDF } from "@/utils/pdf";
 import { formatCurrency } from "@/lib/utils";
 import { getMonthlyAggregates, getLast12MonthsAggregates, getUpcomingBills, getBudgetUsage } from "@/lib/finance";
 import type { UITransaction } from "@/components/TransactionsTable";
+import { KpiCard } from "@/components/financas";
 
 export default function FinancasResumo() {
   const { month, year } = usePeriod();
   const { data: transacoes, addSmart, list } = useTransactions(year, month);
   const { data: contas } = useBills(year, month);
   const { flat: categorias } = useCategories();
+  const { data: recurrences } = useRecurrences();
   const [modalOpen, setModalOpen] = useState(false);
 
   const uiTransacoes: UITransaction[] = useMemo(() => {
@@ -50,6 +54,10 @@ export default function FinancasResumo() {
   const upcomingBills = useMemo(() => getUpcomingBills(contas).map(b => ({ nome: b.description, vencimento: b.due_date, valor: b.amount })), [contas]);
   const budgetUsage = useMemo(() => getBudgetUsage(categorias, transacoes), [categorias, transacoes]);
   const last12 = useMemo(() => getLast12MonthsAggregates(transacoes).map(m => ({ mes: m.key.slice(5), entradas: m.income, saidas: m.expense })), [transacoes]);
+  const insights = useInsights(
+    { year, month },
+    { transactions: transacoes, categories: categorias, bills: contas, goals: [], miles: [] }
+  );
 
   const handlePDF = () => {
     exportTransactionsPDF(
@@ -77,46 +85,26 @@ export default function FinancasResumo() {
       title: "Saldo",
       icon: <Coins className="size-5" />,
       value: monthlyAgg.balance,
-      colorFrom: "hsl(var(--chart-emerald))",
-      colorTo: "hsl(var(--chart-emerald))",
-      spark: [0, monthlyAgg.balance],
-      sparkColor: "#10b981",
     },
     {
       title: "Entradas",
       icon: <TrendingUp className="size-5" />,
       value: monthlyAgg.income,
-      colorFrom: "hsl(var(--chart-blue))",
-      colorTo: "hsl(var(--chart-blue))",
-      spark: [0, monthlyAgg.income],
-      sparkColor: "#2563eb",
     },
     {
       title: "Saídas",
       icon: <TrendingDown className="size-5" />,
       value: monthlyAgg.expense,
-      colorFrom: "hsl(var(--chart-rose))",
-      colorTo: "hsl(var(--chart-rose))",
-      spark: [0, monthlyAgg.expense],
-      sparkColor: "#dc2626",
     },
     {
       title: "Orçamento",
       icon: <PieChart className="size-5" />,
       value: budgetUsage.reduce((s, b) => s + b.spent, 0),
-      colorFrom: "hsl(var(--chart-amber))",
-      colorTo: "hsl(var(--chart-amber))",
-      spark: [0, budgetUsage.reduce((s, b) => s + b.spent, 0)],
-      sparkColor: "#f59e0b",
     },
     {
       title: "Contas a vencer",
       icon: <CalendarClock className="size-5" />,
       value: upcomingBills.reduce((s, b) => s + b.valor, 0),
-      colorFrom: "hsl(var(--chart-violet))",
-      colorTo: "hsl(var(--chart-violet))",
-      spark: [0, upcomingBills.reduce((s, b) => s + b.valor, 0)],
-      sparkColor: "#8b5cf6",
     },
   ];
 
@@ -135,7 +123,13 @@ export default function FinancasResumo() {
         </Button>
       </div>
 
-      <KPIStrip items={kpiItems} />
+      <div className="grid items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        {kpiItems.map((k) => (
+          <KpiCard key={k.title} {...k} />
+        ))}
+      </div>
+
+      {insights.length > 0 && <InsightBar insights={insights} />}
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <WidgetCard className="glass-card">
@@ -203,6 +197,11 @@ export default function FinancasResumo() {
           )}
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
+
+        <RecurrenceList
+          className="glass-card"
+          items={recurrences.map((r) => ({ name: r.description, amount: r.amount }))}
+        />
 
         <WidgetCard className="glass-card">
           <WidgetHeader title="Lançamentos recentes" />
