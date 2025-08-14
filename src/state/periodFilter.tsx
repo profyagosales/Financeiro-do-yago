@@ -1,7 +1,7 @@
 // src/state/periodFilter.tsx
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
-type Mode = "monthly" | "yearly";
+export type Mode = "monthly" | "quarterly" | "yearly" | "custom";
 
 type PeriodState = {
   mode: Mode;
@@ -26,7 +26,8 @@ function writeToURL(mode: Mode, month: number, year: number) {
   const p = new URLSearchParams(window.location.search);
   p.set("mode", mode);
   p.set("year", String(year));
-  if (mode === "monthly") p.set("month", String(month));
+  if (mode === "monthly" || mode === "quarterly" || mode === "custom")
+    p.set("month", String(month));
   else p.delete("month");
   const newUrl = `${window.location.pathname}?${p.toString()}${window.location.hash}`;
   window.history.replaceState(null, "", newUrl);
@@ -77,7 +78,18 @@ export function usePeriod() {
 export function periodRange(state: { mode: Mode; month: number; year: number }) {
   if (state.mode === "monthly") {
     const start = new Date(state.year, state.month - 1, 1);
-    const end = new Date(state.year, state.month, 0); // último dia do mês
+    const end = new Date(state.year, state.month, 0);
+    return { start, end };
+  }
+  if (state.mode === "quarterly") {
+    const q = Math.floor((state.month - 1) / 3);
+    const start = new Date(state.year, q * 3, 1);
+    const end = new Date(state.year, q * 3 + 3, 0);
+    return { start, end };
+  }
+  if (state.mode === "custom") {
+    const start = new Date(state.year, state.month - 1, 1);
+    const end = new Date(state.year, state.month - 1, 1);
     return { start, end };
   }
   const start = new Date(state.year, 0, 1);
