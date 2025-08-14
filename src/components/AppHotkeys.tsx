@@ -5,7 +5,7 @@ import { toast } from "sonner";
 const map: Record<string, string> = {
   d: "/dashboard",
   f: "/financas/mensal",
-  i: "/investimentos",
+  i: "/investimentos/resumo",
   m: "/metas",
   c: "/configuracoes",
 };
