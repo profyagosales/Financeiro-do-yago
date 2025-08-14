@@ -1,7 +1,7 @@
 // src/components/PageHeader.tsx
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 export type Breadcrumb = { label: string; href?: string };
 
@@ -14,20 +14,23 @@ export type PageHeaderProps = {
   children?: ReactNode;
   gradient?: string;
   logoSrc?: string;
+  logo?: ReactNode;
 };
 
 const PageHeader = (props: PageHeaderProps) => {
-  const { title, subtitle, icon, actions, breadcrumbs, children, gradient, logoSrc } = props;
+  const { title, subtitle, icon, actions, breadcrumbs, children, gradient, logoSrc, logo } = props;
   return (
     <div
       className={cn(
-        "mb-6 rounded-xl text-white",
-        gradient ? `bg-gradient-to-r ${gradient}` : "bg-gradient-to-r from-emerald-900 to-teal-700"
+        'mb-6 rounded-xl text-white',
+        gradient ? `bg-gradient-to-r ${gradient}` : 'bg-gradient-to-r from-emerald-900 to-teal-700'
       )}
     >
       <div className="container mx-auto px-4 py-5 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          {logoSrc ? (
+          {logo ? (
+            <div className="h-8 w-8 shrink-0 rounded-md flex items-center justify-center">{logo}</div>
+          ) : logoSrc ? (
             <img src={logoSrc} alt="" className="h-8 w-8 shrink-0 rounded-md" />
           ) : icon ? (
             <div className="rounded-lg bg-white/10 p-2 shrink-0">{icon}</div>
@@ -66,5 +69,3 @@ const PageHeader = (props: PageHeaderProps) => {
 };
 
 export default PageHeader;
-// já exportado acima; remover duplicidade para evitar conflito TS
-// export type { Breadcrumb, PageHeaderProps };
