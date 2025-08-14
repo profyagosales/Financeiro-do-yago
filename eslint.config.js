@@ -21,6 +21,7 @@ export default tseslint.config([
     ],
     plugins: {
       import: pluginImport,
+      storybook,
     },
     languageOptions: {
       ecmaVersion: 2020,
