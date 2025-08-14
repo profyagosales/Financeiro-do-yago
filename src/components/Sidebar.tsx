@@ -50,18 +50,11 @@ const sections: Section[] = [
   {
     label: "Investimentos",
     items: [
-      { type: "item", label: "Resumo", to: "/investimentos", icon: PiggyBank },
-      {
-        type: "group",
-        label: "Carteira",
-        icon: Landmark,
-        children: [
-          { type: "item", label: "Renda Fixa", to: "/investimentos/renda-fixa", icon: Landmark },
-          { type: "item", label: "FIIs", to: "/investimentos/fiis", icon: Building2 },
-          { type: "item", label: "Bolsa", to: "/investimentos/bolsa", icon: CandlestickChart },
-          { type: "item", label: "Cripto", to: "/investimentos/cripto", icon: Coins },
-        ],
-      },
+      { type: "item", label: "Resumo", to: "/investimentos/resumo", icon: PiggyBank },
+      { type: "item", label: "Renda Fixa", to: "/investimentos/renda-fixa", icon: Landmark },
+      { type: "item", label: "FIIs", to: "/investimentos/fiis", icon: Building2 },
+      { type: "item", label: "Bolsa", to: "/investimentos/bolsa", icon: CandlestickChart },
+      { type: "item", label: "Cripto", to: "/investimentos/cripto", icon: Coins },
     ],
   },
   {
@@ -69,8 +62,8 @@ const sections: Section[] = [
     items: [
       { type: "item", label: "Metas & Projetos", to: "/metas", icon: Target },
       { type: "item", label: "Milhas", to: "/milhas", icon: Plane },
-      { type: "item", label: "Lista de Desejos", to: "/lista-desejos", icon: Gift },
-      { type: "item", label: "Lista de Compras", to: "/lista-compras", icon: ShoppingCart },
+      { type: "item", label: "Desejos", to: "/desejos", icon: Gift },
+      { type: "item", label: "Compras", to: "/compras", icon: ShoppingCart },
     ],
   },
 ];

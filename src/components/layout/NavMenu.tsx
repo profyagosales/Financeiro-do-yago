@@ -48,8 +48,8 @@ export const defaultNavItems: NavMenuItem[] = [
   },
   { label: "Metas & Projetos", icon: Target, to: "/metas" },
   { label: "Milhas", icon: Plane, to: "/milhas" },
-  { label: "Lista de compras", icon: ShoppingCart, to: "/compras" },
-  { label: "Lista de desejos", icon: Heart, to: "/desejos" },
+  { label: "Desejos", icon: Heart, to: "/desejos" },
+  { label: "Compras", icon: ShoppingCart, to: "/compras" },
 ];
 
 export function NavMenu({

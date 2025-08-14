@@ -36,8 +36,7 @@ export default function TopNav() {
     {
       label: "Investimentos",
       items: [
-        { label: "Resumo", to: "/investimentos" },
-        { label: "Carteira", to: "/investimentos/carteira" },
+        { label: "Resumo", to: "/investimentos/resumo" },
         { label: "Renda Fixa", to: "/investimentos/renda-fixa" },
         { label: "FIIs", to: "/investimentos/fiis" },
         { label: "Bolsa", to: "/investimentos/bolsa" },
@@ -49,8 +48,8 @@ export default function TopNav() {
       items: [
         { label: "Metas & Projetos", to: "/metas" },
         { label: "Milhas", to: "/milhas" },
-        { label: "Lista de desejos", to: "/lista-desejos" },
-        { label: "Lista de compras", to: "/lista-compras" },
+        { label: "Desejos", to: "/desejos" },
+        { label: "Compras", to: "/compras" },
       ],
     },
   ];

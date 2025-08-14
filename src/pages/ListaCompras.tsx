@@ -1,3 +1,3 @@
 export default function ListaCompras() {
-  return <h1 className="text-2xl font-bold">🧾 Lista de Compras</h1>;
+  return <h1 className="text-2xl font-bold">🧾 Compras</h1>;
 }

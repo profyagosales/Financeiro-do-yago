@@ -85,7 +85,7 @@ export default function InvestimentosResumo() {
         title="Investimentos — Resumo"
         subtitle="Visão geral dos seus aportes por classe de ativos. Crie e edite nas páginas de Carteira."
         icon={<PieIcon className="h-5 w-5" />}
-        breadcrumbs={[{ label: "Investimentos", href: "/investimentos" }, { label: "Resumo" }]}
+        breadcrumbs={[{ label: "Investimentos", href: "/investimentos/resumo" }, { label: "Resumo" }]}
       />
 
       {/* KPIs */}

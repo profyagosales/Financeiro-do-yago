@@ -94,9 +94,10 @@ function AppRoutes() {
             <Route path="/financas/anual"  element={<FinancasAnual />} />
 
             {/* Investimentos */}
-            <Route path="/investimentos"               element={<Investimentos />} />
-            {/* (opcional) redireciona /investments → /investimentos */}
-            <Route path="/investments" element={<Navigate to="/investimentos" replace />} />
+            <Route path="/investimentos/resumo" element={<Investimentos />} />
+            <Route path="/investimentos" element={<Navigate to="/investimentos/resumo" replace />} />
+            {/* (opcional) redireciona /investments → /investimentos/resumo */}
+            <Route path="/investments" element={<Navigate to="/investimentos/resumo" replace />} />
             <Route path="/investimentos/renda-fixa" element={<CarteiraRendaFixa />} />
             <Route path="/investimentos/fiis"       element={<CarteiraFIIs />} />
             <Route path="/investimentos/bolsa"      element={<CarteiraBolsa />} />
@@ -112,8 +113,10 @@ function AppRoutes() {
             <Route path="/milhas/azul"      element={<MilhasAzul />} />
 
             {/* Listas */}
-            <Route path="/lista-desejos" element={<ListaDesejos />} />
-            <Route path="/lista-compras" element={<ListaCompras />} />
+            <Route path="/desejos" element={<ListaDesejos />} />
+            <Route path="/compras" element={<ListaCompras />} />
+            <Route path="/lista-desejos" element={<Navigate to="/desejos" replace />} />
+            <Route path="/lista-compras" element={<Navigate to="/compras" replace />} />
 
             {/* Configurações */}
             <Route path="/configuracoes" element={<Configuracoes />} />
