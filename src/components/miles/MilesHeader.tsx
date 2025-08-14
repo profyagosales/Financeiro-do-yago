@@ -7,13 +7,17 @@ export type { MilesProgram } from './brandConfig';
 export default function MilesHeader({
   program,
   subtitle,
+  counters = [],
   children,
 }: {
   program: MilesProgram;
   subtitle?: string;
+  counters?: { label: string; value: ReactNode }[];
   children?: ReactNode;
 }) {
   const cfg = BRANDS[program];
+  const primaryColor =
+    cfg.gradient.match(/from-\[(#[0-9A-Fa-f]{6})\]/)?.[1] ?? '#000000';
   const Logo = cfg.Logo;
   return (
     <header className={`mb-6 rounded-xl bg-gradient-to-r ${cfg.gradient} text-white`}>
@@ -26,6 +30,20 @@ export default function MilesHeader({
               <p className="truncate text-sm leading-relaxed text-white/80">{subtitle}</p>
             ) : null}
           </div>
+          {counters.length ? (
+            <div className="ml-4 flex shrink-0 gap-2">
+              {counters.map((c) => (
+                <div
+                  key={c.label}
+                  className="rounded-lg px-3 py-2 text-center"
+                  style={{ backgroundColor: cfg.soft, color: primaryColor }}
+                >
+                  <div className="text-xs font-medium">{c.label}</div>
+                  <div className="text-lg font-semibold leading-none">{c.value}</div>
+                </div>
+              ))}
+            </div>
+          ) : null}
         </div>
         {children ? <div className="shrink-0">{children}</div> : null}
       </div>
