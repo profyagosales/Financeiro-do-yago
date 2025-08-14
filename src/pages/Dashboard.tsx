@@ -161,7 +161,7 @@ export default function Dashboard() {
   ];
 
   const { mode, month, year } = usePeriod();
-    const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
+  const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
 
   const container = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0, transition: { staggerChildren: 0.06 } } };
   const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
