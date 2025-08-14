@@ -16,6 +16,8 @@ import { usePeriod } from "@/state/periodFilter";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useBills } from "@/hooks/useBills";
 import { useCategories } from "@/hooks/useCategories";
+import InsightBar from "@/components/financas/InsightBar";
+import { useInsights } from "@/hooks/useInsights";
 import { exportTransactionsPDF } from "@/utils/pdf";
 import { formatCurrency } from "@/lib/utils";
 import { getMonthlyAggregates, getLast12MonthsAggregates, getUpcomingBills, getBudgetUsage } from "@/lib/finance";
@@ -50,6 +52,10 @@ export default function FinancasResumo() {
   const upcomingBills = useMemo(() => getUpcomingBills(contas).map(b => ({ nome: b.description, vencimento: b.due_date, valor: b.amount })), [contas]);
   const budgetUsage = useMemo(() => getBudgetUsage(categorias, transacoes), [categorias, transacoes]);
   const last12 = useMemo(() => getLast12MonthsAggregates(transacoes).map(m => ({ mes: m.key.slice(5), entradas: m.income, saidas: m.expense })), [transacoes]);
+  const insights = useInsights(
+    { year, month },
+    { transactions: transacoes, categories: categorias, bills: contas, goals: [], miles: [] }
+  );
 
   const handlePDF = () => {
     exportTransactionsPDF(
@@ -136,6 +142,8 @@ export default function FinancasResumo() {
       </div>
 
       <KPIStrip items={kpiItems} />
+
+      {insights.length > 0 && <InsightBar insights={insights} />}
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <WidgetCard className="glass-card">

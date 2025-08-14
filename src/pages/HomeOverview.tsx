@@ -39,6 +39,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatCurrency } from "@/lib/utils";
 import { usePeriod } from "@/state/periodFilter";
+import InsightBar from "@/components/financas/InsightBar";
+import { useInsights } from "@/hooks/useInsights";
 
 
 // Garantir decorativos não interativos
@@ -173,6 +175,25 @@ export default function HomeOverview() {
   ];
 
   const { mode, month, year } = usePeriod();
+  const insights = useInsights(
+    { year, month },
+    {
+      transactions: [],
+      categories: [],
+      bills: contasAVencer.map((c, i) => ({
+        id: String(i),
+        description: c.nome,
+        amount: c.valor,
+        due_date: c.vencimento,
+        paid: false,
+        account_id: null,
+        card_id: null,
+        category_id: null,
+      })),
+      goals: [],
+      miles: [],
+    }
+  );
 
   const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
 
@@ -296,6 +317,11 @@ export default function HomeOverview() {
         </motion.div>
 
       </motion.div>
+      {insights.length > 0 && (
+        <motion.div variants={item}>
+          <InsightBar insights={insights} />
+        </motion.div>
+      )}
 
       {/* WIDGETS ----------------------------------------------- */}
       <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={container}>

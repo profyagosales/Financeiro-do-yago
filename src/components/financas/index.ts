@@ -18,3 +18,6 @@ export type { OrcamentoItem, OrcamentoProgressProps } from './OrcamentoProgress'
 
 export { default as AlertasList } from './AlertasList';
 export type { Alerta, AlertasListProps } from './AlertasList';
+
+export { default as InsightBar } from './InsightBar';
+export type { InsightBarProps } from './InsightBar';
