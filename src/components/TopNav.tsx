@@ -12,7 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/contexts/AuthContext';
+import { navGroups, getNavItem } from '@/routes/nav';
 
 const activeLink =
   "text-white font-semibold ring-1 ring-white/30 rounded-lg px-3 py-1 bg-white/10";
@@ -24,37 +25,12 @@ export default function TopNav() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? "";
+  React.useEffect(() => {
+    const item = getNavItem(location.pathname);
+    const label = item?.label ?? 'Financeiro do Yago';
+    document.title = `${label} - Financeiro do Yago`;
+  }, [location.pathname]);
 
-  const navGroups = [
-    {
-      label: "Finanças",
-      items: [
-        { label: "Resumo", to: "/financas/resumo" },
-        { label: "Mensal", to: "/financas/mensal" },
-        { label: "Anual", to: "/financas/anual" },
-      ],
-    },
-    {
-      label: "Investimentos",
-      items: [
-        { label: "Resumo", to: "/investimentos/resumo" },
-        { label: "Carteira", to: "/investimentos/carteira" },
-        { label: "Renda Fixa", to: "/investimentos/renda-fixa" },
-        { label: "FIIs", to: "/investimentos/fiis" },
-        { label: "Bolsa", to: "/investimentos/bolsa" },
-        { label: "Cripto", to: "/investimentos/cripto" },
-      ],
-    },
-    {
-      label: "Planejamento",
-      items: [
-        { label: "Metas & Projetos", to: "/metas" },
-        { label: "Milhas", to: "/milhas" },
-        { label: "Lista de desejos", to: "/desejos" },
-        { label: "Lista de compras", to: "/compras" },
-      ],
-    },
-  ];
 
   const isGroupActive = (items: { to: string }[]) =>
     items.some((it) => location.pathname.startsWith(it.to));

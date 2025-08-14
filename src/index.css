@@ -207,9 +207,6 @@ body::after {
 
 /* Cards “glass” utilitário opcional */
 @layer utilities {
-  .sidebar-header {
-    @apply bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white;
-  }
   .glass {
     @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-sm;
   }
@@ -243,11 +240,6 @@ body::after {
   .glass-card {
     @apply bg-white/60 dark:bg-gray-950/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)];
   }
-}
-
-/* Ajuste fino para sidebar */
-:root {
-  --sidebar-border: 1px;
 }
 
 /* === Charts (Recharts) theming — usa tokens acima === */
