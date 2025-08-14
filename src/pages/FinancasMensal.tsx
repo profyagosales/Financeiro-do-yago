@@ -135,6 +135,7 @@ export default function FinancasMensal() {
         source_id,
         installment_no: t.installment_no ?? null,
         installment_total: t.installment_total ?? null,
+        origin: t.origin ?? null,
       };
     });
   }, [data, categoriasById]);

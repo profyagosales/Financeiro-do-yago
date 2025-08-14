@@ -15,6 +15,10 @@ export type Transaction = {
   installment_no?: number | null;      // 1..N
   installment_total?: number | null;   // N
   parent_installment_id?: number | null; // (opcional se usarmos mais tarde)
+  // origem da transação (ex.: id de item de desejo)
+  origin?: {
+    wishlist_item_id?: number | null;
+  } | null;
 };
 
 // DTO de alto nível para criação/edição no modal
@@ -32,6 +36,9 @@ export type TransactionInput = {
   // Extra (futuro)
   notes?: string | null;
   attachment_url?: string | null;
+  origin?: {
+    wishlist_item_id?: number | null;
+  } | null;
 };
 
 // ===== Helpers de data (seguro em UTC) =====================================
@@ -237,6 +244,7 @@ export function useTransactions(year?: any, month?: any) {
       category_id: dto.category_id ?? null,
       account_id: !isCard ? (dto.source_id ?? null) : null,
       card_id: isCard ? (dto.source_id ?? null) : null,
+      origin: dto.origin ?? null,
     } as Omit<Transaction, "id" | "date" | "amount">;
 
     if (installments === 1) {
@@ -247,6 +255,7 @@ export function useTransactions(year?: any, month?: any) {
         category_id: common.category_id,
         account_id: common.account_id,
         card_id: common.card_id,
+        origin: common.origin,
         installment_no: null,
         installment_total: null,
         parent_installment_id: null,
@@ -259,18 +268,19 @@ export function useTransactions(year?: any, month?: any) {
     const rows: Omit<Transaction, "id">[] = [];
     for (let i = 0; i < installments; i++) {
       const d = i === 0 ? dto.date : addMonthsISO(dto.date, i);
-      rows.push({
-        date: d,
-        description: `${common.description} (${i + 1}/${installments})`,
-        amount,
-        category_id: common.category_id,
-        account_id: common.account_id,
-        card_id: common.card_id,
-        installment_no: i + 1,
-        installment_total: installments,
-        parent_installment_id: null, // poderemos preencher depois se adotarmos grupo
-      });
-    }
+        rows.push({
+          date: d,
+          description: `${common.description} (${i + 1}/${installments})`,
+          amount,
+          category_id: common.category_id,
+          account_id: common.account_id,
+          card_id: common.card_id,
+          origin: common.origin,
+          installment_no: i + 1,
+          installment_total: installments,
+          parent_installment_id: null, // poderemos preencher depois se adotarmos grupo
+        });
+      }
     const inserted = await bulkCreate(rows);
     return inserted;
   }, [create, bulkCreate]);
@@ -309,6 +319,7 @@ export function useTransactions(year?: any, month?: any) {
           category_id: src.category_id ?? null,
           account_id: src.account_id ?? null,
           card_id: src.card_id ?? null,
+          origin: src.origin ?? null,
           installment_no: null,
           installment_total: null,
           parent_installment_id: null,
@@ -326,6 +337,7 @@ export function useTransactions(year?: any, month?: any) {
           category_id: src.category_id ?? null,
           account_id: null,              // parcelas em cartão
           card_id: src.card_id ?? null,
+          origin: src.origin ?? null,
           installment_no: i + 1,
           installment_total: total,
           parent_installment_id: null,
