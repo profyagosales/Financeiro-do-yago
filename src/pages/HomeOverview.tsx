@@ -23,7 +23,7 @@ export default function HomeOverview() {
             </div>
           </Card>
         </Link>
-        <Link to="/investimentos" className="block">
+        <Link to="/investimentos/resumo" className="block">
           <Card className={hubCard}>
             <Wallet className="h-6 w-6" />
             <div>
@@ -50,7 +50,7 @@ export default function HomeOverview() {
             </div>
           </Card>
         </Link>
-        <Link to="/lista-desejos" className="block">
+        <Link to="/desejos" className="block">
           <Card className={hubCard}>
             <Heart className="h-6 w-6" />
             <div>
@@ -59,7 +59,7 @@ export default function HomeOverview() {
             </div>
           </Card>
         </Link>
-        <Link to="/lista-compras" className="block">
+        <Link to="/compras" className="block">
           <Card className={hubCard}>
             <ShoppingCart className="h-6 w-6" />
             <div>

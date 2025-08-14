@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode, type PropsWithChildren } from 'react';
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { motion } from "framer-motion";
 import {
   PieChart,
@@ -18,17 +17,13 @@ import {
   Landmark,
   Target,
   Plane,
-  ChevronRight,
 } from "lucide-react";
 
-import FilterBar from "@/components/FilterBar";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { usePeriod } from "@/state/periodFilter";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Skeleton } from "@/components/ui/Skeleton";
 import HeroSection from "@/components/dashboard/HeroSection";
-import KPIStrip, { type KpiItem } from "@/components/dashboard/KPIStrip";
 import ForecastChart from "@/components/dashboard/ForecastChart";
 import AlertList from "@/components/dashboard/AlertList";
 import InsightCard from "@/components/dashboard/InsightCard";
@@ -37,7 +32,6 @@ import {
   WidgetHeader,
   WidgetFooterAction,
 } from "@/components/dashboard/WidgetCard";
-import { useOverviewData } from "@/hooks/useOverviewData";
 import { usePeriod } from "@/state/periodFilter";
 import { formatCurrency } from "@/lib/utils";
 import MetasSummary from "@/components/MetasSummary";
@@ -76,50 +70,6 @@ function monthShortPtBR(n: number) {
 export default function Dashboard() {
   // MOCKs – depois plugamos hooks reais
   const kpis = { saldoMes: 7532, entradasMes: 12400, saidasMes: 4868, investidoTotal: 36250 };
-  const mockData = [
-    {
-      icon: Wallet,
-      label: "Saldo do mês",
-      value: formatCurrency(kpis.saldoMes),
-      comparison: "+12% vs mês anterior",
-      tooltip: "Saldo total após entradas e saídas do mês.",
-    },
-    {
-      icon: TrendingUp,
-      label: "Entradas",
-      value: formatCurrency(kpis.entradasMes),
-      comparison: "+8% vs mês anterior",
-      tooltip: "Entradas de dinheiro no mês.",
-    },
-    {
-      icon: CreditCard,
-      label: "Saídas",
-      value: formatCurrency(kpis.saidasMes),
-      comparison: "-5% vs mês anterior",
-      tooltip: "Saídas de dinheiro no mês.",
-    },
-    {
-      icon: PiggyBank,
-      label: "Investido total",
-      value: formatCurrency(kpis.investidoTotal),
-      comparison: "+2% vs mês anterior",
-      tooltip: "Total aplicado em investimentos.",
-    },
-    {
-      icon: Landmark,
-      label: "Patrimônio líquido",
-      value: formatCurrency(94850),
-      comparison: "+4% vs mês anterior",
-      tooltip: "Valor total dos ativos menos passivos.",
-    },
-    {
-      icon: Plane,
-      label: "Milhas",
-      value: "45k",
-      comparison: "+3% vs mês anterior",
-      tooltip: "Milhas acumuladas em programas de fidelidade.",
-    },
-  ];
 
   const base = [
     { m: "Jan", in: 3600, out: 1900 },
@@ -217,77 +167,28 @@ export default function Dashboard() {
     );
   }
 
-  const kpiItems: KpiItem[] = [
-    {
-      title: "Saldo do mês",
-      icon: <Wallet className="size-5" />,
-      colorFrom: "hsl(var(--chart-emerald))",
-      colorTo: "hsl(var(--chart-emerald)/.7)",
-      value: kpis.saldoMes,
-      spark: sparkSaldo,
-      sparkColor: "hsl(var(--chart-emerald))",
-    },
-    {
-      title: "Entradas",
-      icon: <TrendingUp className="size-5" />,
-      colorFrom: "hsl(var(--chart-blue))",
-      colorTo: "hsl(var(--chart-blue)/.7)",
-      value: kpis.entradasMes,
-      trend: "up",
-      spark: sparkIn,
-      sparkColor: "hsl(var(--chart-blue))",
-    },
-    {
-      title: "Saídas",
-      icon: <CreditCard className="size-5" />,
-      colorFrom: "hsl(var(--chart-rose))",
-      colorTo: "hsl(var(--chart-amber))",
-      value: kpis.saidasMes,
-      trend: "down",
-      spark: sparkOut,
-      sparkColor: "hsl(var(--chart-rose))",
-    },
-    {
-      title: "Investido total",
-      icon: <PiggyBank className="size-5" />,
-      colorFrom: "hsl(var(--chart-violet))",
-      colorTo: "hsl(var(--chart-blue))",
-      value: kpis.investidoTotal,
-      spark: sparkInv,
-      sparkColor: "hsl(var(--chart-violet))",
-    },
-  ];
 
-  return (
-    <motion.div
+    return (
+      <>
+        <motion.div
+          key={`${mode}-${month}-${year}`}
+          className="space-y-6"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
+          {/* HERO --------------------------------------------------- */}
+          <motion.div variants={item}>
+            <HeroSection />
+          </motion.div>
 
-      key={`${mode}-${month}-${year}`}
-      className="space-y-6"
-      variants={container}
-      initial="hidden"
-      animate="show"
-    >
+          {/* SELECTOR TOP-RIGHT ------------------------------------- */}
+          <motion.div variants={item} className="flex justify-end">
+            <PeriodSelector />
+          </motion.div>
 
-      {/* HERO --------------------------------------------------- */}
-      <motion.div variants={item}>
-        <HeroSection />
-      </motion.div>
-
-
-    <>
-      <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
-        {/* HERO --------------------------------------------------- */}
-        <motion.div variants={item}>
-          <HeroHeader />
-        </motion.div>
-
-      {/* SELECTOR TOP-RIGHT ------------------------------------- */}
-      <motion.div variants={item} className="flex justify-end">
-        <PeriodSelector />
-      </motion.div>
-
-      {/* KPIs --------------------------------------------------- */}
-      <motion.div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-4" variants={container}>
+          {/* KPIs --------------------------------------------------- */}
+          <motion.div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-4" variants={container}>
         <motion.div variants={item}>
           <KpiCard
             title="Saldo do mês"
@@ -410,7 +311,7 @@ export default function Dashboard() {
         </motion.div>
 
         <motion.div variants={item}>
-          <Card className="h-full overflow-x-auto">
+          <WidgetCard className="h-full overflow-x-auto">
             <CardHeader title="Distribuição da carteira" subtitle="Por classe de ativos" />
             {carteira.length === 0 ? (
               <EmptyState
@@ -577,7 +478,7 @@ export default function Dashboard() {
         </motion.div>
         <motion.div variants={item}>
           <InsightCard
-            to="/investimentos"
+            to="/investimentos/resumo"
             icon={<Landmark className="h-5 w-5" />}
             title="Resumo de investimentos"
             desc="Distribuição e aportes"
@@ -626,59 +527,6 @@ export default function Dashboard() {
 
 
 // ---------------------------------- partials
-function HeroHeader() {
-  return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white backdrop-blur-sm border-b border-white/10 shadow-lg">
-      {/* logo + título, sem descrição */}
-      <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <LogoFY size={44} />
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Finanças do Yago</h1>
-        </div>
-        <div className="mt-1 flex gap-2 sm:mt-0">
-          <Link to="/financas/mensal" className="rounded-xl bg-white/90 px-4 py-2 font-medium text-emerald-700 shadow hover:bg-white transition">
-            Ver Finanças
-          </Link>
-          <Link to="/investimentos" className="rounded-xl bg-white/15 px-4 py-2 font-medium text-white ring-1 ring-white/30 hover:bg-white/20 transition">
-            Ver Investimentos
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Logo “FY” estilizada em SVG
-function LogoFY({ size = 44 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 64 64"
-      role="img"
-      aria-label="Logo Finanças do Yago"
-      className="rounded-xl shadow-md"
-    >
-      <defs>
-        <linearGradient id="fy-bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#10b981" />
-          <stop offset="100%" stopColor="#6366f1" />
-        </linearGradient>
-        <linearGradient id="fy-txt" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="100%" stopColor="#e5e7eb" />
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" width="64" height="64" rx="14" fill="url(#fy-bg)" />
-      <circle cx="50" cy="14" r="18" fill="#fff" opacity="0.15" />
-      <g transform="translate(12,16)" fill="url(#fy-txt)">
-        <path d="M4 0h22v6H10v6h12v6H4z" />
-        <path d="M34 0l-6 9 6 9h-8l-4-6-4 6h-8l6-9-6-9h8l4 6 4-6z" />
-      </g>
-    </svg>
-  );
-}
-
 function Card({ className, children }: PropsWithChildren<{ className?: string }>) {
   return <div className={`card-surface p-5 sm:p-6 ${className || ""}`}>{children}</div>;
 }
@@ -689,13 +537,5 @@ function CardHeader({ title, subtitle }: { title: string; subtitle?: string }) {
       <h3 className="text-lg font-semibold">{title}</h3>
       {subtitle && <p className="text-sm text-zinc-500">{subtitle}</p>}
     </div>
-  );
-}
-
-function CardFooterAction({ to, label }: { to: string; label: string }) {
-  return (
-    <Link to={to} className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:underline">
-      {label} <ChevronRight className="size-4" />
-    </Link>
   );
 }
