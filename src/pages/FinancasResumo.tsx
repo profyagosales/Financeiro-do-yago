@@ -3,7 +3,6 @@ import { Plus, Download, Coins, TrendingUp, TrendingDown, PieChart, CalendarCloc
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Legend } from "recharts";
 
 import PageHeader from "@/components/PageHeader";
-import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { WidgetCard, WidgetHeader, WidgetFooterAction } from "@/components/dashboard/WidgetCard";
 import DailyBars from "@/components/charts/DailyBars";
 import CategoryDonut from "@/components/charts/CategoryDonut";
@@ -126,9 +125,7 @@ export default function FinancasResumo() {
 
   return (
     <div className="space-y-6 pb-24">
-      <PageHeader title="Finanças — Resumo" subtitle="Visão consolidada das suas finanças.">
-        <PeriodSelector />
-      </PageHeader>
+      <PageHeader title="Finanças — Resumo" subtitle="Visão consolidada das suas finanças." />
 
       <div className="flex gap-2">
         <Button onClick={() => setModalOpen(true)}>
@@ -262,27 +259,32 @@ export default function FinancasResumo() {
         <WidgetCard className="glass-card">
           <WidgetHeader title="Lançamentos recentes" />
           {uiTransacoes.length > 0 ? (
-            <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-700/60">
-              {uiTransacoes.slice(0, 5).map(t => (
-                <li key={t.id} className="flex justify-between py-2 text-sm">
-                  <span className="flex items-center gap-2 truncate pr-2">
-                    <span className="truncate">{t.description}</span>
-                    {t.origin?.wishlist_item_id && (
-                      <Badge variant="outline">Origem: Desejo</Badge>
-                    )}
-                  </span>
-                  <span
-                    className={
-                      t.type === "income"
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-rose-600 dark:text-rose-400"
-                    }
+            <div className="overflow-x-auto">
+              <ul className="flex gap-4">
+                {uiTransacoes.slice(0, 5).map(t => (
+                  <li
+                    key={t.id}
+                    className="min-w-[14rem] rounded-md border p-3 text-sm"
                   >
-                    {formatCurrency(t.value * (t.type === "income" ? 1 : -1))}
-                  </span>
-                </li>
-              ))}
-            </ul>
+                    <div className="mb-1 flex items-center gap-2">
+                      <span className="truncate">{t.description}</span>
+                      {t.origin?.wishlist_item_id && (
+                        <Badge variant="outline">Origem: Desejo</Badge>
+                      )}
+                    </div>
+                    <span
+                      className={
+                        t.type === "income"
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-rose-600 dark:text-rose-400"
+                      }
+                    >
+                      {formatCurrency(t.value * (t.type === "income" ? 1 : -1))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : (
             <EmptyState
               title="Nenhuma transação"

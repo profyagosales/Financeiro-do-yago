@@ -19,9 +19,8 @@ import {
 } from "recharts";
 
 import { Logo } from "@/components/Logo";
-import MetasSummary from "@/components/MetasSummary";
 import BalanceForecast from "@/components/dashboard/BalanceForecast";
-import PeriodSelector from "@/components/dashboard/PeriodSelector";
+import ProgressList from "@/components/dashboard/Progress";
 import InsightBar from "@/components/dashboard/InsightBar";
 import ForecastMiniChart from "@/components/dashboard/ForecastMiniChart";
 import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
@@ -35,6 +34,7 @@ import {
 } from "@/components/dashboard/WidgetCard";
 import { useRecurrences } from "@/hooks/useRecurrences";
 import { useInsights } from "@/hooks/useInsights";
+import { useGoals } from "@/hooks/useGoals";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card, CardHeader } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
@@ -126,13 +126,6 @@ export default function HomeOverview() {
     { nome: "Cartão Nubank", vencimento: "2025-08-16", valor: 830.0 },
   ];
 
-  const aportesRecentes = [
-    { data: "2025-08-03", tipo: "Renda fixa", ativo: "Tesouro Selic 2029", qtd: 1, preco: 550 },
-    { data: "2025-08-02", tipo: "FIIs", ativo: "MXRF11", qtd: 100, preco: 10.15 },
-    { data: "2025-08-01", tipo: "Ações", ativo: "PETR4", qtd: 20, preco: 38.4 },
-    { data: "2025-07-28", tipo: "Cripto", ativo: "BTC", qtd: 0.005, preco: 355000 },
-  ];
-
   const insightMessage = "Você economizou 15% a mais este mês.";
   const forecastData = base.slice(-6).map((d) => ({ month: d.m, in: d.in, out: d.out }));
   const { data: recurrences } = useRecurrences();
@@ -140,6 +133,21 @@ export default function HomeOverview() {
     { message: "Conta de luz vence em 3 dias" },
     { message: "Orçamento de lazer excedido" },
   ];
+
+  const { data: goals } = useGoals();
+  const metasItems = useMemo(
+    () =>
+      [...goals]
+        .sort((a, b) => (b.progress_pct || 0) - (a.progress_pct || 0))
+        .slice(0, 3)
+        .map((g) => ({ label: g.title, value: g.progress_pct || 0, total: 100 })),
+    [goals]
+  );
+  const investItems = useMemo(
+    () =>
+      carteira.map((c) => ({ label: c.name, value: c.value, total: kpis.investidoTotal })),
+    [carteira, kpis.investidoTotal]
+  );
 
   const shortcuts = [
     {
@@ -273,11 +281,6 @@ export default function HomeOverview() {
                 </motion.div>
               </div>
             </div>
-          </motion.div>
-
-          {/* SELECTOR TOP-RIGHT ------------------------------------- */}
-          <motion.div variants={item} className="flex justify-end">
-            <PeriodSelector />
           </motion.div>
 
           {/* KPIs --------------------------------------------------- */}
@@ -464,7 +467,7 @@ export default function HomeOverview() {
               title="Metas em andamento"
               subtitle="Progresso geral"
             />
-            <MetasSummary />
+            <ProgressList items={metasItems} />
             <WidgetFooterAction to="/financas/anual">Ver detalhes</WidgetFooterAction>
         </WidgetCard>
         </motion.div>
@@ -472,50 +475,11 @@ export default function HomeOverview() {
         <motion.div variants={item}>
           <WidgetCard className="h-full">
             <WidgetHeader
-              title="Aportes recentes"
-              subtitle="Últimas 5 operações"
+              title="Investimentos por classe"
+              subtitle="Participação no total"
             />
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[480px] text-sm">
-                <thead className="text-zinc-500">
-                  <tr>
-                    <th className="w-6 py-2"></th>
-                    <th className="py-2 text-left font-medium">Data</th>
-                    <th className="py-2 text-left font-medium">Ativo</th>
-                    <th className="py-2 text-left font-medium">Classe</th>
-                    <th className="py-2 text-right font-medium">Valor</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
-                  {aportesRecentes.length === 0 ? (
-                    <tr>
-                      <td colSpan={5}>
-                        <EmptyState
-                          icon={<TrendingUp className="h-6 w-6" />}
-                          title="Sem aportes"
-                        />
-                      </td>
-                    </tr>
-                  ) : (
-                    aportesRecentes.map((r) => (
-                      <tr key={r.data + r.ativo}>
-                        <td className="py-2">
-                          <BrandIcon name={`${r.ativo} ${r.tipo}`} />
-                        </td>
-                        <td className="py-2">
-                          {new Date(r.data).toLocaleDateString("pt-BR")}
-                        </td>
-                        <td className="py-2">{r.ativo}</td>
-                        <td className="py-2">{r.tipo}</td>
-                        <td className="py-2 text-right font-medium">
-                          {formatCurrency(r.preco * (r.qtd || 1))}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+            <ProgressList items={investItems} />
+            <WidgetFooterAction to="/investimentos/resumo">Ver detalhes</WidgetFooterAction>
           </WidgetCard>
         </motion.div>
       </motion.div>

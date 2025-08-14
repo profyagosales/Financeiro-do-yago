@@ -26,24 +26,19 @@ export default function LancamentosRecentesTable({ lancamentos, onViewDetails }:
         <EmptyState title="Sem lançamentos" />
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left">
-                <th className="py-2">Descrição</th>
-                <th className="py-2">Data</th>
-                <th className="py-2 text-right">Valor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lancamentos.map((l) => (
-                <tr key={l.id} className="border-t border-zinc-100/60 dark:border-zinc-800/60">
-                  <td className="py-2">{l.descricao}</td>
-                  <td className="py-2">{new Date(l.data).toLocaleDateString('pt-BR')}</td>
-                  <td className="py-2 text-right font-medium">{formatCurrency(l.valor)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ul className="flex gap-4">
+            {lancamentos.map((l) => (
+              <li key={l.id} className="min-w-[14rem] rounded-md border p-3 text-sm">
+                <div className="mb-1 font-medium">{l.descricao}</div>
+                <div className="text-xs text-muted-foreground">
+                  {new Date(l.data).toLocaleDateString('pt-BR')}
+                </div>
+                <div className="mt-1 text-right font-medium">
+                  {formatCurrency(l.valor)}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
