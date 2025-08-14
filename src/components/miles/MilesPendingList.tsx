@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
 import type { MilesProgram } from '@/components/miles/MilesHeader';
+import { BRAND_STYLE as BRANDS } from '@/components/BrandBadge';
 
 export type MilesPending = {
   id: string;
@@ -56,7 +57,7 @@ export default function MilesPendingList({ program }: { program?: MilesProgram }
           <tbody>
             {itens.map((m) => (
               <tr key={m.id} className="border-t">
-                {!program && <td className="py-2 capitalize">{m.program}</td>}
+                {!program && <td className="py-2">{BRANDS[m.program].label}</td>}
                 <td className="py-2">{m.partner}</td>
                 <td>{m.points}</td>
                 <td>{dayjs(m.expected_at).format('DD/MM/YYYY')}</td>
