@@ -2,8 +2,7 @@ import dayjs from 'dayjs';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useAuth } from '@/contexts/AuthContext';
-import type { MilesProgram } from '@/components/miles/MilesHeader';
-import { BRAND_STYLE as BRANDS } from '@/components/BrandBadge';
+import BRANDS, { type MilesProgram } from '@/components/miles/brandConfig';
 
 export type MilesPending = {
   id: string;
