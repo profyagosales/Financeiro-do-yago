@@ -17,7 +17,7 @@ export default function BalanceForecast({ current, forecast, ...rest }: BalanceF
       <p className="text-sm text-muted-foreground">
         {diff >= 0 ? '+' : '-'}{formatCurrency(Math.abs(diff))} em relação ao atual
       </p>
-      <WidgetFooterAction to="/financas/anual" label="Ver detalhes" />
+      <WidgetFooterAction to="/financas/anual">Ver detalhes</WidgetFooterAction>
     </WidgetCard>
   );
 }

@@ -24,7 +24,7 @@ export default function RecurrenceList({ items, ...rest }: RecurrenceListProps) 
           </li>
         ))}
       </ul>
-      <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
+      <WidgetFooterAction to="/financas/mensal">Ver detalhes</WidgetFooterAction>
     </WidgetCard>
   );
 }

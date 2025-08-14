@@ -455,7 +455,7 @@ export default function Dashboard() {
               subtitle="Próximos 10 dias"
             />
             <AlertList items={contasAVencer} />
-            <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
+            <WidgetFooterAction to="/financas/mensal">Ver detalhes</WidgetFooterAction>
           </WidgetCard>
         </motion.div>
 
@@ -466,10 +466,7 @@ export default function Dashboard() {
               subtitle="Progresso geral"
             />
             <MetasSummary />
-            <WidgetFooterAction
-              to="/financas/anual"
-              label="Ver detalhes"
-            />
+            <WidgetFooterAction to="/financas/anual">Ver detalhes</WidgetFooterAction>
           </WidgetCard>
         </motion.div>
 
@@ -520,7 +517,7 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
-            <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
+            <WidgetFooterAction to="/financas/mensal">Ver detalhes</WidgetFooterAction>
           </WidgetCard>
         </motion.div>
       </motion.div>
