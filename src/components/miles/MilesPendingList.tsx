@@ -1,78 +1,3 @@
-import dayjs from 'dayjs';
-import { useMemo } from 'react';
-
-import type { MilesProgram } from '@/components/MilesHeader';
-
-export type MilesPending = {
-  id: string;
-  program: MilesProgram;
-  partner: string;
-  points: number;
-  expected_at: string; // YYYY-MM-DD
-};
-
-// Dados mockados; integração futura com backend/Supabase
-const MOCK: MilesPending[] = [
-  {
-    id: '1',
-    program: 'livelo',
-    partner: 'Compra Loja X',
-    points: 500,
-    expected_at: dayjs().add(10, 'day').format('YYYY-MM-DD'),
-  },
-  {
-    id: '2',
-    program: 'latam',
-    partner: 'Cartão de crédito',
-    points: 1000,
-    expected_at: dayjs().add(30, 'day').format('YYYY-MM-DD'),
-  },
-  {
-    id: '3',
-    program: 'azul',
-    partner: 'Hotel',
-    points: 800,
-    expected_at: dayjs().add(20, 'day').format('YYYY-MM-DD'),
-  },
-];
-
-export default function MilesPendingList({ program }: { program?: MilesProgram }) {
-  const itens = useMemo(() => MOCK.filter((m) => !program || m.program === program), [program]);
-  const colSpan = program ? 3 : 4;
-
-  return (
-    <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
-      <h3 className="font-medium mb-3">A receber</h3>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="text-left text-slate-500">
-            <tr>
-              {!program && <th className="py-2">Programa</th>}
-              <th className="py-2">Origem</th>
-              <th>Pontos</th>
-              <th>Previsto</th>
-            </tr>
-          </thead>
-          <tbody>
-            {itens.map((m) => (
-              <tr key={m.id} className="border-t">
-                {!program && <td className="py-2 capitalize">{m.program}</td>}
-                <td className="py-2">{m.partner}</td>
-                <td>{m.points}</td>
-                <td>{dayjs(m.expected_at).format('DD/MM/YYYY')}</td>
-              </tr>
-            ))}
-            {itens.length === 0 && (
-              <tr>
-                <td colSpan={colSpan} className="py-10 text-center text-slate-500">
-                  Sem pendências.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { toast } from "sonner";
@@ -81,20 +6,18 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-type Program = "livelo" | "latampass" | "azul";
-
+import { BRAND, type MilesProgram } from "@/components/MilesHeader";
 type MileRow = {
   id: number;
   user_id: string;
-  program: Program;
+  program: MilesProgram;
   amount: number;
   expected_at: string | null;
   status: "pending" | "posted" | "expired";
   transaction_id: number | null;
 };
 
-export default function MilesPendingList({ program }: { program?: Program }) {
+export default function MilesPendingList({ program }: { program?: MilesProgram }) {
   const { user } = useAuth();
   const [rows, setRows] = useState<MileRow[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -142,7 +65,7 @@ export default function MilesPendingList({ program }: { program?: Program }) {
     <Card className="p-4">
       <div className="mb-3 flex items-center justify-between">
         <div className="font-medium">
-          A receber {program ? `— ${program === "livelo" ? "Livelo" : program === "latampass" ? "LATAM Pass" : "Azul"}` : ""}
+          A receber {program ? `— ${BRAND[program].name}` : ""}
         </div>
         <div className="text-sm text-muted-foreground">Total: {total.toLocaleString("pt-BR")} pts</div>
       </div>
@@ -166,8 +89,7 @@ export default function MilesPendingList({ program }: { program?: Program }) {
               {rows.map((r) => {
                 const d = r.expected_at ? dayjs(r.expected_at) : null;
                 const diff = d ? d.diff(dayjs(), "day") : null;
-                const diffLabel =
-                  diff === null ? "—" : diff === 0 ? "hoje" : diff > 0 ? `${diff}d` : `${diff}d`;
+                const diffLabel = diff === null ? "—" : diff === 0 ? "hoje" : `${diff}d`;
                 const diffClass =
                   diff === null
                     ? "text-muted-foreground"
@@ -178,7 +100,7 @@ export default function MilesPendingList({ program }: { program?: Program }) {
                     : "text-emerald-500";
                 return (
                   <tr key={r.id} className="border-b last:border-none">
-                    <td className="py-2 capitalize">{r.program}</td>
+                    <td className="py-2">{BRAND[r.program].name}</td>
                     <td className="py-2 text-right">{r.amount.toLocaleString("pt-BR")}</td>
                     <td className="py-2">
                       {r.expected_at ? dayjs(r.expected_at).format("DD/MM/YYYY") : "—"}
@@ -199,4 +121,3 @@ export default function MilesPendingList({ program }: { program?: Program }) {
     </Card>
   );
 }
-
