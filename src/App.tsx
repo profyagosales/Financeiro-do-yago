@@ -85,12 +85,17 @@ function AppRoutes() {
         <Routes>
             {/* Dashboard */}
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/home" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
             {/* Finanças */}
             <Route path="/financas/resumo" element={<FinancasResumo />} />
             <Route path="/financas/mensal" element={<FinancasMensal />} />
             <Route path="/financas/anual"  element={<FinancasAnual />} />
+            <Route
+              path="/resumo-financas"
+              element={<Navigate to="/financas/resumo" replace />}
+            />
 
             {/* Investimentos */}
             <Route path="/investimentos/resumo" element={<Investimentos />} />
