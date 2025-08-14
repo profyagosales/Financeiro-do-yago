@@ -17,13 +17,16 @@ import {
   Landmark,
   Target,
   Plane,
+  Heart,
+  ShoppingCart,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
+import { Logo } from "@/components/Logo";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { usePeriod } from "@/state/periodFilter";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import HeroSection from "@/components/dashboard/HeroSection";
 import ForecastChart from "@/components/dashboard/ForecastChart";
 import AlertList from "@/components/dashboard/AlertList";
 import InsightCard from "@/components/dashboard/InsightCard";
@@ -32,14 +35,10 @@ import {
   WidgetHeader,
   WidgetFooterAction,
 } from "@/components/dashboard/WidgetCard";
-import { usePeriod } from "@/state/periodFilter";
 import { formatCurrency } from "@/lib/utils";
 import MetasSummary from "@/components/MetasSummary";
-import InsightCard from "@/components/dashboard/InsightCard";
-import ForecastChart from "@/components/dashboard/ForecastChart";
 import RecurrenceList from "@/components/dashboard/RecurrenceList";
 import BalanceForecast from "@/components/dashboard/BalanceForecast";
-import AlertList from "@/components/dashboard/AlertList";
 
 
 // Garantir decorativos não interativos
@@ -134,6 +133,45 @@ export default function Dashboard() {
     { message: "Orçamento de lazer excedido" },
   ];
 
+  const shortcuts = [
+    {
+      title: "Finanças",
+      subtitle: "Entradas e saídas",
+      icon: CreditCard,
+      href: "/financas/resumo",
+    },
+    {
+      title: "Investimentos",
+      subtitle: "Carteira e aportes",
+      icon: PieChartIcon,
+      href: "/investimentos/resumo",
+    },
+    {
+      title: "Metas & Projetos",
+      subtitle: "Objetivos em progresso",
+      icon: Target,
+      href: "/metas",
+    },
+    {
+      title: "Milhas",
+      subtitle: "Programas e pontos",
+      icon: Plane,
+      href: "/milhas",
+    },
+    {
+      title: "Lista de desejos",
+      subtitle: "Itens que quero",
+      icon: Heart,
+      href: "/desejos",
+    },
+    {
+      title: "Lista de compras",
+      subtitle: "Planejar aquisições",
+      icon: ShoppingCart,
+      href: "/compras",
+    },
+  ];
+
   const { mode, month, year } = usePeriod();
 
   const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
@@ -179,7 +217,28 @@ export default function Dashboard() {
         >
           {/* HERO --------------------------------------------------- */}
           <motion.div variants={item}>
-            <HeroSection />
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-600/40 to-teal-600/40 p-8 text-white shadow-lg backdrop-blur-sm">
+              <div className="grid gap-8 md:grid-cols-2 md:items-center">
+                <div className="flex flex-col items-center gap-4 text-center md:items-start md:text-left">
+                  <Logo size="lg" />
+                  <h1 className="text-3xl font-bold tracking-tight">Financeiro do Yago</h1>
+                </div>
+                <motion.div className="grid grid-cols-2 gap-4 sm:grid-cols-3" variants={container}>
+                  {shortcuts.map(({ title, subtitle, icon: Icon, href }) => (
+                    <motion.div key={title} variants={item}>
+                      <Link
+                        to={href}
+                        className="group block rounded-xl border border-white/20 bg-white/10 p-4 transition hover:-translate-y-0.5 hover:ring-2 hover:ring-white/40"
+                      >
+                        <Icon className="mb-2 h-6 w-6" />
+                        <div className="font-medium">{title}</div>
+                        <div className="text-sm text-white/80">{subtitle}</div>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
+            </div>
           </motion.div>
 
           {/* SELECTOR TOP-RIGHT ------------------------------------- */}
@@ -527,58 +586,6 @@ export default function Dashboard() {
 
 
 // ---------------------------------- partials
-function HeroHeader() {
-  return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white backdrop-blur-sm border-b border-white/10 shadow-lg">
-      {/* logo + título, sem descrição */}
-      <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <LogoFY size={44} />
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Finanças do Yago</h1>
-        </div>
-        <div className="mt-1 flex gap-2 sm:mt-0">
-          <Link to="/financas/mensal" className="rounded-xl bg-white/90 px-4 py-2 font-medium text-emerald-700 shadow hover:bg-white transition">
-            Ver Finanças
-          </Link>
-          <Link to="/investimentos/resumo" className="rounded-xl bg-white/15 px-4 py-2 font-medium text-white ring-1 ring-white/30 hover:bg-white/20 transition">
-            Ver Investimentos
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Logo “FY” estilizada em SVG
-function LogoFY({ size = 44 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 64 64"
-      role="img"
-      aria-label="Logo Finanças do Yago"
-      className="rounded-xl shadow-md"
-    >
-      <defs>
-        <linearGradient id="fy-bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#10b981" />
-          <stop offset="100%" stopColor="#6366f1" />
-        </linearGradient>
-        <linearGradient id="fy-txt" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="100%" stopColor="#e5e7eb" />
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" width="64" height="64" rx="14" fill="url(#fy-bg)" />
-      <circle cx="50" cy="14" r="18" fill="#fff" opacity="0.15" />
-      <g transform="translate(12,16)" fill="url(#fy-txt)">
-        <path d="M4 0h22v6H10v6h12v6H4z" />
-        <path d="M34 0l-6 9 6 9h-8l-4-6-4 6h-8l6-9-6-9h8l4 6 4-6z" />
-      </g>
-    </svg>
-  );
-}
 function Card({ className, children }: PropsWithChildren<{ className?: string }>) {
   return <div className={`card-surface p-5 sm:p-6 ${className || ""}`}>{children}</div>;
 }
