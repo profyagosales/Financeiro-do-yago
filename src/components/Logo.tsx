@@ -1,3 +1,4 @@
+import React from "react";
 
 export type LogoProps = {
   size?: "sm" | "md" | "lg";

@@ -8,7 +8,10 @@ import CategoryDonut from '@/components/charts/CategoryDonut';
 import DailyBars from '@/components/charts/DailyBars';
 import { ModalTransacao } from '@/components/ModalTransacao';
 import PageHeader from '@/components/PageHeader';
-import SourcePicker from '@/components/SourcePicker';
+import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
+import CategoryPicker from '@/components/CategoryPicker';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 import TransactionsTable, { type UITransaction } from '@/components/TransactionsTable';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
@@ -22,6 +25,9 @@ import { useTransactions, type Transaction, type TransactionInput } from '@/hook
 
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
+
+// Shims rápidos para compilar. Depois podemos trocar pelos tipos reais.
+type BaseData = Record<string, any>;
 
 // utils simples p/ busca sem acento
 const norm = (s: string) =>

@@ -1,10 +1,11 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+// Use o Toaster direto do sonner para ter 'richColors' tipado
+import { Toaster } from 'sonner';
 
 import AppHotkeys from '@/components/AppHotkeys';
 import RouteLoader from '@/components/RouteLoader';
 import Sidebar from '@/components/Sidebar';
-import { Toaster } from '@/components/ui/Toasts';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 /* ---------- lazy imports de páginas ---------- */
 const Dashboard      = lazy(() => import('./pages/Dashboard'));

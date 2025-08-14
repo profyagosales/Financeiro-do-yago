@@ -13,6 +13,7 @@ type Story = StoryObj<typeof Logo>;
 
 export const Default: Story = {
   args: {
-    size: 48,
+    // o componente aceita 'sm' | 'md' | 'lg'
+    size: 'lg',
   },
 };
