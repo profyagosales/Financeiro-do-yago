@@ -378,7 +378,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
         </div>
         </div>
 
-        <div className="sticky bottom-0 bg-background/80 backdrop-blur p-4 border-t">
+        <div className="sticky bottom-0 bg-background/80 backdrop-blur border-t p-4">
           <DialogFooter>
             <Button variant="ghost" onClick={onClose} disabled={loading}>Cancelar</Button>
             <Button onClick={handleSubmit} disabled={loading}>
