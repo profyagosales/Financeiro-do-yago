@@ -58,7 +58,7 @@ export default function MilhasHome() {
             </CardHeader>
           </Card>
         </Link>
-        <Link to="/milhas/latam" className="block">
+        <Link to="/milhas/latampass" className="block">
           <Card className="hover:bg-muted/50">
             <CardHeader className="text-center">
               <CardTitle>LATAM Pass</CardTitle>

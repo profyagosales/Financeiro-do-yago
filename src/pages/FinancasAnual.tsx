@@ -110,7 +110,7 @@ export default function FinancasAnual() {
             <div>
               <span className="mb-1 block text-xs text-emerald-100/90">Ano</span>
               <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
-                <SelectTrigger className="w-full rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+                <SelectTrigger className="min-w-[120px] bg-background text-foreground">
                   <SelectValue placeholder="Ano" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">

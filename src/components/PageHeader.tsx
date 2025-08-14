@@ -1,20 +1,37 @@
 // src/components/PageHeader.tsx
 import type { ReactNode } from "react";
 
+import { cn } from "@/lib/utils";
+
 export type Breadcrumb = { label: string; href?: string };
 
 export type PageHeaderProps = {
-  title: string; subtitle?: string; icon?: ReactNode;
-  actions?: ReactNode; breadcrumbs?: Breadcrumb[]; children?: ReactNode;
+  title: string;
+  subtitle?: string;
+  icon?: ReactNode;
+  actions?: ReactNode;
+  breadcrumbs?: Breadcrumb[];
+  children?: ReactNode;
+  gradient?: string;
+  logoSrc?: string;
 };
 
 const PageHeader = (props: PageHeaderProps) => {
-  const { title, subtitle, icon, actions, breadcrumbs, children } = props;
+  const { title, subtitle, icon, actions, breadcrumbs, children, gradient, logoSrc } = props;
   return (
-    <div className="mb-6 rounded-xl bg-gradient-to-r from-emerald-900 to-teal-700 text-white">
+    <div
+      className={cn(
+        "mb-6 rounded-xl text-white",
+        gradient ? `bg-gradient-to-r ${gradient}` : "bg-gradient-to-r from-emerald-900 to-teal-700"
+      )}
+    >
       <div className="container mx-auto px-4 py-5 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          {icon ? <div className="rounded-lg bg-white/10 p-2 shrink-0">{icon}</div> : null}
+          {logoSrc ? (
+            <img src={logoSrc} alt="" className="h-8 w-8 shrink-0 rounded-md" />
+          ) : icon ? (
+            <div className="rounded-lg bg-white/10 p-2 shrink-0">{icon}</div>
+          ) : null}
           <div className="min-w-0">
             <h1 className="text-xl sm:text-2xl font-semibold truncate">{title}</h1>
             {subtitle ? (

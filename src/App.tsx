@@ -9,7 +9,10 @@ import Sidebar from '@/components/Sidebar';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { PeriodProvider } from '@/contexts/PeriodContext';
 /* ---------- lazy imports de páginas ---------- */
-const Dashboard      = lazy(() => import('./pages/Dashboard'));
+// Renomeamos o antigo "Dashboard" (focado em finanças) para FinancasResumo
+const FinancasResumo = lazy(() => import('./pages/FinancasResumo'));
+// Novo dashboard geral com cartões-resumo de módulos (finanças, investimentos, metas, milhas, listas)
+const Dashboard      = lazy(() => import('./pages/HomeOverview'));
 const FinancasMensal = lazy(() => import('./pages/FinancasMensal'));
 const FinancasAnual  = lazy(() => import('./pages/FinancasAnual'));
 
@@ -23,6 +26,7 @@ const CarteiraCripto    = lazy(() => import('./pages/CarteiraCripto'));
 
 const Metas = lazy(() => import('./pages/Metas'));
 
+const MilhasHome   = lazy(() => import('./pages/MilhasHome'));
 const MilhasLivelo = lazy(() => import('./pages/MilhasLivelo'));
 const MilhasLatam  = lazy(() => import('./pages/MilhasLatam'));
 const MilhasAzul   = lazy(() => import('./pages/MilhasAzul'));
@@ -81,13 +85,12 @@ function AppRoutes() {
         <Suspense fallback={<RouteLoader />}>
 
           <Routes>
-            {/* redirect raiz */}
-            <Route path="/" element={<Navigate to="/dashboard" />} />
-
             {/* Dashboard */}
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/" element={<Dashboard />} />
 
             {/* Finanças */}
+            <Route path="/financas/resumo" element={<FinancasResumo />} />
             <Route path="/financas/mensal" element={<FinancasMensal />} />
             <Route path="/financas/anual"  element={<FinancasAnual />} />
 
@@ -104,6 +107,7 @@ function AppRoutes() {
             <Route path="/metas" element={<Metas />} />
 
             {/* Milhas */}
+            <Route path="/milhas"           element={<MilhasHome />} />
             <Route path="/milhas/livelo"    element={<MilhasLivelo />} />
             <Route path="/milhas/latampass" element={<MilhasLatam />} />
             <Route path="/milhas/azul"      element={<MilhasAzul />} />
