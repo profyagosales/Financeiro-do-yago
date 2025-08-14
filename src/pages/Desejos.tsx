@@ -7,6 +7,7 @@ import KPIStrip, { type KpiItem } from "@/components/dashboard/KPIStrip";
 import WishlistNewItemModal, { WishlistItem } from "@/components/wishlist/WishlistNewItemModal";
 import WishlistSimulateModal from "@/components/wishlist/WishlistSimulateModal";
 import WishlistDrawer from "@/components/wishlist/WishlistDrawer";
+import WishlistFilters from "@/components/wishlist/WishlistFilters";
 
 export default function Desejos() {
   const [items, setItems] = React.useState<WishlistItem[]>([
@@ -85,6 +86,11 @@ export default function Desejos() {
 
   return (
     <div className="space-y-4">
+      <WishlistFilters
+        onPeriodChange={() => {}}
+        onStatusChange={() => {}}
+        onCategoryChange={() => {}}
+      />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">🛍️ Desejos</h1>
         <Button onClick={() => setNewOpen(true)}>Novo desejo</Button>
