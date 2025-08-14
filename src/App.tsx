@@ -82,10 +82,10 @@ function AppRoutes() {
       <Suspense fallback={<RouteLoader />}>
 
         <Routes>
-            {/* Home overview */}
-            <Route path="/homeoverview" element={<HomeOverview />} />
-            <Route path="/home" element={<Navigate to="/homeoverview" replace />} />
-            <Route path="/" element={<Navigate to="/homeoverview" replace />} />
+            {/* Dashboard */}
+            <Route path="/dashboard" element={<HomeOverview />} />
+            <Route path="/home" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
             {/* Finanças */}
             <Route path="/financas/resumo" element={<FinancasResumo />} />

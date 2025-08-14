@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const map: Record<string, string> = {
-  d: "/homeoverview",
+  d: "/dashboard",
   f: "/financas/mensal",
   i: "/investimentos/resumo",
   m: "/metas",

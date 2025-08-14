@@ -44,7 +44,7 @@ export const navGroups: NavGroup[] = [
 ];
 
 export const navRoutes: NavRoute[] = [
-  { label: 'Visão geral', to: '/homeoverview', variant: 'pill' },
+  { label: 'Visão geral', to: '/dashboard', variant: 'pill' },
   { label: 'Finanças', to: '/financas/resumo' },
   { label: 'Investimentos', to: '/investimentos/resumo' },
   { label: 'Metas & Projetos', to: '/metas' },
@@ -55,7 +55,7 @@ export const navRoutes: NavRoute[] = [
 
 export const dashboardNavItem: NavItem = {
   label: 'Visão geral',
-  to: '/homeoverview',
+  to: '/dashboard',
 };
 
 export function getNavItem(pathname: string): NavItem | null {
