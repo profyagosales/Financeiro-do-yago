@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 
-import AppTopbar from "@/components/TopNav";
+import Topbar from "@/components/layout/Topbar";
 import { cn } from "@/lib/utils";
 
 type AppShellProps = PropsWithChildren<{
@@ -10,7 +10,7 @@ type AppShellProps = PropsWithChildren<{
 export default function AppShell({ children, mainClassName }: AppShellProps) {
   return (
     <>
-      <AppTopbar />
+      <Topbar />
       <main className={cn("pt-20", mainClassName)}>{children}</main>
     </>
   );
