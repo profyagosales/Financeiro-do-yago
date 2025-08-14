@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+
 import MilesHeader, { type MilesProgram } from '@/components/MilesHeader';
 import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
@@ -9,35 +10,12 @@ import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
 import ModalMilesMovement, { type MilesMovement } from '@/components/ModalMilesMovement';
 import MilesPendingList from '@/components/miles/MilesPendingList';
-import liveloLogo from '@/assets/logos/livelo.svg';
-import latamLogo from '@/assets/logos/latampass.svg';
-import azulLogo from '@/assets/logos/azul.svg';
+import { BRANDS } from '@/components/miles/brandConfig';
 
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
 export default function MilhasLivelo({ program = 'livelo' }: { program?: MilesProgram }) {
-type Program = 'livelo' | 'latam' | 'azul';
-
-const CONFIG: Record<Program, { title: string; gradient: string; logo: string }> = {
-  livelo: {
-    title: 'Milhas — Livelo',
-    gradient: 'from-fuchsia-600 via-pink-500 to-rose-500',
-    logo: liveloLogo,
-  },
-  latam: {
-    title: 'Milhas — LATAM Pass',
-    gradient: 'from-red-600 via-rose-600 to-purple-600',
-    logo: latamLogo,
-  },
-  azul: {
-    title: 'Milhas — Azul',
-    gradient: 'from-sky-600 via-cyan-600 to-blue-600',
-    logo: azulLogo,
-  },
-};
-
-export default function MilhasLivelo({ program = 'livelo' }: { program?: Program }) {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<MilesMovement | null>(null);
 
@@ -63,7 +41,7 @@ export default function MilhasLivelo({ program = 'livelo' }: { program?: Program
 
   const thisMonth = useMemo(() => dayjs().format('YYYY-MM'), []);
   const ganhosMes = useMemo(() => movs.filter(m=>m.kind==='earn'   && m.date.startsWith(thisMonth)).reduce((s,m)=>s+m.points,0), [movs, thisMonth]);
-  const resgMes  = useMemo(() => movs.filter(m=>m.kind==='redeem' && m.date.startsWith(thisMonth)).reduce((s,m)=>s+m.points,0), [movs, thisMonth]);
+  const resgMes  = useMemo(() => movs.filter(m=>m.kind==='redeem' && m.date.startsWith(thisMonth)).reduce((s,m)=>s+m.points,0),[movs, thisMonth]);
 
   const donut = useMemo(() => ([
     { name: 'Ganhos',   value: ganhosMes },
@@ -86,7 +64,7 @@ export default function MilhasLivelo({ program = 'livelo' }: { program?: Program
     toast.success('Excluído');
   };
 
-  const cfg = CONFIG[program];
+  const cfg = BRANDS[program];
 
   return (
     <div className="space-y-6">
@@ -95,10 +73,10 @@ export default function MilhasLivelo({ program = 'livelo' }: { program?: Program
       </MilesHeader>
       <MilesPendingList program={program} />
       <PageHeader
-        title={cfg.title}
+        title={`Milhas — ${cfg.label}`}
         subtitle="Saldo, a receber e expiração"
         gradient={cfg.gradient}
-        logoSrc={cfg.logo}
+        logo={<cfg.Logo className="h-8 w-8" />}
         actions={<Button onClick={()=>{ setEdit(null); setOpen(true); }}>Novo movimento</Button>}
       />
 
