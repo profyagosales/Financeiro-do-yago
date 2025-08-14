@@ -1,5 +1,3 @@
-import * as React from "react";
-
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import WishlistNewItemModal, { WishlistItem } from "@/components/wishlist/WishlistNewItemModal";
@@ -54,6 +52,7 @@ export default function Desejos() {
         <h1 className="text-2xl font-bold">🛍️ Desejos</h1>
         <Button onClick={() => setNewOpen(true)}>Novo desejo</Button>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map(item => (
           <Card
