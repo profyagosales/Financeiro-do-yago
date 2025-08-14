@@ -6,7 +6,6 @@ import RouteLoader from '@/components/RouteLoader';
 import Sidebar from '@/components/Sidebar';
 import { Toaster } from '@/components/ui/Toasts';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-
 /* ---------- lazy imports de páginas ---------- */
 const Dashboard      = lazy(() => import('./pages/Dashboard'));
 const FinancasMensal = lazy(() => import('./pages/FinancasMensal'));

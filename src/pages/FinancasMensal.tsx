@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import 'dayjs/locale/pt-br';
 import { CalendarRange, Clock, Coins, Copy, Download, Plus, Search, TrendingDown, TrendingUp } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -21,6 +20,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useCategories } from '@/hooks/useCategories';
 import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
 
+import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
 // utils simples p/ busca sem acento
