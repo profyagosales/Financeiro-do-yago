@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   PieChart as PieIcon,
-  LineChart as LineIcon,
   Landmark,
   Building2,
   CandlestickChart,
@@ -21,6 +20,7 @@ import {
   CartesianGrid,
 } from "recharts";
 
+import { LineChart as LineIcon } from "@/components/icons";
 import PageHeader from "@/components/PageHeader";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";

@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import type { Transaction } from './useTransactions';
 
 // Simple moving average forecasting utilities.
@@ -48,5 +50,13 @@ export function forecastMonthEndBalance(trans: Transaction[], window = 7) {
   const daysLeft = Math.max(0, Math.round((end.getTime() - today.getTime()) / MS_PER_DAY));
   const change = forecast.slice(0, daysLeft).reduce((s, p) => s + p.value, 0);
   return current + change;
+}
+
+export function useForecast(trans: Transaction[], window = 7) {
+  return useMemo(() => {
+    const data = forecastCashflowNext30(trans, window);
+    const balance = forecastMonthEndBalance(trans, window);
+    return { data, balance };
+  }, [trans, window]);
 }
 

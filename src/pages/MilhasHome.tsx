@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Plane } from 'lucide-react';
 
+import { Plane } from '@/components/icons';
 import PageHeader from '@/components/PageHeader';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import MilesPendingList from '@/components/miles/MilesPendingList';
