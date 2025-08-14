@@ -14,6 +14,7 @@ import { useCategories } from '@/hooks/useCategories';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useCreditCards } from '@/hooks/useCreditCards';
 import MoneyInput from '@/components/MoneyInput';
+import type { ShoppingItem } from '@/hooks/useTransactions';
 
 // --- Types -----------------------------------------------------------------
 export type BaseData = {
@@ -46,6 +47,35 @@ export type Props = {
   initialData?: BaseData | null;
   onSubmit: (data: BaseData) => Promise<void> | void;
 };
+
+export function baseDataFromShoppingItem(item: ShoppingItem, pricePaid?: number): BaseData {
+  return {
+    date: new Date().toISOString().slice(0, 10),
+    description: item.title,
+    value: pricePaid ?? item.price ?? item.estimated_price ?? 0,
+    type: 'expense',
+    category: 'Outros',
+    category_id: item.wishlist_category_id ?? item.category_id ?? null,
+    payment_method: 'Outro',
+    source_kind: 'account',
+    source_id: null,
+    source_label: null,
+    installments: null,
+    notes: null,
+    attachment_file: null,
+    miles:
+      item.accumulates_miles &&
+      item.miles_program &&
+      item.miles_qty &&
+      item.miles_expected_at
+        ? {
+            program: item.miles_program as any,
+            amount: item.miles_qty,
+            expected_at: item.miles_expected_at,
+          }
+        : null,
+  };
+}
 
 const METODOS = ['Pix','Cartão','Dinheiro','Boleto','Transferência','Outro'];
 
