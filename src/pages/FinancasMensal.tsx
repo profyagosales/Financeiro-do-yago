@@ -24,11 +24,10 @@ import { useCategories } from '@/hooks/useCategories';
 import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
+import { exportTransactionsPDF } from '@/utils/pdf';
 
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
-
-
 // utils simples p/ busca sem acento
 const norm = (s: string) =>
   (s || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
@@ -36,36 +35,6 @@ const norm = (s: string) =>
 // força qualquer valor a número válido
 const n = (v: unknown) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
-// CSV helper local (exporta apenas filtradas)
-function toCSV(rows: UITransaction[]) {
-  const header = [
-    'id',
-    'date',
-    'description',
-    'value',
-    'type',
-    'category',
-    'source_kind',
-    'source_id',
-    'installment_no',
-    'installment_total',
-  ].join(',');
-  const lines = rows.map((r) =>
-    [
-      r.id,
-      r.date,
-      JSON.stringify(r.description ?? ''),
-      r.value,
-      r.type,
-      JSON.stringify(r.category ?? ''),
-      r.source_kind ?? '',
-      JSON.stringify(r.source_id ?? ''),
-      r.installment_no ?? '',
-      r.installment_total ?? '',
-    ].join(',')
-  );
-  return [header, ...lines].join('\n');
-}
 
 export default function FinancasMensal() {
   // ===== filtros locais sincronizados com URL =====
@@ -292,14 +261,11 @@ export default function FinancasMensal() {
       toast.info('Nada para exportar');
       return;
     }
-    const csv = toCSV(transacoesFiltradas);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `financas-${mesAtual}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    exportTransactionsPDF(
+      transacoesFiltradas,
+      { categoriaId, fonte, busca },
+      mesAtual
+    );
   };
 
   const abrirDuplicar = () => {
@@ -431,7 +397,7 @@ export default function FinancasMensal() {
             <Plus className="h-4 w-4" /> Nova transação
           </Button>
           <Button variant="outline" onClick={handleExport} className="inline-flex items-center gap-2">
-            <Download className="h-4 w-4" /> Exportar CSV
+            <Download className="h-4 w-4" /> Exportar PDF
           </Button>
           <Button variant="outline" onClick={abrirDuplicar} className="inline-flex items-center gap-2">
             <Copy className="h-4 w-4" /> Duplicar
