@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { Plus, Download, Coins, TrendingUp, TrendingDown, PieChart, CalendarClock } from "lucide-react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { Plus, Download, Coins, TrendingUp, TrendingDown, PieChart, CalendarClock, Info } from "lucide-react";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Legend } from "recharts";
 
 import PageHeader from "@/components/PageHeader";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
@@ -26,7 +26,7 @@ import { KpiCard } from "@/components/financas";
 
 export default function FinancasResumo() {
   const { month, year } = usePeriod();
-  const { data: transacoes, addSmart, list } = useTransactions(year, month);
+  const { data: transacoes, addSmart, list, loading: transLoading } = useTransactions(year, month);
   const { data: contas } = useBills(year, month);
   const { flat: categorias } = useCategories();
   const { data: recurrences } = useRecurrences();
@@ -133,6 +133,29 @@ export default function FinancasResumo() {
 
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <WidgetCard className="glass-card">
+          <div className="mb-3 flex items-center gap-2">
+            <h3 className="text-lg font-semibold">Previsão — 30 dias</h3>
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="size-4 text-zinc-400" />
+                </TooltipTrigger>
+                <TooltipContent>Estimativa simples baseada na média dos últimos dias</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          {transacoes.length > 0 ? (
+            <>
+              <ForecastMiniChart data={forecastData} isLoading={transLoading} />
+              <p className="mt-2 text-sm text-zinc-500">
+                Saldo no fim do mês: {formatCurrency(forecastBalance)}
+              </p>
+            </>
+          ) : (
+            <EmptyState title="Sem dados" />
+          )}
+        </WidgetCard>
+        <WidgetCard className="glass-card">
           <WidgetHeader title="Fluxo de caixa mensal" />
           {uiTransacoes.length > 0 ? (
             <DailyBars transacoes={uiTransacoes} mes={`${year}-${String(month).padStart(2, "0")}`} />
@@ -154,7 +177,7 @@ export default function FinancasResumo() {
                 <BarChart data={last12}>
                   <XAxis dataKey="mes" />
                   <YAxis />
-                  <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                  <RechartsTooltip formatter={(v: number) => formatCurrency(v)} />
                   <Legend />
                   <Bar dataKey="entradas" fill="#10b981" />
                   <Bar dataKey="saidas" fill="#ef4444" />
