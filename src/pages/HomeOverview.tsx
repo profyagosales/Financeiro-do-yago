@@ -32,14 +32,15 @@ import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
 import RecurrenceWidget from "@/components/dashboard/RecurrenceWidget";
 import AlertList from "@/components/dashboard/AlertList";
 import InsightCard from "@/components/dashboard/InsightCard";
-import { KpiCard } from "@/components/dashboard/KPIStrip";
 import {
   WidgetCard,
   WidgetFooterAction,
   WidgetHeader,
 } from "@/components/dashboard/WidgetCard";
 import { useRecurrences } from "@/hooks/useRecurrences";
+import { useInsights } from "@/hooks/useInsights";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Card, CardHeader } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 import { usePeriod } from "@/state/periodFilter";
 import { KpiCard } from "@/components/financas";
