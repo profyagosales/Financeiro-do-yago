@@ -2,42 +2,18 @@ import { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import MilesHeader, { type MilesProgram } from '@/components/MilesHeader';
-import PageHeader from '@/components/PageHeader';
+
+import MilesHeader, { BRAND, type MilesProgram } from '@/components/miles/MilesHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
 import ModalMilesMovement, { type MilesMovement } from '@/components/ModalMilesMovement';
 import MilesPendingList from '@/components/miles/MilesPendingList';
-import liveloLogo from '@/assets/logos/livelo.svg';
-import latamLogo from '@/assets/logos/latampass.svg';
-import azulLogo from '@/assets/logos/azul.svg';
 
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
-export default function MilhasLivelo({ program = 'livelo' }: { program?: MilesProgram }) {
-type Program = 'livelo' | 'latam' | 'azul';
-
-const CONFIG: Record<Program, { title: string; gradient: string; logo: string }> = {
-  livelo: {
-    title: 'Milhas — Livelo',
-    gradient: 'from-fuchsia-600 via-pink-500 to-rose-500',
-    logo: liveloLogo,
-  },
-  latam: {
-    title: 'Milhas — LATAM Pass',
-    gradient: 'from-red-600 via-rose-600 to-purple-600',
-    logo: latamLogo,
-  },
-  azul: {
-    title: 'Milhas — Azul',
-    gradient: 'from-sky-600 via-cyan-600 to-blue-600',
-    logo: azulLogo,
-  },
-};
-
-export default function MilhasLivelo({ program = 'livelo' }: { program?: Program }) {
+export default function MilhasLivelo({ program = 'livelo' as MilesProgram }: { program?: MilesProgram }) {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<MilesMovement | null>(null);
 
@@ -62,8 +38,10 @@ export default function MilhasLivelo({ program = 'livelo' }: { program?: Program
   }, [movs]);
 
   const thisMonth = useMemo(() => dayjs().format('YYYY-MM'), []);
-  const ganhosMes = useMemo(() => movs.filter(m=>m.kind==='earn'   && m.date.startsWith(thisMonth)).reduce((s,m)=>s+m.points,0), [movs, thisMonth]);
-  const resgMes  = useMemo(() => movs.filter(m=>m.kind==='redeem' && m.date.startsWith(thisMonth)).reduce((s,m)=>s+m.points,0), [movs, thisMonth]);
+  const ganhosMes = useMemo(() => movs.filter(m=>m.kind==='earn'   && m.date.startsWith(thisMonth)).reduce((s,m)=>s+m.points,0),
+ [movs, thisMonth]);
+  const resgMes  = useMemo(() => movs.filter(m=>m.kind==='redeem' && m.date.startsWith(thisMonth)).reduce((s,m)=>s+m.points,0),
+[movs, thisMonth]);
 
   const donut = useMemo(() => ([
     { name: 'Ganhos',   value: ganhosMes },
@@ -86,33 +64,50 @@ export default function MilhasLivelo({ program = 'livelo' }: { program?: Program
     toast.success('Excluído');
   };
 
-  const cfg = CONFIG[program];
+  const cfg = BRAND[program];
 
   return (
-    <div className="space-y-6">
+    <div
+      className="space-y-6 p-4 sm:p-6"
+      style={{ background: `radial-gradient(circle at 25% 25%, ${cfg.color}22, transparent 70%)` }}
+    >
       <MilesHeader program={program} subtitle="Saldo, expiração e movimentos">
         <Button onClick={()=>{ setEdit(null); setOpen(true); }}>Novo movimento</Button>
       </MilesHeader>
+
       <MilesPendingList program={program} />
-      <PageHeader
-        title={cfg.title}
-        subtitle="Saldo, a receber e expiração"
-        gradient={cfg.gradient}
-        logoSrc={cfg.logo}
-        actions={<Button onClick={()=>{ setEdit(null); setOpen(true); }}>Novo movimento</Button>}
-      />
 
       {/* KPIs */}
       <section className="grid gap-4 sm:grid-cols-4">
-        <MotionCard><div><div className="text-sm text-slate-500">Saldo</div><AnimatedNumber value={saldo} currency={false} /></div></MotionCard>
-        <MotionCard><div><div className="text-sm text-slate-500">Expira (60 dias)</div><AnimatedNumber value={expira60} currency={false} /></div></MotionCard>
-        <MotionCard><div><div className="text-sm text-slate-500">Ganhos (mês)</div><AnimatedNumber value={ganhosMes} currency={false} /></div></MotionCard>
-        <MotionCard><div><div className="text-sm text-slate-500">Resgates (mês)</div><AnimatedNumber value={-resgMes} currency={false} /></div></MotionCard>
+        <MotionCard>
+          <div>
+            <div className="text-sm text-muted-foreground">Saldo</div>
+            <AnimatedNumber value={saldo} currency={false} />
+          </div>
+        </MotionCard>
+        <MotionCard>
+          <div>
+            <div className="text-sm text-muted-foreground">Expira (60 dias)</div>
+            <AnimatedNumber value={expira60} currency={false} />
+          </div>
+        </MotionCard>
+        <MotionCard>
+          <div>
+            <div className="text-sm text-muted-foreground">Ganhos (mês)</div>
+            <AnimatedNumber value={ganhosMes} currency={false} />
+          </div>
+        </MotionCard>
+        <MotionCard>
+          <div>
+            <div className="text-sm text-muted-foreground">Resgates (mês)</div>
+            <AnimatedNumber value={-resgMes} currency={false} />
+          </div>
+        </MotionCard>
       </section>
 
       {/* Donut mês */}
-      <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
-        <h3 className="font-medium mb-3">Movimentos no mês</h3>
+      <div className="rounded-xl border border-black/10 dark:border-white/10 bg-background p-4">
+        <h3 className="font-medium mb-3 text-foreground">Movimentos no mês</h3>
         <div className="h-[300px]">
           <ResponsiveContainer>
             <PieChart>
@@ -128,16 +123,16 @@ export default function MilhasLivelo({ program = 'livelo' }: { program?: Program
       </div>
 
       {/* Tabela simples */}
-      <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
-        <h3 className="font-medium mb-3">Movimentos</h3>
+      <div className="rounded-xl border border-black/10 dark:border-white/10 bg-background p-4">
+        <h3 className="font-medium mb-3 text-foreground">Movimentos</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="text-left text-slate-500">
+            <thead className="text-left text-muted-foreground">
               <tr><th className="py-2">Data</th><th>Tipo</th><th>Pontos</th><th>Origem</th><th>Expira</th><th></th></tr>
             </thead>
             <tbody>
               {movs.map(m => (
-                <tr key={m.id} className="border-t">
+                <tr key={m.id} className="border-t border-black/10 dark:border-white/10">
                   <td className="py-2">{dayjs(m.date).format('DD/MM/YYYY')}</td>
                   <td className={m.kind==='earn'?'text-emerald-600':'text-rose-600'}>{m.kind==='earn'?'Ganhos':'Resgates'}</td>
                   <td>{m.kind==='redeem' ? `- ${m.points}` : m.points}</td>
@@ -150,7 +145,7 @@ export default function MilhasLivelo({ program = 'livelo' }: { program?: Program
                 </tr>
               ))}
               {movs.length===0 && (
-                <tr><td colSpan={6} className="py-10 text-center text-slate-500">Sem movimentos.</td></tr>
+                <tr><td colSpan={6} className="py-10 text-center text-muted-foreground">Sem movimentos.</td></tr>
               )}
             </tbody>
           </table>
@@ -166,3 +161,4 @@ export default function MilhasLivelo({ program = 'livelo' }: { program?: Program
     </div>
   );
 }
+
