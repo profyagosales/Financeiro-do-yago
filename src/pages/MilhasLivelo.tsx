@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import { toast } from "sonner";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
-import MilesHeader from "@/components/MilesHeader";
 import PageHeader from "@/components/PageHeader";
 import { MotionCard } from "@/components/ui/MotionCard";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
@@ -19,20 +18,17 @@ dayjs.locale("pt-br");
 
 type Program = "livelo" | "latam" | "azul";
 
-const CONFIG: Record<Program, { title: string; gradient: string; logo: string }> = {
+const CONFIG: Record<Program, { title: string; logo: string }> = {
   livelo: {
     title: "Milhas — Livelo",
-    gradient: "from-fuchsia-600 via-pink-500 to-rose-500",
     logo: liveloLogo,
   },
   latam: {
     title: "Milhas — LATAM Pass",
-    gradient: "from-red-600 via-rose-600 to-purple-600",
     logo: latamLogo,
   },
   azul: {
     title: "Milhas — Azul",
-    gradient: "from-sky-600 via-cyan-600 to-blue-600",
     logo: azulLogo,
   },
 };
@@ -140,21 +136,9 @@ export default function MilhasLivelo({ program = "livelo" }: { program?: Program
 
   return (
     <div className="space-y-6">
-      <MilesHeader program={program} subtitle="Saldo, expiração e movimentos">
-        <Button
-          onClick={() => {
-            setEdit(null);
-            setOpen(true);
-          }}
-        >
-          Novo movimento
-        </Button>
-      </MilesHeader>
-      <MilesPendingList program={program} />
       <PageHeader
         title={cfg.title}
         subtitle="Saldo, a receber e expiração"
-        gradient={cfg.gradient}
         logoSrc={cfg.logo}
         actions={
           <Button
@@ -167,6 +151,7 @@ export default function MilhasLivelo({ program = "livelo" }: { program?: Program
           </Button>
         }
       />
+      <MilesPendingList program={program} />
 
       {/* KPIs */}
       <section className="grid gap-4 sm:grid-cols-4">
