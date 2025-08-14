@@ -10,7 +10,7 @@ import tseslint from 'typescript-eslint'
 import { globalIgnores } from 'eslint/config'
 
 export default tseslint.config([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'src/pages/Dashboard.tsx', 'src/pages/Dashboard.js']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

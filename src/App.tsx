@@ -94,10 +94,10 @@ function AppRoutes() {
             <Route path="/financas/anual"  element={<FinancasAnual />} />
 
             {/* Investimentos */}
-            <Route path="/investimentos"               element={<Navigate to="/investimentos/resumo" replace />} />
-            <Route path="/investimentos/resumo"        element={<Investimentos />} />
-            {/* (opcional) redireciona /investments → /investimentos/resumo */}
+            <Route path="/investimentos/resumo" element={<Investimentos />} />
+            <Route path="/investimentos" element={<Navigate to="/investimentos/resumo" replace />} />
             <Route path="/investments" element={<Navigate to="/investimentos/resumo" replace />} />
+            <Route path="/carteira" element={<Navigate to="/investimentos/resumo" replace />} />
             <Route path="/investimentos/renda-fixa" element={<CarteiraRendaFixa />} />
             <Route path="/investimentos/fiis"       element={<CarteiraFIIs />} />
             <Route path="/investimentos/bolsa"      element={<CarteiraBolsa />} />

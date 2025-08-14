@@ -65,8 +65,10 @@ const sections: Section[] = [
   {
     label: "Planejamento",
     items: [
-      { type: "item", label: "Desejos", to: "/desejos", icon: Gift },
-      { type: "item", label: "Compras", to: "/compras", icon: ShoppingCart },
+      { type: "item", label: "Metas & Projetos", to: "/metas", icon: Target },
+      { type: "item", label: "Milhas", to: "/milhas", icon: Plane },
+      { type: "item", label: "Lista de Desejos", to: "/desejos", icon: Gift },
+      { type: "item", label: "Lista de Compras", to: "/compras", icon: ShoppingCart },
     ],
   },
 ];

@@ -37,6 +37,7 @@ export default function AppTopbar() {
       label: 'Investimentos',
       items: [
         { label: 'Resumo', to: '/investimentos/resumo' },
+        { label: 'Carteira', to: '/investimentos/carteira' },
         { label: 'Renda Fixa', to: '/investimentos/renda-fixa' },
         { label: 'FIIs', to: '/investimentos/fiis' },
         { label: 'Bolsa', to: '/investimentos/bolsa' },
@@ -46,8 +47,10 @@ export default function AppTopbar() {
     {
       label: 'Planejamento',
       items: [
-        { label: 'Desejos', to: '/desejos' },
-        { label: 'Compras', to: '/compras' },
+        { label: 'Metas & Projetos', to: '/metas' },
+        { label: 'Milhas', to: '/milhas' },
+        { label: 'Lista de desejos', to: '/desejos' },
+        { label: 'Lista de compras', to: '/compras' },
       ],
     },
   ];
