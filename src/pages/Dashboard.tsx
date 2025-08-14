@@ -33,6 +33,7 @@ import { usePeriod } from "@/state/periodFilter";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency } from "@/lib/utils";
+import MetasSummary from "@/components/MetasSummary";
 
 // Garantir decorativos não interativos
 // className nos decorativos: "pointer-events-none select-none -z-10 opacity-25"
@@ -389,28 +390,7 @@ export default function Dashboard() {
         <motion.div variants={item}>
           <Card className="h-full">
             <CardHeader title="Metas em andamento" subtitle="Progresso geral" />
-            <div className="space-y-4">
-              {[
-                { t: "Reserva de emergência", pct: 62 },
-                { t: "Viagem 2026", pct: 18 },
-                { t: "Curso/Mestrado", pct: 44 },
-              ].map((g) => (
-                <div key={g.t}>
-                  <div className="mb-1 flex justify-between text-sm">
-                    <span className="text-zinc-600 dark:text-zinc-300">{g.t}</span>
-                    <span className="font-medium">{g.pct}%</span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-zinc-200/70 dark:bg-zinc-800/70">
-                    <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${g.pct}%` }}
-                      transition={{ duration: 0.9, ease: "easeOut" }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+            <MetasSummary />
             <CardFooterAction to="/metas" label="Ir para Metas & Projetos" />
           </Card>
         </motion.div>
