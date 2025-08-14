@@ -31,7 +31,7 @@ const MilhasLivelo = lazy(() => import('./pages/MilhasLivelo'));
 const MilhasLatam  = lazy(() => import('./pages/MilhasLatam'));
 const MilhasAzul   = lazy(() => import('./pages/MilhasAzul'));
 
-const ListaDesejos = lazy(() => import('./pages/ListaDesejos'));
+const Desejos = lazy(() => import('./pages/Desejos'));
 const ListaCompras = lazy(() => import('./pages/ListaCompras'));
 
 const Configuracoes = lazy(() => import('./pages/Configuracoes'));
@@ -116,7 +116,7 @@ function AppRoutes() {
             <Route path="/milhas/azul"      element={<MilhasAzul />} />
 
             {/* Listas */}
-            <Route path="/desejos" element={<ListaDesejos />} />
+            <Route path="/desejos" element={<Desejos />} />
             <Route path="/compras" element={<ListaCompras />} />
             <Route path="/lista-desejos" element={<Navigate to="/desejos" replace />} />
             <Route path="/lista-compras" element={<Navigate to="/compras" replace />} />
