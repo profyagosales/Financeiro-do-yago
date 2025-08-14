@@ -167,7 +167,7 @@ export default function HomeOverview() {
       href: "/milhas",
     },
     {
-      title: "Lista de desejos",
+      title: "Desejos",
       subtitle: "Itens que quero",
       icon: Heart,
       href: "/desejos",

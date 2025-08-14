@@ -67,7 +67,7 @@ const sections: Section[] = [
     items: [
       { type: "item", label: "Metas & Projetos", to: "/metas", icon: Target },
       { type: "item", label: "Milhas", to: "/milhas", icon: Plane },
-      { type: "item", label: "Lista de Desejos", to: "/desejos", icon: Gift },
+      { type: "item", label: "Desejos", to: "/desejos", icon: Gift },
       { type: "item", label: "Lista de Compras", to: "/compras", icon: ShoppingCart },
     ],
   },

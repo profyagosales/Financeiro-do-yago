@@ -118,7 +118,6 @@ function AppRoutes() {
             {/* Listas */}
             <Route path="/desejos" element={<Desejos />} />
             <Route path="/compras" element={<ListaCompras />} />
-            <Route path="/lista-desejos" element={<Navigate to="/desejos" replace />} />
             <Route path="/lista-compras" element={<Navigate to="/compras" replace />} />
 
             {/* Configurações */}
