@@ -27,7 +27,7 @@ interface NavItem {
 }
 
 const items: NavItem[] = [
-  { label: "Visão Geral", to: "/homeoverview", icon: LayoutDashboard },
+  { label: "Visão Geral", to: "/dashboard", icon: LayoutDashboard },
   { label: "Investimentos", to: "/investimentos/resumo", icon: TrendingUp },
   { label: "Metas e Projetos", to: "/metas", icon: Target },
   { label: "Milhas", to: "/milhas", icon: Plane },
