@@ -1,58 +1,58 @@
-import * as React from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { ChevronDown, Settings } from "lucide-react";
+import * as React from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { ChevronDown, Settings } from 'lucide-react';
 
-import { ThemeToggle } from "./ui/ThemeToggle";
-import AlertsDrawer from "./financas/AlertsDrawer";
-import { Logo } from "./Logo";
+import { ThemeToggle } from './ui/ThemeToggle';
+import AlertsDrawer from './financas/AlertsDrawer';
+import { Logo } from './Logo';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import MobileNavDrawer from "./layout/MobileNavDrawer";
+} from './ui/dropdown-menu';
+import MobileNavDrawer from './layout/MobileNavDrawer';
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/contexts/AuthContext';
 
 const activeLink =
-  "text-white font-semibold ring-1 ring-white/30 rounded-lg px-3 py-1 bg-white/10";
+  'text-white font-semibold ring-1 ring-white/30 rounded-lg px-3 py-1 bg-white/10';
 const baseLink =
-  "text-white/80 hover:text-white px-3 py-1 rounded-lg transition";
+  'text-white/80 hover:text-white px-3 py-1 rounded-lg transition';
 
 export default function TopNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const initials = user?.email?.slice(0, 2).toUpperCase() ?? "";
+  const initials = user?.email?.slice(0, 2).toUpperCase() ?? '';
 
   const navGroups = [
     {
-      label: "Finanças",
+      label: 'Finanças',
       items: [
-        { label: "Resumo", to: "/financas/resumo" },
-        { label: "Mensal", to: "/financas/mensal" },
-        { label: "Anual", to: "/financas/anual" },
+        { label: 'Resumo', to: '/financas/resumo' },
+        { label: 'Mensal', to: '/financas/mensal' },
+        { label: 'Anual', to: '/financas/anual' },
       ],
     },
     {
-      label: "Investimentos",
+      label: 'Investimentos',
       items: [
-        { label: "Resumo", to: "/investimentos/resumo" },
-        { label: "Carteira", to: "/investimentos/carteira" },
-        { label: "Renda Fixa", to: "/investimentos/renda-fixa" },
-        { label: "FIIs", to: "/investimentos/fiis" },
-        { label: "Bolsa", to: "/investimentos/bolsa" },
-        { label: "Cripto", to: "/investimentos/cripto" },
+        { label: 'Resumo', to: '/investimentos/resumo' },
+        { label: 'Carteira', to: '/investimentos/carteira' },
+        { label: 'Renda Fixa', to: '/investimentos/renda-fixa' },
+        { label: 'FIIs', to: '/investimentos/fiis' },
+        { label: 'Bolsa', to: '/investimentos/bolsa' },
+        { label: 'Cripto', to: '/investimentos/cripto' },
       ],
     },
     {
-      label: "Planejamento",
+      label: 'Planejamento',
       items: [
-        { label: "Metas & Projetos", to: "/metas" },
-        { label: "Milhas", to: "/milhas" },
-        { label: "Lista de desejos", to: "/desejos" },
-        { label: "Lista de compras", to: "/compras" },
+        { label: 'Metas & Projetos', to: '/metas' },
+        { label: 'Milhas', to: '/milhas' },
+        { label: 'Lista de desejos', to: '/desejos' },
+        { label: 'Lista de compras', to: '/compras' },
       ],
     },
   ];
@@ -69,7 +69,12 @@ export default function TopNav() {
         </NavLink>
         <MobileNavDrawer />
         <nav className="ml-6 hidden items-center gap-2 lg:flex">
-          <NavLink to="/dashboard" className={({ isActive }) => (isActive ? activeLink : baseLink)}>
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              isActive || location.pathname === '/' ? activeLink : baseLink
+            }
+          >
             Visão geral
           </NavLink>
           {navGroups.map((group) => {
@@ -124,7 +129,7 @@ export default function TopNav() {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem onSelect={() => navigate("/perfil")}>Perfil</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/perfil')}>Perfil</DropdownMenuItem>
               <DropdownMenuItem onSelect={signOut}>Sair</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
