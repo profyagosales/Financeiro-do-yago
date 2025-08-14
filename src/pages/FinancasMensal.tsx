@@ -22,6 +22,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useCategories } from '@/hooks/useCategories';
 import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabaseClient';
 
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
@@ -133,6 +135,7 @@ export default function FinancasMensal() {
   // (esta versão assume que useTransactions já possui duplicateMany e list)
   const { data, loading, error, addSmart, update, remove, duplicateMany, list } =
     useTransactions(year, month);
+  const { user } = useAuth() as { user: { id: string } | null };
 
   // ===== categorias (mapear id -> nome) =====
   const { byId: categoriasById } = useCategories();
@@ -226,8 +229,23 @@ export default function FinancasMensal() {
         } as Partial<Transaction>);
         toast.success('Transação atualizada!');
       } else {
-        await addSmart({ ...dataForm, value } as unknown as TransactionInput);
+        const inserted = await addSmart({ ...dataForm, value } as unknown as TransactionInput);
         toast.success('Transação adicionada!');
+        if (dataForm.miles && inserted[0]?.id) {
+          try {
+            await supabase.from('miles').insert({
+              user_id: user?.id,
+              transaction_id: inserted[0].id,
+              program: dataForm.miles.program,
+              amount: dataForm.miles.amount,
+              expected_at: dataForm.miles.expected_at,
+              status: 'pending',
+            });
+          } catch (e) {
+            console.error(e);
+            toast.error('Erro ao registrar milhas');
+          }
+        }
       }
       setModalAberto(false);
     } catch (err: unknown) {

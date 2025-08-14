@@ -194,20 +194,25 @@ export function useTransactions(year?: any, month?: any) {
 
   // ----- CRUD de baixo nível (compat) --------------------------------------
   const create = useCallback(async (t: Omit<Transaction, "id">) => {
-    const { error } = await supabase
+    const { data: inserted, error } = await supabase
       .from("transactions")
-      .insert(t as unknown as Transaction);
+      .insert(t as unknown as Transaction)
+      .select()
+      .single();
     if (error) throw error;
     await list();
+    return inserted as Transaction;
   }, [list]);
 
   const bulkCreate = useCallback(async (rows: Omit<Transaction, "id">[]) => {
-    if (!rows?.length) return;
-    const { error } = await supabase
+    if (!rows?.length) return [];
+    const { data: inserted, error } = await supabase
       .from("transactions")
-      .insert(rows as unknown as Transaction[]);
+      .insert(rows as unknown as Transaction[])
+      .select();
     if (error) throw error;
     await list();
+    return (inserted || []) as Transaction[];
   }, [list]);
 
   const update = useCallback(async (id: number, patch: Partial<Transaction>) => {
@@ -229,7 +234,7 @@ export function useTransactions(year?: any, month?: any) {
    * - Se cartão + parcelas>1: gera N lançamentos mensais com installment_no/total
    * - Mapeia source_kind/source_id para account_id/card_id
    */
-  const addSmart = useCallback(async (dto: TransactionInput) => {
+  const addSmart = useCallback(async (dto: TransactionInput): Promise<Transaction[]> => {
     const baseValue = Math.abs(Number(dto.value || 0));
     if (!baseValue) throw new Error("Valor inválido");
 
@@ -257,8 +262,8 @@ export function useTransactions(year?: any, month?: any) {
         installment_total: null,
         parent_installment_id: null,
       };
-      await create(row);
-      return;
+      const r = await create(row);
+      return [r];
     }
 
     // Parcelado: gera N linhas mês a mês
@@ -277,7 +282,8 @@ export function useTransactions(year?: any, month?: any) {
         parent_installment_id: null, // poderemos preencher depois se adotarmos grupo
       });
     }
-    await bulkCreate(rows);
+    const inserted = await bulkCreate(rows);
+    return inserted;
   }, [create, bulkCreate]);
 
   // ----- Filtros locais (UI) -----------------------------------------------

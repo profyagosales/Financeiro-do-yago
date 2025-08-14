@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import dayjs from 'dayjs';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import CategoryPicker from '@/components/CategoryPicker';
 import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
@@ -30,6 +32,12 @@ export type BaseData = {
   notes?: string | null;
   // Anexo (nota/recibo)
   attachment_file?: File | null;
+  // Milhas (opcional)
+  miles?: {
+    program: 'livelo' | 'latampass' | 'azul';
+    amount: number;
+    expected_at: string; // YYYY-MM-DD
+  } | null;
 };
 
 export type Props = {
@@ -63,6 +71,12 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [k: string]: string | null }>({});
+
+  // Milhas
+  const [addMiles, setAddMiles] = useState(false);
+  const [milesProgram, setMilesProgram] = useState<'livelo' | 'latampass' | 'azul' | ''>('');
+  const [milesQty, setMilesQty] = useState<number | ''>('');
+  const [milesWhen, setMilesWhen] = useState<string>(dayjs().add(30, 'day').format('YYYY-MM-DD'));
 
   // Dialog de criação rápida de categoria
   const [newCatOpen, setNewCatOpen] = useState(false);
@@ -106,6 +120,13 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     try {
       const value = Math.abs(Number(form.value));
       const payload: BaseData = { ...form, value };
+      if (addMiles && milesProgram && milesQty && milesWhen) {
+        payload.miles = {
+          program: milesProgram,
+          amount: Number(milesQty),
+          expected_at: milesWhen,
+        };
+      }
       await onSubmit(payload);
       onClose();
     } catch (e: unknown) {
@@ -114,7 +135,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
     } finally {
       setLoading(false);
     }
-  }, [errors, form, onClose, onSubmit, validate]);
+  }, [addMiles, milesProgram, milesQty, milesWhen, errors, form, onClose, onSubmit, validate]);
 
   useEffect(() => {
     if (initialData) {
@@ -124,8 +145,23 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
         attachment_file: null, // não herdamos arquivo
         date: initialData.date || new Date().toISOString().slice(0,10),
       }));
+      if (initialData.miles) {
+        setAddMiles(true);
+        setMilesProgram(initialData.miles.program);
+        setMilesQty(initialData.miles.amount);
+        setMilesWhen(initialData.miles.expected_at);
+      } else {
+        setAddMiles(false);
+        setMilesProgram('');
+        setMilesQty('');
+        setMilesWhen(dayjs().add(30, 'day').format('YYYY-MM-DD'));
+      }
     } else {
       setForm((f) => ({ ...f, date: new Date().toISOString().slice(0,10) }));
+      setAddMiles(false);
+      setMilesProgram('');
+      setMilesQty('');
+      setMilesWhen(dayjs().add(30, 'day').format('YYYY-MM-DD'));
     }
   }, [initialData, open]);
 
@@ -301,6 +337,42 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
               onChange={(e) => handleChange('attachment_file', e.target.files?.[0] || null)}
             />
             <span className="text-xs text-slate-500">(Opcional; upload/extração OCR entram no próximo passo.)</span>
+          </div>
+
+          {/* Milhas */}
+          <div className="rounded-md border p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="font-medium">Acumula milhas?</Label>
+              <Switch checked={addMiles} onCheckedChange={setAddMiles} />
+            </div>
+            {addMiles && (
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid gap-1">
+                  <Label>Programa</Label>
+                  <Select value={milesProgram} onValueChange={(v) => setMilesProgram(v as any)}>
+                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="livelo">Livelo</SelectItem>
+                      <SelectItem value="latampass">LATAM Pass</SelectItem>
+                      <SelectItem value="azul">Azul</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-1">
+                  <Label>Quantidade</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={milesQty as any}
+                    onChange={(e) => setMilesQty(e.target.value === '' ? '' : Number(e.target.value))}
+                  />
+                </div>
+                <div className="grid gap-1">
+                  <Label>Disponível em</Label>
+                  <Input type="date" value={milesWhen} onChange={(e) => setMilesWhen(e.target.value)} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
