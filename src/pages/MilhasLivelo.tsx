@@ -3,16 +3,17 @@ import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
-import MilesHeader from '@/components/MilesHeader';
+import MilesHeader, { type MilesProgram } from '@/components/MilesHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
 import ModalMilesMovement, { type MilesMovement } from '@/components/ModalMilesMovement';
+import MilesPendingList from '@/components/miles/MilesPendingList';
 
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
-export default function MilhasLivelo() {
+export default function MilhasLivelo({ program = 'livelo' }: { program?: MilesProgram }) {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<MilesMovement | null>(null);
 
@@ -63,9 +64,10 @@ export default function MilhasLivelo() {
 
   return (
     <div className="space-y-6">
-      <MilesHeader program="livelo" subtitle="Saldo, expiração e movimentos">
+      <MilesHeader program={program} subtitle="Saldo, expiração e movimentos">
         <Button onClick={()=>{ setEdit(null); setOpen(true); }}>Novo movimento</Button>
       </MilesHeader>
+      <MilesPendingList program={program} />
 
       {/* KPIs */}
       <section className="grid gap-4 sm:grid-cols-4">
