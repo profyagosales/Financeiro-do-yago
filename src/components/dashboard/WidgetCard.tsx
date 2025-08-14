@@ -10,8 +10,8 @@ export function WidgetCard({ className, children }: PropsWithChildren<{ classNam
 export function WidgetHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-3">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      {subtitle && <p className="text-sm text-zinc-500">{subtitle}</p>}
+      <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">{title}</h3>
+      {subtitle && <p className="text-sm text-zinc-600 dark:text-zinc-400">{subtitle}</p>}
     </div>
   );
 }
@@ -20,7 +20,7 @@ export function WidgetFooterAction({ to, children }: PropsWithChildren<{ to: str
   return (
     <Link
       to={to}
-      className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:underline"
+      className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:underline"
     >
       {children}
       <ChevronRight className="size-4" />

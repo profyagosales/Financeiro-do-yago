@@ -1,14 +1,24 @@
 // src/components/charts/DailyBars.tsx
 import { useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, LabelList } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  LabelList,
+} from 'recharts';
 import dayjs from 'dayjs';
 
 import { SERIES_COLORS } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
+import { SkeletonLine } from '@/components/ui/SkeletonLine';
 
-type Props = { transacoes?: UITransaction[]; mes?: string };
+type Props = { transacoes?: UITransaction[]; mes?: string; isLoading?: boolean };
 
-export default function DailyBars({ transacoes = [], mes }: Props) {
+export default function DailyBars({ transacoes = [], mes, isLoading = false }: Props) {
   // cria série diária do mês: receitas e despesas
   const data = useMemo(() => {
     const month = mes ?? dayjs().format('YYYY-MM');
@@ -31,7 +41,9 @@ export default function DailyBars({ transacoes = [], mes }: Props) {
     <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
       <h3 className="font-medium mb-3">Movimento diário</h3>
       <div className="h-[320px]">
-        {hasData ? (
+        {isLoading ? (
+          <SkeletonLine className="h-full w-full" />
+        ) : hasData ? (
           <ResponsiveContainer>
             <BarChart data={data} margin={{ top: 12, right: 16, bottom: 12, left: 8 }}>
               <XAxis dataKey="dia" />

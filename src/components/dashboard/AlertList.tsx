@@ -16,7 +16,7 @@ export default function AlertList({ items }: { items: AlertItem[] }) {
     return <EmptyState icon={<CreditCard className="h-6 w-6" />} title="Nenhuma conta a vencer" />;
   }
   return (
-    <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
+    <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-700/60">
       {items.map((c) => (
         <li key={c.nome + c.vencimento} className="flex items-center gap-3 py-3">
           <BrandIcon name={c.nome} />
