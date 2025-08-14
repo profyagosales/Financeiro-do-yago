@@ -29,6 +29,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import ForecastChart from "@/components/dashboard/ForecastChart";
 import AlertList from "@/components/dashboard/AlertList";
+import AlertsWidget from "@/components/dashboard/AlertsWidget";
 import InsightCard from "@/components/dashboard/InsightCard";
 import {
   WidgetCard,
@@ -312,7 +313,7 @@ export default function Dashboard() {
           <BalanceForecast current={kpis.saldoMes} forecast={kpis.saldoMes + 1000} onClick={() => setActiveWidget('balance')} />
         </motion.div>
         <motion.div variants={item}>
-          <AlertList alerts={alerts} onClick={() => setActiveWidget('alerts')} />
+          <AlertsWidget alerts={alerts} onClick={() => setActiveWidget('alerts')} />
         </motion.div>
       </motion.div>
 

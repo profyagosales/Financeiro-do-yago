@@ -13,7 +13,13 @@ export type AlertItem = {
 // Renders a list of upcoming payments/alerts.
 export default function AlertList({ items }: { items: AlertItem[] }) {
   if (items.length === 0) {
-    return <EmptyState icon={<CreditCard className="h-6 w-6" />} title="Nenhuma conta a vencer" />;
+    return (
+      <EmptyState
+        icon={<CreditCard className="h-6 w-6" />}
+        title="Nenhuma conta a vencer"
+        action={{ label: 'Adicionar', href: '/financas/mensal' }}
+      />
+    );
   }
   return (
     <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">

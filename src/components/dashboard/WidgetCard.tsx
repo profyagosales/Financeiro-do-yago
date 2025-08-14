@@ -1,10 +1,14 @@
-import type { PropsWithChildren } from "react";
+import type { HTMLAttributes, PropsWithChildren } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 
 // Generic card used by dashboard widgets.
-export function WidgetCard({ className, children }: PropsWithChildren<{ className?: string }>) {
-  return <div className={`card-surface p-5 sm:p-6 ${className ?? ""}`}>{children}</div>;
+export function WidgetCard({ className, children, ...rest }: PropsWithChildren<HTMLAttributes<HTMLDivElement>>) {
+  return (
+    <div className={`card-surface p-5 sm:p-6 ${className ?? ""}`} {...rest}>
+      {children}
+    </div>
+  );
 }
 
 export function WidgetHeader({ title, subtitle }: { title: string; subtitle?: string }) {

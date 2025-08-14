@@ -1,12 +1,23 @@
 import { motion } from "framer-motion";
+import { Target } from "lucide-react";
 
 import { useGoals } from "@/hooks/useGoals";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default function MetasSummary() {
   const { data } = useGoals();
   const topGoals = [...data]
     .sort((a, b) => (b.progress_pct || 0) - (a.progress_pct || 0))
     .slice(0, 3);
+  if (topGoals.length === 0) {
+    return (
+      <EmptyState
+        icon={<Target className="h-6 w-6" />}
+        title="Nenhuma meta"
+        action={{ label: "Criar meta", href: "/metas" }}
+      />
+    );
+  }
 
   return (
     <div className="space-y-4">
