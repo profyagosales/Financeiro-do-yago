@@ -4,14 +4,16 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 
 import { mapCategoryColor } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
+import { SkeletonLine } from '@/components/ui/SkeletonLine';
 
 type Props = {
   transacoes?: UITransaction[];
   mes?: string;
   categoriesData?: Array<{ category: string; value: number }>;
+  isLoading?: boolean;
 };
 
-export default function CategoryDonut({ transacoes = [], categoriesData }: Props) {
+export default function CategoryDonut({ transacoes = [], categoriesData, isLoading = false }: Props) {
   // soma por categoria (apenas despesas)
   const data = useMemo(() => {
     if (categoriesData) {
@@ -27,6 +29,14 @@ export default function CategoryDonut({ transacoes = [], categoriesData }: Props
 
     return Object.entries(byCat).map(([name, value]) => ({ name, value }));
   }, [categoriesData, transacoes]);
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border bg-white dark:bg-slate-900 p-4 h-[360px]">
+        <SkeletonLine className="h-full w-full" />
+      </div>
+    );
+  }
 
   if (!data.length) {
     return (
@@ -51,11 +61,11 @@ export default function CategoryDonut({ transacoes = [], categoriesData }: Props
               paddingAngle={2}
               label={({ percent = 0 }) => `${(percent * 100).toFixed(0)}%`}
               labelLine={false}
-              >
-                {data.map((entry) => (
-                  <Cell key={entry.name} fill={mapCategoryColor(entry.name)} />
-                ))}
-              </Pie>
+            >
+              {data.map((entry) => (
+                <Cell key={entry.name} fill={mapCategoryColor(entry.name)} />
+              ))}
+            </Pie>
             <Tooltip
               formatter={(v: number) =>
                 (Number(v) || 0).toLocaleString('pt-BR', {

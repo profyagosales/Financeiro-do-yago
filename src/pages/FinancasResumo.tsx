@@ -11,6 +11,7 @@ import AlertList from "@/components/dashboard/AlertList";
 import RecurrenceList from "@/components/dashboard/RecurrenceList";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SkeletonLine } from "@/components/ui/SkeletonLine";
 import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";
 import { usePeriod } from "@/state/periodFilter";
 import { useTransactions } from "@/hooks/useTransactions";
@@ -157,7 +158,9 @@ export default function FinancasResumo() {
         </WidgetCard>
         <WidgetCard className="glass-card">
           <WidgetHeader title="Fluxo de caixa mensal" />
-          {uiTransacoes.length > 0 ? (
+          {loadingTrans ? (
+            <DailyBars isLoading />
+          ) : uiTransacoes.length > 0 ? (
             <DailyBars transacoes={uiTransacoes} mes={`${year}-${String(month).padStart(2, "0")}`} />
           ) : (
             <EmptyState
@@ -169,9 +172,11 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Entradas vs saídas (12 meses)" />
-          {uiTransacoes.length > 0 ? (
+          {loadingTrans ? (
+            <SkeletonLine className="h-56 w-full" />
+          ) : uiTransacoes.length > 0 ? (
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={last12}>
@@ -194,9 +199,11 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/anual" label="Ver detalhes" />
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Despesas por categoria" />
-          {budgetUsage.length > 0 ? (
+          {loadingTrans ? (
+            <CategoryDonut isLoading />
+          ) : budgetUsage.length > 0 ? (
             <CategoryDonut categoriesData={budgetUsage.map(b => ({ category: b.category, value: b.spent }))} />
           ) : (
             <EmptyState
@@ -208,7 +215,7 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Contas a vencer" />
           {upcomingBills.length > 0 ? (
             <AlertList items={upcomingBills} />
@@ -229,11 +236,11 @@ export default function FinancasResumo() {
         <WidgetCard className="glass-card">
           <WidgetHeader title="Lançamentos recentes" />
           {uiTransacoes.length > 0 ? (
-            <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
+            <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-700/60">
               {uiTransacoes.slice(0, 5).map(t => (
                 <li key={t.id} className="flex justify-between py-2 text-sm">
                   <span className="truncate pr-2">{t.description}</span>
-                  <span className={t.type === "income" ? "text-emerald-600" : "text-rose-600"}>
+                  <span className={t.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}>
                     {formatCurrency(t.value * (t.type === "income" ? 1 : -1))}
                   </span>
                 </li>
@@ -248,7 +255,7 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Orçamento do mês" />
           {budgetUsage.length > 0 ? (
             <ul className="space-y-2">
@@ -268,7 +275,7 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Alertas" />
           {upcomingBills.length > 0 ? (
             <AlertList items={upcomingBills} />
