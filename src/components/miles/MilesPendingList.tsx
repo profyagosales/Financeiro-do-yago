@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
-import type { MilesProgram } from '@/components/miles/MilesHeader';
+import { BRAND, type MilesProgram } from './MilesHeader';
 
 export type MilesPending = {
   id: string;
@@ -42,7 +42,9 @@ export default function MilesPendingList({ program }: { program?: MilesProgram }
 
   return (
     <div className="rounded-xl border bg-white p-4 dark:bg-slate-900">
-      <h3 className="mb-3 font-medium">A receber</h3>
+      <h3 className="mb-3 font-medium">
+        A receber{program ? ` — ${BRAND[program].name}` : ''}
+      </h3>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead className="text-left text-slate-500">
@@ -56,7 +58,7 @@ export default function MilesPendingList({ program }: { program?: MilesProgram }
           <tbody>
             {itens.map((m) => (
               <tr key={m.id} className="border-t">
-                {!program && <td className="py-2 capitalize">{m.program}</td>}
+                {!program && <td className="py-2">{BRAND[m.program].name}</td>}
                 <td className="py-2">{m.partner}</td>
                 <td>{m.points}</td>
                 <td>{dayjs(m.expected_at).format('DD/MM/YYYY')}</td>
