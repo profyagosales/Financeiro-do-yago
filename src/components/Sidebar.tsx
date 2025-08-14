@@ -35,7 +35,7 @@ type Section = { label: string; items: (NavLeaf | NavGroup)[] };
 const sections: Section[] = [
   {
     label: "Geral",
-    items: [{ type: "item", label: "Visão geral", to: "/dashboard", icon: LayoutDashboard }],
+    items: [{ type: "item", label: "Visão geral", to: "/homeoverview", icon: LayoutDashboard }],
   },
   {
     label: "Finanças",
@@ -307,7 +307,7 @@ function NavLeafLink({ leaf, collapsed }: { leaf: NavLeaf; collapsed?: boolean }
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40",
           collapsed ? "justify-center" : "",
           isActive
-            ? leaf.to === "/dashboard"
+            ? leaf.to === "/homeoverview"
               ? "sb-active bg-gradient-to-r from-emerald-600/20 to-emerald-400/20 text-emerald-200 ring-2 ring-emerald-400/60"
               : "sb-active bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
             : "text-slate-300 hover:text-white hover:bg-emerald-600/10",

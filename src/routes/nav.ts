@@ -5,7 +5,7 @@ export interface NavRoute {
 }
 
 export const navRoutes: NavRoute[] = [
-  { label: 'Visão geral', to: '/dashboard', variant: 'pill' },
+  { label: 'Visão geral', to: '/homeoverview', variant: 'pill' },
   { label: 'Finanças', to: '/financas/resumo' },
   { label: 'Investimentos', to: '/investimentos/resumo' },
   { label: 'Metas & Projetos', to: '/metas' },
