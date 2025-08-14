@@ -41,19 +41,34 @@ const MOCK: MilesPending[] = [
 export default function MilesPendingList({ program }: { program?: MilesProgram }) {
   const { user } = useAuth();
   const [itens, setItens] = useState<MilesPending[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(() => {
     if (!user?.id) {
+      setLoading(false);
       setItens([]);
       return;
     }
 
     setItens(MOCK.filter((m) => !program || m.program === program));
+    setLoading(false);
   }, [user?.id, program]);
 
   useEffect(() => {
+    setLoading(true);
     load();
   }, [load]);
+
+  if (!user?.id && !loading) {
+    return (
+      <div className="rounded-xl border bg-white p-4 dark:bg-slate-900">
+        <h3 className="mb-3 font-medium">A receber</h3>
+        <div className="py-10 text-center text-slate-500">
+          Faça login para ver as pendências.
+        </div>
+      </div>
+    );
+  }
 
   const colSpan = program ? 3 : 4;
 
