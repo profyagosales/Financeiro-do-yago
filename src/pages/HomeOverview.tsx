@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 
 import Hero from "@/components/dashboard/Hero";
-import QuickLinks, { type QuickLink } from "@/components/dashboard/QuickLinks";
-import KPIStrip, { type KpiItem } from "@/components/dashboard/KPIStrip";
+import QuickLinks, { type QuickLink } from "@/components/overview/QuickLinks";
+import KPIStrip, { type KpiItem } from "@/components/overview/KPIStrip";
 import InsightCard from "@/components/dashboard/InsightCard";
 import ForecastChart, { type FluxoItem } from "@/components/dashboard/ForecastChart";
 import AlertList, { type AlertItem } from "@/components/dashboard/AlertList";

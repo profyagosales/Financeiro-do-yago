@@ -2,16 +2,22 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
+import { cn } from "@/lib/utils";
+
 export type QuickLink = {
   title: string;
   icon: ReactNode;
   href: string;
 };
 
-// Displays a grid of quick navigation links used on the dashboard.
-export default function QuickLinks({ items }: { items: QuickLink[] }) {
+interface QuickLinksProps {
+  items: QuickLink[];
+  className?: string;
+}
+
+export default function QuickLinks({ items, className }: QuickLinksProps) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+    <div className={cn("grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6", className)}>
       {items.map(({ title, icon, href }) => (
         <motion.div
           key={title}
