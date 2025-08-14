@@ -5,7 +5,7 @@ import { Toaster } from 'sonner';
 
 import AppHotkeys from '@/components/AppHotkeys';
 import RouteLoader from '@/components/RouteLoader';
-import Sidebar from '@/components/Sidebar';
+import TopNav from '@/components/TopNav';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { PeriodProvider } from '@/contexts/PeriodContext';
 /* ---------- lazy imports de páginas ---------- */
@@ -76,9 +76,9 @@ function AppRoutes() {
     );
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <main className="flex-1 p-6">
+    <div className="min-h-screen">
+      <TopNav />
+      <main className="pt-16 p-6">
         {/* ⬇️ Atalhos globais (g d, g f, g i, g m, g c, Shift+/? para ajuda) */}
         <AppHotkeys />
 
