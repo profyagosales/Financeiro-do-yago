@@ -14,7 +14,11 @@ import MilesPendingList from '@/components/miles/MilesPendingList';
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
-export default function MilhasLivelo({ program = 'livelo' }: { program?: MilesProgram }) {
+interface MilhasLiveloProps {
+  program?: MilesProgram;
+}
+
+export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<MilesMovement | null>(null);
 

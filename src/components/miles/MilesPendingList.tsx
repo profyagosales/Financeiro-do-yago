@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { useAuth } from '@/contexts/AuthContext';
 import type { MilesProgram } from '@/components/miles/MilesHeader';
+import { BRAND_STYLE as BRANDS } from '@/components/BrandBadge';
 
 export type MilesPending = {
   id: string;
@@ -37,7 +39,22 @@ const MOCK: MilesPending[] = [
 ];
 
 export default function MilesPendingList({ program }: { program?: MilesProgram }) {
-  const itens = useMemo(() => MOCK.filter((m) => !program || m.program === program), [program]);
+  const { user } = useAuth();
+  const [itens, setItens] = useState<MilesPending[]>([]);
+
+  const load = useCallback(() => {
+    if (!user?.id) {
+      setItens([]);
+      return;
+    }
+
+    setItens(MOCK.filter((m) => !program || m.program === program));
+  }, [user?.id, program]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
   const colSpan = program ? 3 : 4;
 
   return (
@@ -56,7 +73,7 @@ export default function MilesPendingList({ program }: { program?: MilesProgram }
           <tbody>
             {itens.map((m) => (
               <tr key={m.id} className="border-t">
-                {!program && <td className="py-2 capitalize">{m.program}</td>}
+                {!program && <td className="py-2">{BRANDS[m.program].label}</td>}
                 <td className="py-2">{m.partner}</td>
                 <td>{m.points}</td>
                 <td>{dayjs(m.expected_at).format('DD/MM/YYYY')}</td>
