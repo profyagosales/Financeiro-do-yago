@@ -70,7 +70,7 @@ export default function CarteiraRendaFixa() {
         title="Carteira — Renda Fixa"
         subtitle="Lançamentos e aportes desta classe."
         icon={<Coins className="h-5 w-5" />}
-        breadcrumbs={[{ label: "Investimentos", href: "/investimentos" }, { label: "Carteira", href: "/investimentos/renda-fixa" }, { label: "Renda Fixa" }]}
+        breadcrumbs={[{ label: "Investimentos", href: "/investimentos/resumo" }, { label: "Carteira", href: "/investimentos/renda-fixa" }, { label: "Renda Fixa" }]}
         actions={<Button className="gap-2" onClick={() => setOpenNew(true)}><Plus className="h-4 w-4" /> Novo investimento</Button>}
       />
 
