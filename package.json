@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "format": "prettier --write .",
     "prepare": "husky",
     "codemod:imports": "tsx scripts/codemod-rewrite-imports.ts",
