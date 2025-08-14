@@ -9,6 +9,7 @@ import { WidgetCard, WidgetHeader, WidgetFooterAction } from "@/components/dashb
 import DailyBars from "@/components/charts/DailyBars";
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import AlertList from "@/components/dashboard/AlertList";
+import RecurrenceList from "@/components/dashboard/RecurrenceList";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";
@@ -16,6 +17,7 @@ import { usePeriod } from "@/state/periodFilter";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useBills } from "@/hooks/useBills";
 import { useCategories } from "@/hooks/useCategories";
+import { useRecurrences } from "@/hooks/useRecurrences";
 import { exportTransactionsPDF } from "@/utils/pdf";
 import { formatCurrency } from "@/lib/utils";
 import { getMonthlyAggregates, getLast12MonthsAggregates, getUpcomingBills, getBudgetUsage } from "@/lib/finance";
@@ -26,6 +28,7 @@ export default function FinancasResumo() {
   const { data: transacoes, addSmart, list } = useTransactions(year, month);
   const { data: contas } = useBills(year, month);
   const { flat: categorias } = useCategories();
+  const { data: recurrences } = useRecurrences();
   const [modalOpen, setModalOpen] = useState(false);
 
   const uiTransacoes: UITransaction[] = useMemo(() => {
@@ -203,6 +206,11 @@ export default function FinancasResumo() {
           )}
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
+
+        <RecurrenceList
+          className="glass-card"
+          items={recurrences.map((r) => ({ name: r.description, amount: r.amount }))}
+        />
 
         <WidgetCard className="glass-card">
           <WidgetHeader title="Lançamentos recentes" />

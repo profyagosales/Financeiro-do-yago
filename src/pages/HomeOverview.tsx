@@ -35,6 +35,7 @@ import {
   WidgetFooterAction,
   WidgetHeader,
 } from "@/components/dashboard/WidgetCard";
+import { useRecurrences } from "@/hooks/useRecurrences";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatCurrency } from "@/lib/utils";
@@ -123,11 +124,7 @@ export default function HomeOverview() {
 
   const insightMessage = "Você economizou 15% a mais este mês.";
   const forecastData = base.slice(-6).map((d) => ({ month: d.m, in: d.in, out: d.out }));
-  const recurrences = [
-    { name: "Aluguel", amount: 1500 },
-    { name: "Academia", amount: 90 },
-    { name: "Internet", amount: 120 },
-  ];
+  const { data: recurrences } = useRecurrences();
   const alerts = [
     { message: "Conta de luz vence em 3 dias" },
     { message: "Orçamento de lazer excedido" },
@@ -306,7 +303,10 @@ export default function HomeOverview() {
           <ForecastChart data={forecastData} onClick={() => setActiveWidget('forecast')} />
         </motion.div>
         <motion.div variants={item}>
-          <RecurrenceList items={recurrences} onClick={() => setActiveWidget('recurrence')} />
+          <RecurrenceList
+            items={recurrences.map((r) => ({ name: r.description, amount: r.amount }))}
+            onClick={() => setActiveWidget('recurrence')}
+          />
         </motion.div>
         <motion.div variants={item}>
           <BalanceForecast current={kpis.saldoMes} forecast={kpis.saldoMes + 1000} onClick={() => setActiveWidget('balance')} />
