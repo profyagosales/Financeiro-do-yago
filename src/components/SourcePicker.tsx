@@ -98,8 +98,11 @@ export default function SourcePicker({
       {/* Picker por tipo */}
       {kind === "account" ? (
         <Select
-          value={selectedId ?? ""}
-          onValueChange={(v) => onChange({ kind: "account", id: v || null })}
+          // Nunca passe "" para value. Use undefined para indicar falta de seleção.
+          value={selectedId ?? undefined}
+          onValueChange={(v) =>
+            onChange({ kind: "account", id: !v || v === "Todas" ? null : v })
+          }
         >
           <SelectTrigger
             aria-label={ariaLabel ?? placeholder}
@@ -108,8 +111,10 @@ export default function SourcePicker({
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent className="rounded-xl max-h-72">
-            <SelectItem value="">Todas</SelectItem>
+            {/* Token explícito para "todas" evita value="" */}
+            <SelectItem value="Todas">Todas</SelectItem>
             {accounts.map((a) => (
+              // Garanta que value nunca seja string vazia
               <SelectItem key={a.id} value={a.id}>
                 <span className="inline-flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
@@ -125,8 +130,10 @@ export default function SourcePicker({
       ) : (
         <>
           <Select
-            value={selectedId ?? ""}
-            onValueChange={(v) => onChange({ kind: "card", id: v || null })}
+            value={selectedId ?? undefined}
+            onValueChange={(v) =>
+              onChange({ kind: "card", id: !v || v === "Todas" ? null : v })
+            }
           >
           <SelectTrigger
             aria-label={ariaLabel ?? placeholder}
@@ -135,7 +142,7 @@ export default function SourcePicker({
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent className="rounded-xl max-h-72">
-            <SelectItem value="">Todas</SelectItem>
+            <SelectItem value="Todas">Todas</SelectItem>
             {cards.map((c) => (
               <SelectItem key={c.id} value={c.id}>
                   <span className="inline-flex items-center gap-2">

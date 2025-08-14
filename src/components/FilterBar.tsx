@@ -111,6 +111,7 @@ export default function FilterBar({ variant = "default", className = "" }: Props
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
             <CalendarRange className="h-4 w-4 text-emerald-600" />
           </span>
+          {/* Nunca usar "" como value controlado */}
           <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
             <SelectTrigger className="w-[120px] rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
               <SelectValue placeholder="Mês" />
@@ -131,6 +132,7 @@ export default function FilterBar({ variant = "default", className = "" }: Props
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
           <Calendar className="h-4 w-4 text-emerald-600" />
         </span>
+        {/* Nunca passe "" como value */}
         <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
           <SelectTrigger className="w-[110px] rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
             <SelectValue placeholder="Ano" />
