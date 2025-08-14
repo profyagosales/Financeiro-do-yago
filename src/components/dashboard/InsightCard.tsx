@@ -28,7 +28,7 @@ export default function InsightCard({
         to={to}
         className="inline-block rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/30"
       >
-        Abrir
+        Ver mais
       </Link>
     </WidgetCard>
   );
