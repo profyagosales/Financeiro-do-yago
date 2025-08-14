@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useId } from "react";
 import { CreditCard, Plus } from "lucide-react";
-import { toast } from "sonner";
 
+import { toast } from "@/components/ui/Toasts";
 import { Wallet } from "@/components/icons";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCreditCards, cycleFor as cardCycleFor } from "@/hooks/useCreditCards";

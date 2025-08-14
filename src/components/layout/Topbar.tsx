@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-import { Toaster } from 'sonner';
 
 import AvatarMenu from './AvatarMenu';
 import NavItem from './NavItem';
@@ -44,7 +43,6 @@ export default function Topbar() {
           <AvatarMenu />
         </div>
       </div>
-      <Toaster richColors position="top-right" />
     </header>
   );
 }

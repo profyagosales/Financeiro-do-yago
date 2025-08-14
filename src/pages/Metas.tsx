@@ -1,6 +1,5 @@
 // src/pages/Metas.tsx
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 import {
   Plus,
   CalendarDays,
@@ -16,6 +15,7 @@ import {
   Search,
 } from "lucide-react";
 
+import { toast } from "@/components/ui/Toasts";
 import { Target } from "@/components/icons";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";

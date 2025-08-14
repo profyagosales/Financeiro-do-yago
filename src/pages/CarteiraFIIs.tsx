@@ -1,8 +1,8 @@
 // src/pages/CarteiraFIIs.tsx
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
 import { Plus, MoreHorizontal, Pencil, Trash2, Building2 } from "lucide-react";
 
+import { toast } from "@/components/ui/Toasts";
 import { useInvestments } from "@/hooks/useInvestments";
 import ModalInvest from "@/components/ModalInvest";
 import PageHeader from "@/components/PageHeader";

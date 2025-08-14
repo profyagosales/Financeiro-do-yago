@@ -1,8 +1,8 @@
 // src/pages/Login.tsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 
+import { toast } from '@/components/ui/Toasts';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
