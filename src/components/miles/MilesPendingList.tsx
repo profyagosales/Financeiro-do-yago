@@ -1,43 +1,51 @@
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { MilesProgram } from '@/components/miles/MilesHeader';
+import { supabase } from '@/lib/supabaseClient';
 
 export type MilesPending = {
-  id: string;
+  id: number;
   program: MilesProgram;
-  partner: string;
+  partner?: string | null;
   points: number;
   expected_at: string; // YYYY-MM-DD
 };
 
-// Dados mockados; integração futura com backend/Supabase
-const MOCK: MilesPending[] = [
-  {
-    id: '1',
-    program: 'livelo',
-    partner: 'Compra Loja X',
-    points: 500,
-    expected_at: dayjs().add(10, 'day').format('YYYY-MM-DD'),
-  },
-  {
-    id: '2',
-    program: 'latampass',
-    partner: 'Cartão de crédito',
-    points: 1000,
-    expected_at: dayjs().add(30, 'day').format('YYYY-MM-DD'),
-  },
-  {
-    id: '3',
-    program: 'azul',
-    partner: 'Hotel',
-    points: 800,
-    expected_at: dayjs().add(20, 'day').format('YYYY-MM-DD'),
-  },
-];
-
 export default function MilesPendingList({ program }: { program?: MilesProgram }) {
-  const itens = useMemo(() => MOCK.filter((m) => !program || m.program === program), [program]);
+  const [itens, setItens] = useState<MilesPending[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      let q = supabase
+        .from('miles')
+        .select('id, program, amount, expected_at, transaction:transactions(description)')
+        .eq('status', 'pending')
+        .order('expected_at', { ascending: true });
+      if (program) q = q.eq('program', program);
+      const { data, error } = await q;
+      if (cancelled) return;
+      if (error) {
+        console.error(error);
+        setItens([]);
+        return;
+      }
+      const rows = (data ?? []).map((m: any) => ({
+        id: m.id,
+        program: m.program as MilesProgram,
+        partner: m.transaction?.description ?? null,
+        points: m.amount,
+        expected_at: m.expected_at,
+      }));
+      setItens(rows);
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [program]);
+
   const colSpan = program ? 3 : 4;
 
   return (
@@ -57,7 +65,7 @@ export default function MilesPendingList({ program }: { program?: MilesProgram }
             {itens.map((m) => (
               <tr key={m.id} className="border-t">
                 {!program && <td className="py-2 capitalize">{m.program}</td>}
-                <td className="py-2">{m.partner}</td>
+                <td className="py-2">{m.partner ?? '-'}</td>
                 <td>{m.points}</td>
                 <td>{dayjs(m.expected_at).format('DD/MM/YYYY')}</td>
               </tr>
@@ -75,3 +83,4 @@ export default function MilesPendingList({ program }: { program?: MilesProgram }
     </div>
   );
 }
+
