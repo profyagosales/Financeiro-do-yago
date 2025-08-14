@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { MilesProgram } from '@/components/miles/MilesHeader';
+import { useAuth } from '@/contexts/AuthContext';
 
 export type MilesPending = {
   id: string;
@@ -37,7 +38,37 @@ const MOCK: MilesPending[] = [
 ];
 
 export default function MilesPendingList({ program }: { program?: MilesProgram }) {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+
   const itens = useMemo(() => MOCK.filter((m) => !program || m.program === program), [program]);
+
+  useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    // Utiliza dados mockados por enquanto; futuras chamadas para backend vão aqui
+    setLoading(false);
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="rounded-xl border bg-white p-4 text-center text-slate-500 dark:bg-slate-900">
+        Carregando...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="rounded-xl border bg-white p-4 text-center text-slate-500 dark:bg-slate-900">
+        Faça login para visualizar pendências de milhas.
+      </div>
+    );
+  }
+
   const colSpan = program ? 3 : 4;
 
   return (
