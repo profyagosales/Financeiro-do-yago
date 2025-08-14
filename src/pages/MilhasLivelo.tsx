@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+
 import MilesHeader, { type MilesProgram } from '@/components/MilesHeader';
 import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
@@ -16,8 +17,7 @@ import azulLogo from '@/assets/logos/azul.svg';
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
-export default function MilhasLivelo({ program = 'livelo' }: { program?: MilesProgram }) {
-type Program = 'livelo' | 'latam' | 'azul';
+type Program = MilesProgram;
 
 const CONFIG: Record<Program, { title: string; gradient: string; logo: string }> = {
   livelo: {
@@ -25,7 +25,7 @@ const CONFIG: Record<Program, { title: string; gradient: string; logo: string }>
     gradient: 'from-fuchsia-600 via-pink-500 to-rose-500',
     logo: liveloLogo,
   },
-  latam: {
+  latampass: {
     title: 'Milhas — LATAM Pass',
     gradient: 'from-red-600 via-rose-600 to-purple-600',
     logo: latamLogo,

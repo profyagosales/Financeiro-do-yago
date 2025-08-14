@@ -1,16 +1,43 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plane } from 'lucide-react';
+import dayjs from 'dayjs';
 
 import PageHeader from '@/components/PageHeader';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import MilesPendingList from '@/components/miles/MilesPendingList';
+import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function MilhasHome() {
+  const { user } = useAuth();
+  const [pendingMonth, setPendingMonth] = useState(0);
   const saldoTotal = 12000;
   const ultimos = [
     { id: '1', programa: 'Livelo', pontos: 1200 },
     { id: '2', programa: 'LATAM Pass', pontos: -500 },
   ];
+
+  useEffect(() => {
+    async function load() {
+      if (!user) return;
+      const start = dayjs().startOf('month').format('YYYY-MM-DD');
+      const end = dayjs().endOf('month').format('YYYY-MM-DD');
+      const { data, error } = await supabase
+        .from('miles')
+        .select('amount')
+        .eq('user_id', user.id)
+        .eq('status', 'pending')
+        .gte('expected_at', start)
+        .lte('expected_at', end);
+      if (!error && data) {
+        const total = data.reduce((sum, r) => sum + (r.amount ?? 0), 0);
+        setPendingMonth(total);
+      }
+    }
+    load();
+  }, [user?.id]);
 
   return (
     <div className="space-y-6">
@@ -18,6 +45,13 @@ export default function MilhasHome() {
         title="Milhas"
         subtitle="Resumo geral e atalhos para programas"
         icon={<Plane className="h-5 w-5" />}
+        actions={
+          pendingMonth > 0 ? (
+            <Badge variant="secondary">
+              A receber: {pendingMonth.toLocaleString('pt-BR')} pts
+            </Badge>
+          ) : null
+        }
       />
 
       <div className="grid gap-4 md:grid-cols-3">
