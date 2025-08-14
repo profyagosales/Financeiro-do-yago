@@ -34,6 +34,10 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency } from "@/lib/utils";
 
+// Garantir decorativos não interativos
+// className nos decorativos: "pointer-events-none select-none -z-10 opacity-25"
+// conteúdo dos cards: "relative z-10"
+
 function monthShortPtBR(n: number) {
   const arr = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
   return arr[Math.max(1, Math.min(12, n)) - 1];

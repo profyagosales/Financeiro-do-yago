@@ -21,6 +21,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCategories, type Category } from "@/hooks/useCategories";
 
+// quando showAll, não use value="" – use "Todas"
+// e garanta value controlado nunca vazio
+
 type Props = {
   value: string | null | undefined;
   onChange: (id: string | null) => void;

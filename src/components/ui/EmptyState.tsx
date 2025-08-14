@@ -22,3 +22,5 @@ export function EmptyState({ icon, title, message, className }: EmptyStateProps)
   );
 }
 
+export default EmptyState;
+

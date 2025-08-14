@@ -1,18 +1,34 @@
-import { useEffect, useMemo, useState } from 'react';
-import dayjs from 'dayjs';
-import { Coins, TrendingUp, TrendingDown, CalendarRange } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+import { useEffect, useMemo, useState } from "react";
+import dayjs from "dayjs";
+import { Coins, TrendingUp, TrendingDown, CalendarRange } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
 
-import PageHeader from '@/components/PageHeader';
-import { MotionCard } from '@/components/ui/MotionCard';
-import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import CategoryDonut from '@/components/charts/CategoryDonut';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { useCategories } from '@/hooks/useCategories';
-import { getYearSummary, type YearSummary } from '@/hooks/useTransactions';
+import PageHeader from "@/components/PageHeader";
+import { MotionCard } from "@/components/ui/MotionCard";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import CategoryDonut from "@/components/charts/CategoryDonut";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { useCategories } from "@/hooks/useCategories";
+import { getYearSummary, type YearSummary } from "@/hooks/useTransactions";
+
+// Dark mode labels: garanta contraste
+// aplique text-neutral-200/300 nos labels e text-muted-foreground em subtítulos
 
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
@@ -108,7 +124,7 @@ export default function FinancasAnual() {
         actions={(
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-end">
             <div>
-              <span className="mb-1 block text-xs text-emerald-100/90">Ano</span>
+              <span className="mb-1 block text-xs text-emerald-900/70 dark:text-emerald-100/80">Ano</span>
               <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
                 <SelectTrigger className="min-w-[120px] bg-background text-foreground">
                   <SelectValue placeholder="Ano" />

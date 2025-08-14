@@ -1,7 +1,3 @@
-/**
- * src/contexts/PeriodContext.tsx
- * Shim de compatibilidade: reexporta a implementação real do estado.
- * Assim, imports antigos de "@/contexts/PeriodContext" seguem funcionando
- * mesmo que a fonte oficial esteja em "@/state/periodFilter".
- */
+// Shim estável: reexporta a implementação real do estado
 export { PeriodProvider, usePeriod } from "@/state/periodFilter";
+
