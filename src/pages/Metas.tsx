@@ -360,23 +360,24 @@ export default function Metas() {
   /* ------------------------------ UI ------------------------------ */
   return (
     <>
-      <PageHeader
-        title="Metas & Projetos"
-        subtitle="Defina objetivos, acompanhe progresso, registre aportes e mantenha tudo sob controle."
-        icon={<Target className="h-5 w-5" />}
-        actions={
-          <Button
-            onClick={openNewGoal}
-            className="gap-2 bg-emerald-600 hover:bg-emerald-500 text-white"
-          >
-            <Plus className="h-4 w-4" />
-            Nova meta
-          </Button>
-        }
-      />
+      <div className="space-y-6 pb-24">
+        <PageHeader
+          title="Metas & Projetos"
+          subtitle="Defina objetivos, acompanhe progresso, registre aportes e mantenha tudo sob controle."
+          icon={<Target className="h-5 w-5" />}
+          actions={
+            <Button
+              onClick={openNewGoal}
+              className="gap-2 bg-emerald-600 hover:bg-emerald-500 text-white"
+            >
+              <Plus className="h-4 w-4" />
+              Nova meta
+            </Button>
+          }
+        />
 
-      {/* KPIs */}
-      <div className="grid gap-4 md:grid-cols-4">
+        {/* KPIs */}
+        <div className="grid gap-4 md:grid-cols-4">
         <Card className="shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription>Patrimônio alvo</CardDescription>
@@ -534,6 +535,7 @@ export default function Metas() {
               </CardFooter>
             </Card>
           ))}
+        </div>
       </div>
 
       {/* Dialog Nova/Editar Meta */}
