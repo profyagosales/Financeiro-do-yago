@@ -14,7 +14,7 @@ export default function MilhasHome() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24">
       <PageHeader
         title="Milhas"
         subtitle="Resumo geral e atalhos para programas"

@@ -80,7 +80,7 @@ export default function InvestimentosResumo() {
   const latest = useMemo(() => rows.slice(0, 10), [rows]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24">
       <PageHeader
         title="Investimentos — Resumo"
         subtitle="Visão geral dos seus aportes por classe de ativos. Crie e edite nas páginas de Carteira."
