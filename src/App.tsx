@@ -5,7 +5,8 @@ import { Toaster } from 'sonner';
 
 import AppHotkeys from '@/components/AppHotkeys';
 import RouteLoader from '@/components/RouteLoader';
-import TopNav from '@/components/TopNav';
+import AppShell from '@/components/AppShell';
+import AppTopbar from '@/components/AppTopbar';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { PeriodProvider } from '@/contexts/PeriodContext';
 /* ---------- lazy imports de páginas ---------- */
@@ -76,15 +77,13 @@ function AppRoutes() {
     );
 
   return (
-    <div className="min-h-screen">
-      <TopNav />
-      <main className="pt-16 p-6">
-        {/* ⬇️ Atalhos globais (g d, g f, g i, g m, g c, Shift+/? para ajuda) */}
-        <AppHotkeys />
+    <AppShell topbar={<AppTopbar />}>
+      {/* ⬇️ Atalhos globais (g d, g f, g i, g m, g c, Shift+/? para ajuda) */}
+      <AppHotkeys />
 
-        <Suspense fallback={<RouteLoader />}>
+      <Suspense fallback={<RouteLoader />}>
 
-          <Routes>
+        <Routes>
             {/* Dashboard */}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/" element={<Dashboard />} />
@@ -123,7 +122,6 @@ function AppRoutes() {
             <Route path="*" element={<h1>Página não encontrada (404)</h1>} />
           </Routes>
         </Suspense>
-      </main>
-    </div>
-  );
+      </AppShell>
+    );
 }
