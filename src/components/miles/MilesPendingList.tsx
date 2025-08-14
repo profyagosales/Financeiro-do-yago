@@ -1,78 +1,3 @@
-import dayjs from 'dayjs';
-import { useMemo } from 'react';
-
-import type { MilesProgram } from '@/components/MilesHeader';
-
-export type MilesPending = {
-  id: string;
-  program: MilesProgram;
-  partner: string;
-  points: number;
-  expected_at: string; // YYYY-MM-DD
-};
-
-// Dados mockados; integração futura com backend/Supabase
-const MOCK: MilesPending[] = [
-  {
-    id: '1',
-    program: 'livelo',
-    partner: 'Compra Loja X',
-    points: 500,
-    expected_at: dayjs().add(10, 'day').format('YYYY-MM-DD'),
-  },
-  {
-    id: '2',
-    program: 'latam',
-    partner: 'Cartão de crédito',
-    points: 1000,
-    expected_at: dayjs().add(30, 'day').format('YYYY-MM-DD'),
-  },
-  {
-    id: '3',
-    program: 'azul',
-    partner: 'Hotel',
-    points: 800,
-    expected_at: dayjs().add(20, 'day').format('YYYY-MM-DD'),
-  },
-];
-
-export default function MilesPendingList({ program }: { program?: MilesProgram }) {
-  const itens = useMemo(() => MOCK.filter((m) => !program || m.program === program), [program]);
-  const colSpan = program ? 3 : 4;
-
-  return (
-    <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
-      <h3 className="font-medium mb-3">A receber</h3>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="text-left text-slate-500">
-            <tr>
-              {!program && <th className="py-2">Programa</th>}
-              <th className="py-2">Origem</th>
-              <th>Pontos</th>
-              <th>Previsto</th>
-            </tr>
-          </thead>
-          <tbody>
-            {itens.map((m) => (
-              <tr key={m.id} className="border-t">
-                {!program && <td className="py-2 capitalize">{m.program}</td>}
-                <td className="py-2">{m.partner}</td>
-                <td>{m.points}</td>
-                <td>{dayjs(m.expected_at).format('DD/MM/YYYY')}</td>
-              </tr>
-            ))}
-            {itens.length === 0 && (
-              <tr>
-                <td colSpan={colSpan} className="py-10 text-center text-slate-500">
-                  Sem pendências.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { toast } from "sonner";
@@ -142,14 +67,27 @@ export default function MilesPendingList({ program }: { program?: Program }) {
     <Card className="p-4">
       <div className="mb-3 flex items-center justify-between">
         <div className="font-medium">
-          A receber {program ? `— ${program === "livelo" ? "Livelo" : program === "latampass" ? "LATAM Pass" : "Azul"}` : ""}
+          A receber{" "}
+          {program
+            ? `— ${
+                program === "livelo"
+                  ? "Livelo"
+                  : program === "latampass"
+                  ? "LATAM Pass"
+                  : "Azul"
+              }`
+            : ""}
         </div>
-        <div className="text-sm text-muted-foreground">Total: {total.toLocaleString("pt-BR")} pts</div>
+        <div className="text-sm text-muted-foreground">
+          Total: {total.toLocaleString("pt-BR")} pts
+        </div>
       </div>
       {loading ? (
         <div className="text-sm text-muted-foreground">Carregando…</div>
       ) : !rows?.length ? (
-        <div className="text-sm text-muted-foreground">Nenhum lançamento pendente.</div>
+        <div className="text-sm text-muted-foreground">
+          Nenhum lançamento pendente.
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -167,7 +105,7 @@ export default function MilesPendingList({ program }: { program?: Program }) {
                 const d = r.expected_at ? dayjs(r.expected_at) : null;
                 const diff = d ? d.diff(dayjs(), "day") : null;
                 const diffLabel =
-                  diff === null ? "—" : diff === 0 ? "hoje" : diff > 0 ? `${diff}d` : `${diff}d`;
+                  diff === null ? "—" : diff === 0 ? "hoje" : `${diff}d`;
                 const diffClass =
                   diff === null
                     ? "text-muted-foreground"
@@ -179,11 +117,17 @@ export default function MilesPendingList({ program }: { program?: Program }) {
                 return (
                   <tr key={r.id} className="border-b last:border-none">
                     <td className="py-2 capitalize">{r.program}</td>
-                    <td className="py-2 text-right">{r.amount.toLocaleString("pt-BR")}</td>
-                    <td className="py-2">
-                      {r.expected_at ? dayjs(r.expected_at).format("DD/MM/YYYY") : "—"}
+                    <td className="py-2 text-right">
+                      {r.amount.toLocaleString("pt-BR")}
                     </td>
-                    <td className={`py-2 text-center font-medium ${diffClass}`}>{diffLabel}</td>
+                    <td className="py-2">
+                      {r.expected_at
+                        ? dayjs(r.expected_at).format("DD/MM/YYYY")
+                        : "—"}
+                    </td>
+                    <td className={`py-2 text-center font-medium ${diffClass}`}>
+                      {diffLabel}
+                    </td>
                     <td className="py-2 text-right">
                       <Button size="sm" onClick={() => markPosted(r.id)}>
                         Marcar como creditado
@@ -199,4 +143,3 @@ export default function MilesPendingList({ program }: { program?: Program }) {
     </Card>
   );
 }
-

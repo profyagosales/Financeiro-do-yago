@@ -132,7 +132,7 @@ export function Sidebar() {
           collapsed ? "w-20" : "w-72",
         ].join(" ")}
       >
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-800">
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-800 ring-1 ring-white/5">
           {/* Logo não aceita className; envolve em uma div */}
           <div className="h-7 w-7">
             <Logo />
@@ -156,7 +156,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        <nav ref={navRef} className="px-2 py-3 overflow-y-auto h-[calc(100vh-56px)]">
+        <nav ref={navRef} className="px-3 py-4 overflow-y-auto h-[calc(100vh-56px)] scrollbar-none">
           {sections.map((section) => (
             <div key={section.label} className="mt-4 first:mt-0">
               {!collapsed && (
@@ -165,7 +165,7 @@ export function Sidebar() {
                 </div>
               )}
 
-              <ul className="space-y-1">
+              <ul className="space-y-2">
                 {section.items.map((item) => {
                   if (item.type === "group") {
                     const Icon = item.icon ?? Wallet;
@@ -175,7 +175,7 @@ export function Sidebar() {
                       <button
                         onClick={() => handleGroupClick(item)}
                         className={[
-                          "group flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-slate-300 hover:bg:white/5 hover:bg-white/5 hover:text-white transition",
+                          "group flex w-full items-center justify-between rounded-lg px-4 py-2.5 text-left text-slate-300 hover:bg-white/5 hover:text-white transition",
                           collapsed ? "justify-center" : "",
                         ].join(" ")}
                         aria-expanded={isOpen}
@@ -212,7 +212,7 @@ export function Sidebar() {
                         </div>
 
                         {!collapsed && isOpen && (
-                          <ul className="mt-1 space-y-1 pl-8">
+                          <ul className="mt-2 space-y-1 pl-8">
                             {item.children.map((child) => (
                               <li key={child.to}>
                                 <NavLeafLink leaf={child} />
@@ -248,7 +248,7 @@ function NavLeafLink({ leaf, collapsed }: { leaf: NavLeaf; collapsed?: boolean }
       aria-label={collapsed ? leaf.label : undefined}
       className={({ isActive }) =>
         [
-          "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
+          "group relative flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40",
           collapsed ? "justify-center" : "",
           isActive
