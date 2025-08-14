@@ -8,7 +8,7 @@ function getInitialTheme(): "light" | "dark" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ className = "" }: { className?: string }) {
   const [theme, setTheme] = React.useState<"light" | "dark">(getInitialTheme);
 
   React.useEffect(() => {
@@ -23,7 +23,7 @@ export function ThemeToggle() {
       type="button"
       onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
       aria-label="Alternar tema"
-      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-900/60 text-slate-200 hover:bg-slate-800 hover:text-white transition shadow-sm"
+      className={["inline-flex h-9 w-9 items-center justify-center rounded-xl transition bg-slate-900/60 text-slate-200 hover:bg-slate-800 hover:text-white", className].join(" ")}
     >
       <Sun className="h-4 w-4 block dark:hidden" />
       <Moon className="h-4 w-4 hidden dark:block" />
