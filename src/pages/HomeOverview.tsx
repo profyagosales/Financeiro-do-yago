@@ -54,7 +54,7 @@ export default function HomeOverview() {
           <Card className={hubCard}>
             <Heart className="h-6 w-6" />
             <div>
-              <div className="font-semibold">Lista de desejos</div>
+              <div className="font-semibold">Desejos</div>
               <div className="text-sm text-white/80">Planejamento de compras</div>
             </div>
           </Card>
@@ -63,7 +63,7 @@ export default function HomeOverview() {
           <Card className={hubCard}>
             <ShoppingCart className="h-6 w-6" />
             <div>
-              <div className="font-semibold">Lista de compras</div>
+              <div className="font-semibold">Compras</div>
               <div className="text-sm text-white/80">Itens e orçamentos</div>
             </div>
           </Card>

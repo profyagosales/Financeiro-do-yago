@@ -9,8 +9,6 @@ import {
   Building2,
   CandlestickChart,
   Coins,
-  Target,
-  Plane,
   Gift,
   ShoppingCart,
   Settings,
