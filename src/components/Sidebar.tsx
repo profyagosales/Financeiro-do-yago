@@ -161,7 +161,7 @@ export function Sidebar() {
         ].join(" ")}
       >
         <div className="flex h-full flex-col">
-          <div className="m-3 flex items-center rounded-2xl sidebar-header p-5 ring-1 ring-white/10">
+          <div className="m-3 flex items-center rounded-xl sidebar-header p-5 ring-1 ring-white/10">
             <Logo size="lg" />
             {!collapsed && <span className="ml-2 text-xl font-semibold">FY</span>}
             <div className="ml-auto flex items-center gap-2">
@@ -267,7 +267,7 @@ export function Sidebar() {
           <div className="p-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex w-full items-center gap-3 rounded-2xl p-2 text-left hover:bg-emerald-600/10 transition">
+                  <button className="flex w-full items-center gap-3 rounded-xl p-2 text-left hover:bg-emerald-600/10 transition">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold text-white">
                     {initials}
                   </div>

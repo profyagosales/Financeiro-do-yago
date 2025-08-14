@@ -526,7 +526,7 @@ export default function TransactionsTable({
 
       {/* Dialog Duplicar p/ mês (se habilitado) */}
       <Dialog open={dupOpen} onOpenChange={setDupOpen}>
-        <DialogContent className="sm:max-w-md bg-white/80 dark:bg-zinc-950/80 backdrop-blur rounded-2xl border border-white/30 dark:border-white/10 shadow-xl">
+          <DialogContent className="sm:max-w-md bg-white/80 dark:bg-zinc-950/80 backdrop-blur rounded-xl border border-white/30 dark:border-white/10 shadow-xl">
           <DialogHeader>
             <DialogTitle className="text-base sm:text-lg">Duplicar selecionadas</DialogTitle>
           </DialogHeader>

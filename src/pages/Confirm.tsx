@@ -35,7 +35,7 @@ export default function Confirm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white/70 backdrop-blur shadow-xl border border-emerald-100 p-6">
+        <div className="w-full max-w-md glass border border-emerald-100/50 p-6">
         <div className="flex items-center gap-3 mb-2">
           <div className="h-10 w-10 rounded-full bg-emerald-600 text-white grid place-items-center font-bold">FY</div>
           <h1 className="text-xl font-semibold text-emerald-900">Confirmando seu e-mail…</h1>

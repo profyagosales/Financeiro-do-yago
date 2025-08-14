@@ -1,6 +1,6 @@
 @layer components {
   .menu-dropdown {
-    @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-xl rounded-2xl p-2;
+    @apply glass p-2;
   }
   .menu-item {
     @apply flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-neutral-700 dark:text-neutral-200 transition-colors hover:bg-white/30 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40;

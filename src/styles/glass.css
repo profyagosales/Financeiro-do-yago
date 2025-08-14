@@ -3,6 +3,7 @@
   --glass-border: rgba(255, 255, 255, 0.18);
   --glass-blur: 12px;
   --glass-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --glass-radius: 0.75rem;
 }
 
 .glass {
@@ -10,6 +11,7 @@
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(var(--glass-blur));
   box-shadow: var(--glass-shadow);
+  border-radius: var(--glass-radius);
 }
 
 .dark .glass {

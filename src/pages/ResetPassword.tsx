@@ -61,8 +61,8 @@ export default function ResetPassword() {
 
   if (phase === "preparing") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-emerald-100 grid place-items-center p-4">
-        <div className="w-full max-w-md rounded-2xl bg-white/70 backdrop-blur shadow-xl border border-emerald-100 p-6">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-emerald-100 grid place-items-center p-4">
+          <div className="w-full max-w-md glass border border-emerald-100/50 p-6">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-full bg-emerald-600 text-white grid place-items-center font-bold">FY</div>
             <h1 className="text-xl font-semibold text-emerald-900">Definir nova senha</h1>
@@ -74,11 +74,11 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-emerald-100 grid place-items-center p-4">
-      <form
-        onSubmit={onSubmit}
-        className="w-full max-w-md rounded-2xl bg-white/70 backdrop-blur shadow-xl border border-emerald-100 p-6 space-y-4"
-      >
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-emerald-100 grid place-items-center p-4">
+        <form
+          onSubmit={onSubmit}
+          className="w-full max-w-md glass border border-emerald-100/50 p-6 space-y-4"
+        >
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-emerald-600 text-white grid place-items-center font-bold">FY</div>
           <h1 className="text-xl font-semibold text-emerald-900">Definir nova senha</h1>

@@ -250,8 +250,8 @@ export default function HomeOverview() {
         animate="show"
       >
           {/* HERO --------------------------------------------------- */}
-          <motion.div variants={item}>
-            <div className="hero-gradient relative overflow-hidden rounded-2xl border border-white/15 p-8 text-neutral-100 shadow-lg">
+            <motion.div variants={item}>
+              <div className="glass hero-gradient relative overflow-hidden rounded-xl p-8 text-neutral-100">
               <div className="grid gap-8 md:grid-cols-2 md:items-center">
                 <div className="flex flex-col items-center gap-4 text-center md:items-start md:text-left">
                   <Logo size="lg" />

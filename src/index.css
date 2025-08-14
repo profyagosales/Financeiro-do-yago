@@ -211,17 +211,17 @@ body::after {
     @apply bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white;
   }
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-sm;
+    @apply rounded-xl bg-white/70 backdrop-blur-md border border-white/40 shadow-sm;
   }
   .dark .glass {
     @apply bg-white/5 border-white/10;
   }
   /* Cards e KPIs padronizados */
   .card-surface {
-    @apply rounded-2xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-sm;
+    @apply glass bg-gradient-to-br from-white/60 to-white/40;
   }
   .dark .card-surface {
-    @apply bg-white/5 border-white/10;
+    @apply bg-gradient-to-br from-white/10 to-white/5;
   }
   .kpi {
     @apply card-surface p-5 sm:p-6 flex items-start gap-4;

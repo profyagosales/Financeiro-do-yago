@@ -40,10 +40,10 @@ const DialogContent = React.forwardRef<
     <DialogOverlay />
     <MotionContent
       ref={ref}
-      className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-2xl border border-white/40 bg-white/70 p-6 shadow-2xl backdrop-blur dark:border-white/10 dark:bg-white/5",
-        className
-      )}
+        className={cn(
+          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-xl border border-white/40 bg-white/70 p-6 shadow-2xl backdrop-blur dark:border-white/10 dark:bg-white/5",
+          className
+        )}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
