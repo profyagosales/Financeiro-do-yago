@@ -20,6 +20,7 @@
     "gen:mock": "tsx scripts/generate-mock.ts",
     "precommit": "lint-staged",
     "assets:pwa": "tsx scripts/generate-icons.ts",
+    "repo:doctor": "node scripts/repo-doctor.mjs",
     "postinstall": "node -e \"console.log('Dica: rode npm run assets:pwa para gerar PNG/ICO a partir dos SVGs.');\""
   },
   "dependencies": {
