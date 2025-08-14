@@ -25,6 +25,8 @@ import {
   Target,
   Plane,
   PieChart as PieChartIcon,
+  ArrowUpRight,
+  ArrowDownRight,
 } from "lucide-react";
 
 import BrandIcon from "@/components/BrandIcon";
@@ -559,10 +561,11 @@ function KpiCard({
     >
       {/* Ícone decorativo sem capturar cliques */}
       <div
-        className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full opacity-20 blur-2xl"
+        aria-hidden
+        className="pointer-events-none absolute -right-8 -top-8 z-0 h-28 w-28 rounded-full opacity-25 blur-2xl"
         style={{ background: `linear-gradient(135deg, ${colorFrom}, ${colorTo})` }}
       />
-      <div className="flex items-start justify-between gap-3">
+      <div className="relative z-10 flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <div
             className="kpi-icon"
@@ -582,13 +585,15 @@ function KpiCard({
         </div>
       </div>
       {trend === "up" ? (
-        <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700">
-          ▲ bom
-        </span>
+        <ArrowUpRight
+          aria-hidden
+          className="pointer-events-none absolute right-2 top-2 z-0 h-12 w-12 text-emerald-600 opacity-25"
+        />
       ) : trend === "down" ? (
-        <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-1 text-xs font-medium text-rose-700">
-          ▼ atenção
-        </span>
+        <ArrowDownRight
+          aria-hidden
+          className="pointer-events-none absolute right-2 top-2 z-0 h-12 w-12 text-rose-600 opacity-25"
+        />
       ) : null}
     </motion.div>
   );
