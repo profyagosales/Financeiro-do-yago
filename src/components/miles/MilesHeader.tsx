@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react';
 
-import azulLogo from '@/assets/logos/azul.svg';
-import latamLogo from '@/assets/logos/latampass.svg';
-import liveloLogo from '@/assets/logos/livelo.svg';
+import { BRANDS, type MilesProgram } from './brandConfig';
 
+export type { MilesProgram } from './brandConfig';
 export type MilesProgram = 'livelo' | 'latampass' | 'azul';
 
 export const brandConfig: Record<MilesProgram, { label: string; logo: string; gradient: string }> = {
@@ -33,12 +32,14 @@ export default function MilesHeader({
   subtitle?: string;
   children?: ReactNode;
 }) {
+  const cfg = BRANDS[program];
+  const Logo = cfg.Logo;
   const cfg = brandConfig[program];
   return (
     <header className={`mb-6 rounded-xl bg-gradient-to-r ${cfg.gradient} text-white`}>
       <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-5">
         <div className="flex min-w-0 items-center gap-3">
-          <img src={cfg.logo} alt={cfg.label} className="h-7 w-auto shrink-0" />
+          <Logo className="h-7 w-7 shrink-0" />
           <div className="min-w-0">
             <h1 className="text-xl font-semibold">Milhas — {cfg.label}</h1>
             {subtitle ? (

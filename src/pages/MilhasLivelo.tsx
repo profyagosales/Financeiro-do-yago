@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 import MilesHeader, { type MilesProgram } from '@/components/miles/MilesHeader';
+import { BRANDS } from '@/components/miles/brandConfig';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
@@ -104,7 +105,7 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
 
   return (
     <div className="space-y-6">
-      <MilesHeader program={program} subtitle="Saldo, expiração e movimentos">
+      <MilesHeader program={program} subtitle={`Saldo, expiração e movimentos - ${BRANDS.livelo.label}`}>
         <Button
           onClick={() => {
             setEdit(null);
