@@ -49,14 +49,12 @@ export { PeriodProvider, usePeriod } from '@/state/periodFilter';
   }
 })();
 
-// --- 1) App usa TopNav (sem Sidebar), PeriodProvider, Toaster Sonner ----------
+// --- 1) App usa TopNav, PeriodProvider e Toaster Sonner ----------------------
 (() => {
   const f = rd("src/App.tsx");
   const s = read(f);
   if (!s) { warn("src/App.tsx não encontrado"); return; }
   let next = s;
-  // Remove import da Sidebar (apenas se houver)
-  next = next.replace(/import\s+Sidebar\s+from\s+['"]@\/components\/Sidebar['"];\s*/g, "");
   // Garante TopNav import
   if (!/from ['"]@\/components\/TopNav['"]/.test(next)) {
     if (exists(rd("src/components/TopNav.tsx"))) {
