@@ -6,6 +6,7 @@ import {
   CandlestickChart, Coins, Target, Plane, Gift, ShoppingCart, Settings,
   ChevronDown, ChevronsLeft, ChevronsRight,
 } from "lucide-react";
+
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 

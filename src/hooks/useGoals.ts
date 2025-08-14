@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
+
 import { supabase } from '@/lib/supabaseClient';
 
 export type Goal = {

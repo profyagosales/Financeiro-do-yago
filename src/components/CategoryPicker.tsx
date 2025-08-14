@@ -1,5 +1,7 @@
 import { useMemo, useState, useId } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { toast } from "sonner";
+
 import {
   Select,
   SelectContent,
@@ -17,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 import { useCategories, type Category } from "@/hooks/useCategories";
 
 type Props = {

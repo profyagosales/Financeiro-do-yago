@@ -1,20 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
-import 'dayjs/locale/pt-br';
+import { Coins, TrendingUp, TrendingDown, CalendarRange } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
 import PageHeader from '@/components/PageHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { Coins, TrendingUp, TrendingDown, CalendarRange } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CategoryDonut from '@/components/charts/CategoryDonut';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 import { useCategories } from '@/hooks/useCategories';
 import { getYearSummary, type YearSummary } from '@/hooks/useTransactions';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
+import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
 export default function FinancasAnual() {

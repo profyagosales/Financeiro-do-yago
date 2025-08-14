@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, LabelList } from 'recharts';
 import dayjs from 'dayjs';
+
 import { SERIES_COLORS } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
 

@@ -1,11 +1,25 @@
 // src/pages/Metas.tsx
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import {
+  Plus,
+  Target,
+  CalendarDays,
+  TrendingUp,
+  PiggyBank,
+  MoreHorizontal,
+  CheckCircle2,
+  Archive,
+  Trash2,
+  HandCoins,
+  AlertTriangle,
+  Clock,
+  Search,
+} from "lucide-react";
+
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
-
 import PageHeader from "@/components/PageHeader";
-
 import {
   Card,
   CardHeader,
@@ -42,21 +56,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import {
-  Plus,
-  Target,
-  CalendarDays,
-  TrendingUp,
-  PiggyBank,
-  MoreHorizontal,
-  CheckCircle2,
-  Archive,
-  Trash2,
-  HandCoins,
-  AlertTriangle,
-  Clock,
-  Search,
-} from "lucide-react";
 
 /* ----------------------------- Tipos ----------------------------- */
 type GoalRow = {

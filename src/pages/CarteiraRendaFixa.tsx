@@ -6,7 +6,6 @@ import { Plus, MoreHorizontal, Pencil, Trash2, Coins } from "lucide-react";
 import { useInvestments } from "@/hooks/useInvestments";
 import ModalInvest from "@/components/ModalInvest";
 import PageHeader from "@/components/PageHeader";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

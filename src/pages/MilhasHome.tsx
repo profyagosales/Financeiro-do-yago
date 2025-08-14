@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
+import { Plane } from 'lucide-react';
+
 import PageHeader from '@/components/PageHeader';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Plane } from 'lucide-react';
 
 export default function MilhasHome() {
   const saldoTotal = 12000;

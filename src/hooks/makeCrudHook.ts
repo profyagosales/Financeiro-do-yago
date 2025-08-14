@@ -1,5 +1,6 @@
 // src/hooks/makeCrudHook.ts
 import { useEffect, useState, useCallback } from 'react';
+
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 

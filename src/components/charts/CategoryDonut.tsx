@@ -1,6 +1,7 @@
 // src/components/charts/CategoryDonut.tsx
 import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+
 import { mapCategoryColor } from '@/lib/palette';
 import type { UITransaction } from '@/components/TransactionsTable';
 

@@ -78,3 +78,5 @@ export function AppHotkeys() {
 
   return null;
 }
+
+export default AppHotkeys;

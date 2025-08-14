@@ -1,7 +1,8 @@
 // src/components/FilterBar.tsx
 import { useCallback, type KeyboardEvent } from 'react';
-import { usePeriod } from "@/state/periodFilter";
 import { CalendarRange, Calendar } from "lucide-react";
+
+import { usePeriod } from "@/state/periodFilter";
 import {
   Select,
   SelectTrigger,

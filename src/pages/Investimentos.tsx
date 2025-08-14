@@ -1,15 +1,5 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import PageHeader from "@/components/PageHeader";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useInvestments } from "@/hooks/useInvestments";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
-
 import {
   PieChart as PieIcon,
   LineChart as LineIcon,
@@ -30,6 +20,17 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
+
+import PageHeader from "@/components/PageHeader";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useInvestments } from "@/hooks/useInvestments";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
+
 
 // Helpers
 const BRL = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });

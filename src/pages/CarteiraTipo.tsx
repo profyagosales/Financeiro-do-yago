@@ -1,10 +1,11 @@
 // src/pages/CarteiraTipo.tsx
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { Plus, MoreHorizontal, Pencil, Trash2, Coins } from "lucide-react";
+
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/PageHeader";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,6 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogD
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, MoreHorizontal, Pencil, Trash2, Coins } from "lucide-react";
 
 type Props = { tipo: "Renda fixa" | "FIIs" | "Ações" | "Cripto" | "Outros" };
 

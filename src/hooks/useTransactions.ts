@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
+
 import { supabase } from "@/lib/supabaseClient";
 
 // ===== Tipos base (compatíveis com tabela atual) ============================

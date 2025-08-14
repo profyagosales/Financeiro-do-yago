@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
-import 'dayjs/locale/pt-br';
+import { toast } from 'sonner';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 import MilesHeader from '@/components/MilesHeader';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
 import ModalMilesMovement, { type MilesMovement } from '@/components/ModalMilesMovement';
-import { toast } from 'sonner';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
+import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
 export default function MilhasLivelo() {

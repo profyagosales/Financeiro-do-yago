@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { useReceiptOCR, type ReceiptData } from "@/hooks/useReceiptOCR";
 
 type Props = {
