@@ -4,6 +4,7 @@ import { Plane } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import MilesPendingList from '@/components/miles/MilesPendingList';
+import MilesMonthlyTotals from '@/components/miles/MilesMonthlyTotals';
 
 export default function MilhasHome() {
   const saldoTotal = 12000;
@@ -47,6 +48,8 @@ export default function MilhasHome() {
           </CardContent>
         </Card>
       </div>
+
+      <MilesMonthlyTotals />
 
       <MilesPendingList />
 
