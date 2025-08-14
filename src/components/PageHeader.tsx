@@ -13,11 +13,11 @@ export type PageHeaderProps = {
   breadcrumbs?: Breadcrumb[];
   children?: ReactNode;
   gradient?: string;
-  logoSrc?: string;
+  logo?: ReactNode;
 };
 
 const PageHeader = (props: PageHeaderProps) => {
-  const { title, subtitle, icon, actions, breadcrumbs, children, gradient, logoSrc } = props;
+  const { title, subtitle, icon, actions, breadcrumbs, children, gradient, logo } = props;
   return (
     <div
       className={cn(
@@ -27,8 +27,8 @@ const PageHeader = (props: PageHeaderProps) => {
     >
       <div className="container mx-auto px-4 py-5 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          {logoSrc ? (
-            <img src={logoSrc} alt="" className="h-8 w-8 shrink-0 rounded-md" />
+          {logo ? (
+            <div className="h-8 w-8 shrink-0 rounded-md flex items-center justify-center">{logo}</div>
           ) : icon ? (
             <div className="rounded-lg bg-white/10 p-2 shrink-0">{icon}</div>
           ) : null}
