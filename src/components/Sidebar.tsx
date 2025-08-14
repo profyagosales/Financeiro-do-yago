@@ -18,10 +18,11 @@ const sections: Section[] = [
   {
     label: "Geral",
     items: [
-      { type: "item", label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+      { type: "item", label: "Visão geral", to: "/dashboard", icon: LayoutDashboard },
       {
         type: "group", label: "Finanças", icon: Wallet,
         children: [
+          { type: "item", label: "Resumo", to: "/financas/resumo", icon: LayoutDashboard },
           { type: "item", label: "Mensal", to: "/financas/mensal", icon: CalendarRange },
           { type: "item", label: "Anual", to: "/financas/anual", icon: CalendarRange },
         ],
