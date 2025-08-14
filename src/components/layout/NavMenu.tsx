@@ -1,6 +1,6 @@
 import * as React from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   LayoutDashboard,
   WalletCards,
@@ -8,11 +8,22 @@ import {
   ShoppingCart,
   Heart,
   ChevronDown,
+  Target,
+  Plane,
+  PieChart,
+  CalendarDays,
+  CalendarRange,
+  LineChart,
+  Landmark,
+  Building2,
+  CandlestickChart,
+  Bitcoin,
 } from "lucide-react";
 
 export interface NavMenuChild {
   label: string;
   to: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
 export interface NavMenuItem {
@@ -28,20 +39,24 @@ export const defaultNavItems: NavMenuItem[] = [
     label: "Finanças",
     icon: WalletCards,
     children: [
-      { label: "Resumo", to: "/financas/resumo" },
-      { label: "Mensal", to: "/financas/mensal" },
-      { label: "Anual", to: "/financas/anual" },
+      { label: "Resumo", to: "/financas/resumo", icon: PieChart },
+      { label: "Mensal", to: "/financas/mensal", icon: CalendarDays },
+      { label: "Anual", to: "/financas/anual", icon: CalendarRange },
     ],
   },
   {
     label: "Investimentos",
     icon: TrendingUp,
     children: [
-      { label: "Resumo", to: "/investimentos/resumo" },
-      { label: "Renda fixa", to: "/investimentos/renda-fixa" },
-      { label: "FIIs", to: "/investimentos/fiis" },
-      { label: "Bolsa", to: "/investimentos/bolsa" },
-      { label: "Cripto", to: "/investimentos/cripto" },
+      { label: "Resumo", to: "/investimentos/resumo", icon: LineChart },
+      {
+        label: "Renda fixa",
+        to: "/investimentos/renda-fixa",
+        icon: Landmark,
+      },
+      { label: "FIIs", to: "/investimentos/fiis", icon: Building2 },
+      { label: "Bolsa", to: "/investimentos/bolsa", icon: CandlestickChart },
+      { label: "Cripto", to: "/investimentos/cripto", icon: Bitcoin },
     ],
   },
   { label: "Metas & Projetos", icon: Target, to: "/metas" },
@@ -104,16 +119,16 @@ export function NavMenu({
                   }}
                   aria-expanded={isOpen}
                   className={[
-                    "relative flex items-center gap-1 rounded-full px-3 py-1 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40",
+                    "relative flex items-center gap-2 rounded-full px-3 py-1 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40",
                     isActive
                       ? "text-emerald-300"
-                      : "text-slate-300 hover:text-white hover:bg-emerald-600/10",
+                      : "text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-emerald-600/10",
                   ].join(" ")}
                 >
-                  <Icon className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                  <Icon className="h-4 w-4" strokeWidth={1.5} />
                   <span>{item.label}</span>
                   <ChevronDown
-                    className={`h-[18px] w-[18px] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
                     strokeWidth={1.5}
                   />
                   {isActive && (
@@ -129,27 +144,39 @@ export function NavMenu({
                     </>
                   )}
                 </button>
-                {isOpen && (
-                  <ul className="absolute left-0 mt-2 w-48 rounded-md bg-slate-900/95 p-1 shadow-lg ring-1 ring-black/20 z-10">
-                    {item.children.map((child) => (
-                      <li key={child.to}>
-                        <NavLink
-                          to={child.to}
-                          className={({ isActive }) =>
-                            [
-                              "block rounded-md px-3 py-2 text-sm transition hover:bg-emerald-600/10",
-                              isActive
-                                ? "text-emerald-300"
-                                : "text-slate-300 hover:text-white",
-                            ].join(" ")
-                          }
-                        >
-                          {child.label}
-                        </NavLink>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.ul
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="menu-dropdown absolute left-0 mt-2 w-56 z-10"
+                    >
+                      {item.children.map((child) => {
+                        const ChildIcon = child.icon;
+                        return (
+                          <li key={child.to}>
+                            <NavLink
+                              to={child.to}
+                              className={({ isActive }) =>
+                                [
+                                  "menu-item",
+                                  isActive
+                                    ? "text-emerald-600 dark:text-emerald-300"
+                                    : "",
+                                ].join(" ")
+                              }
+                            >
+                              <ChildIcon className="h-4 w-4" strokeWidth={1.5} />
+                              <span>{child.label}</span>
+                            </NavLink>
+                          </li>
+                        );
+                      })}
+                    </motion.ul>
+                  )}
+                </AnimatePresence>
               </li>
             );
           }
@@ -163,13 +190,13 @@ export function NavMenu({
                 {({ isActive }) => (
                   <div
                     className={[
-                      "relative flex items-center gap-1 rounded-full px-3 py-1 text-sm transition",
+                      "relative flex items-center gap-2 rounded-full px-3 py-1 text-sm transition",
                       isActive
                         ? "text-emerald-300"
-                        : "text-slate-300 hover:text-white hover:bg-emerald-600/10",
+                        : "text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-emerald-600/10",
                     ].join(" ")}
                   >
-                    <Icon className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                    <Icon className="h-4 w-4" strokeWidth={1.5} />
                     <span>{item.label}</span>
                     {isActive && (
                       <>
