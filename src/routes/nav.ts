@@ -34,12 +34,13 @@ export const navGroups: NavGroup[] = [
   },
 ];
 
+export const allNavItems: NavItem[] = [
+  dashboardNavItem,
+  ...navGroups.flatMap((g) => g.items),
+];
+
 export function getNavItem(path: string): NavItem | undefined {
-  const items: NavItem[] = [dashboardNavItem];
-  for (const group of navGroups) {
-    items.push(...group.items);
-  }
-  return items
+  return allNavItems
     .filter((i) => path.startsWith(i.to))
     .sort((a, b) => b.to.length - a.to.length)[0];
 }

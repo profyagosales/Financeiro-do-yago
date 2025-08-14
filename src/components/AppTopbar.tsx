@@ -13,7 +13,7 @@ import {
 } from './ui/dropdown-menu';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { navGroups, getNavItem } from '@/routes/nav';
+import { dashboardNavItem, navGroups, getNavItem } from '@/routes/nav';
 
 const activeLink =
   'text-white font-semibold ring-1 ring-white/30 rounded-lg px-3 py-1 bg-white/10';
@@ -38,18 +38,18 @@ export default function AppTopbar() {
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-emerald-600/80 to-teal-600/80 backdrop-blur border-b border-white/10 dark:border-white/10">
       <div className="mx-auto flex h-16 items-center px-4">
-        <NavLink to="/dashboard" className="flex items-center text-white">
+        <NavLink to={dashboardNavItem.to} className="flex items-center text-white">
           <Logo size="lg" />
           <span className="ml-2 text-xl font-semibold">FY</span>
         </NavLink>
         <nav className="ml-6 flex items-center gap-2">
           <NavLink
-            to="/dashboard"
+            to={dashboardNavItem.to}
             className={({ isActive }) =>
               isActive || location.pathname === '/' ? activeLink : baseLink
             }
           >
-            Visão geral
+            {dashboardNavItem.label}
           </NavLink>
           {navGroups.map((group) => {
             const active = isGroupActive(group.items);
