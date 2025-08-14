@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState, useId } from "react";
-import { Wallet, CreditCard, Plus } from "lucide-react";
+import { CreditCard, Plus } from "lucide-react";
 import { toast } from "sonner";
 
+import { Wallet } from "@/components/icons";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCreditCards, cycleFor as cardCycleFor } from "@/hooks/useCreditCards";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

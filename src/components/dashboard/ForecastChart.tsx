@@ -8,8 +8,8 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
-import { Wallet } from "lucide-react";
 
+import { Wallet } from "@/components/icons";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency } from "@/lib/utils";
 

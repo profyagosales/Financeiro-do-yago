@@ -1,11 +1,12 @@
 import * as React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Settings, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import "@/styles/topbar.css";
 import { motion } from "framer-motion";
 
+import AlertsDrawer from "../financas/AlertsDrawer";
 import { Logo } from "../Logo";
 import { ThemeToggle } from "../ui/ThemeToggle";
-import AlertsDrawer from "../financas/AlertsDrawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
+import { Settings } from "@/components/icons";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AppTopbar() {
@@ -29,15 +31,14 @@ export default function AppTopbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navLinkBase =
-    "inline-flex items-center h-9 px-3 rounded-full text-white/80 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-400/70 dark:focus:ring-emerald-300/50";
-  const navLinkActive = "bg-white/20 text-white";
+  const navLinkBase = "nav-pill nav-ghost nav-hover-underline";
+  const navLinkActive = "text-emerald-300";
 
   return (
     <motion.header
       initial={false}
       animate={{ height: scrolled ? 56 : 72 }}
-      className={`sticky top-0 z-50 backdrop-blur-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600/90 dark:ring-1 dark:ring-white/10 ${scrolled ? "shadow-md" : ""}`}
+      className={`topbar-glass ${scrolled ? "shadow-md" : ""}`}
     >
       <div className="mx-auto flex h-full items-center px-4">
         <NavLink to="/dashboard" className="flex items-center text-white">
@@ -60,14 +61,14 @@ export default function AppTopbar() {
           <ThemeToggle className="focus:outline-none focus:ring-2 focus:ring-emerald-400/70 dark:focus:ring-emerald-300/50" />
           <NavLink
             to="/configuracoes"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/70 dark:focus:ring-emerald-300/50"
+            className="nav-pill nav-ghost h-9 w-9 justify-center"
             title="Configurações"
           >
             <Settings className="h-4 w-4" />
           </NavLink>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 rounded-xl px-2 py-1 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/70 dark:focus:ring-emerald-300/50">
+              <button className="nav-pill nav-ghost px-2 py-1">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold">
                   {initials}
                 </div>

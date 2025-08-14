@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Moon, Sun } from "lucide-react";
+
+import { Moon, Sun } from "@/components/icons";
 
 function getInitialTheme(): "light" | "dark" {
   if (typeof window === "undefined") return "light";
@@ -26,7 +27,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
       aria-label="Alternar tema"
       className={[
-        "inline-flex h-9 w-9 items-center justify-center rounded-xl transition text-white hover:bg-white/20",
+        "nav-pill nav-ghost h-9 w-9 justify-center",
         className,
       ].join(" ")}
     >

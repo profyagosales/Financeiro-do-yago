@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronDown, Settings } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
-import { ThemeToggle } from './ui/ThemeToggle';
+import '@/styles/topbar.css';
+
 import AlertsDrawer from './financas/AlertsDrawer';
 import { Logo } from './Logo';
+import { ThemeToggle } from './ui/ThemeToggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,12 +14,11 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
+import { Settings } from '@/components/icons';
 import { useAuth } from '@/contexts/AuthContext';
 
-const activeLink =
-  'text-white font-semibold ring-1 ring-white/30 rounded-lg px-3 py-1 bg-white/10';
-const baseLink =
-  'text-white/80 hover:text-white px-3 py-1 rounded-lg transition';
+const activeLink = 'nav-pill nav-hover-underline text-emerald-300';
+const baseLink = 'nav-pill nav-ghost nav-hover-underline';
 
 export default function AppTopbar() {
   const location = useLocation();
@@ -60,7 +61,7 @@ export default function AppTopbar() {
     items.some((it) => location.pathname.startsWith(it.to));
 
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-emerald-600/80 to-teal-600/80 backdrop-blur border-b border-white/10 dark:border-white/10">
+    <header className="topbar-glass">
       <div className="mx-auto flex h-16 items-center px-4">
         <NavLink to="/dashboard" className="flex items-center text-white">
           <Logo size="lg" />
@@ -80,9 +81,7 @@ export default function AppTopbar() {
             return (
               <DropdownMenu key={group.label}>
                 <DropdownMenuTrigger asChild>
-                  <button
-                    className={`${active ? activeLink : baseLink} flex items-center gap-1`}
-                  >
+                  <button className={active ? activeLink : baseLink}>
                     {group.label}
                     <ChevronDown className="h-4 w-4" />
                   </button>
@@ -106,14 +105,14 @@ export default function AppTopbar() {
           <ThemeToggle />
           <NavLink
             to="/configuracoes"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-white hover:bg-white/20"
+            className="nav-pill nav-ghost h-9 w-9 justify-center"
             title="Configurações"
           >
             <Settings className="h-4 w-4" />
           </NavLink>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 rounded-xl px-2 py-1 text-white hover:bg-white/20">
+              <button className="nav-pill nav-ghost px-2 py-1">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold">
                   {initials}
                 </div>

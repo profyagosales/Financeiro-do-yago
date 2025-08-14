@@ -30,11 +30,7 @@ export default function FinancasResumo() {
   const { data: transacoes, addSmart, list, loading: transLoading } = useTransactions(year, month);
   const { data: contas } = useBills(year, month);
   const { flat: categorias } = useCategories();
-  const { data: recurrences } = useRecurrences();
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: forecastData, isLoading: forecastLoading } = useForecast();
-  const { data: recurrences, isLoading: recurrencesLoading } = useRecurrences();
-  const { data: alerts, isLoading: alertsLoading } = useAlerts();
 
   const uiTransacoes: UITransaction[] = useMemo(() => {
     return transacoes.map(t => ({

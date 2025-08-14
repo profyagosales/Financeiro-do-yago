@@ -1,0 +1,19 @@
+@layer components {
+  .topbar-glass {
+    @apply sticky top-0 z-50 w-full bg-white/60 dark:bg-neutral-900/60 backdrop-blur border-b border-white/20 dark:border-white/10;
+  }
+  .nav-pill {
+    @apply relative flex items-center gap-2 rounded-full px-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40;
+  }
+  .nav-ghost {
+    @apply text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-emerald-600/10;
+  }
+  .nav-hover-underline::after {
+    content: "";
+    @apply absolute left-2 right-2 -bottom-1 h-0.5 bg-emerald-500 opacity-0 transition-opacity;
+  }
+  .nav-hover-underline:hover::after,
+  .nav-hover-underline[aria-current="page"]::after {
+    @apply opacity-100;
+  }
+}
