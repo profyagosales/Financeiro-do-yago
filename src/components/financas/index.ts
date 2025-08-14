@@ -19,5 +19,5 @@ export type { OrcamentoItem, OrcamentoProgressProps } from './OrcamentoProgress'
 export { default as AlertasList } from './AlertasList';
 export type { Alerta, AlertasListProps } from './AlertasList';
 
-export { default as ForecastMiniChart } from './ForecastMiniChart';
-export type { ForecastMiniChartProps } from './ForecastMiniChart';
+export { default as KpiCard } from './KpiCard';
+export type { KpiCardProps } from './KpiCard';
