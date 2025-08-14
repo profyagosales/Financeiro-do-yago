@@ -24,6 +24,10 @@ import { formatCurrency } from "@/lib/utils";
 import { getMonthlyAggregates, getLast12MonthsAggregates, getUpcomingBills, getBudgetUsage } from "@/lib/finance";
 import type { UITransaction } from "@/components/TransactionsTable";
 import { KpiCard } from "@/components/financas";
+import { useRecurrences } from "@/hooks/useRecurrences";
+import { forecastCashflowNext30, forecastMonthEndBalance } from "@/hooks/useForecast";
+import ForecastMiniChart from "@/components/financas/ForecastMiniChart";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function FinancasResumo() {
   const { month, year } = usePeriod();
@@ -32,9 +36,8 @@ export default function FinancasResumo() {
   const { flat: categorias } = useCategories();
   const { data: recurrences } = useRecurrences();
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: forecastData, isLoading: forecastLoading } = useForecast();
-  const { data: recurrences, isLoading: recurrencesLoading } = useRecurrences();
-  const { data: alerts, isLoading: alertsLoading } = useAlerts();
+  const forecastData = useMemo(() => forecastCashflowNext30(transacoes), [transacoes]);
+  const forecastBalance = useMemo(() => forecastMonthEndBalance(transacoes), [transacoes]);
 
   const uiTransacoes: UITransaction[] = useMemo(() => {
     return transacoes.map(t => ({
@@ -161,7 +164,7 @@ export default function FinancasResumo() {
         </WidgetCard>
         <WidgetCard className="glass-card">
           <WidgetHeader title="Fluxo de caixa mensal" />
-          {loadingTrans ? (
+          {transLoading ? (
             <DailyBars isLoading />
           ) : uiTransacoes.length > 0 ? (
             <DailyBars transacoes={uiTransacoes} mes={`${year}-${String(month).padStart(2, "0")}`} />
@@ -177,7 +180,7 @@ export default function FinancasResumo() {
 
         <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Entradas vs saídas (12 meses)" />
-          {loadingTrans ? (
+          {transLoading ? (
             <SkeletonLine className="h-56 w-full" />
           ) : uiTransacoes.length > 0 ? (
             <div className="h-56">
@@ -204,7 +207,7 @@ export default function FinancasResumo() {
 
         <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Despesas por categoria" />
-          {loadingTrans ? (
+          {transLoading ? (
             <CategoryDonut isLoading />
           ) : budgetUsage.length > 0 ? (
             <CategoryDonut categoriesData={budgetUsage.map(b => ({ category: b.category, value: b.spent }))} />

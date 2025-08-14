@@ -62,13 +62,13 @@ export default function AppTopbar() {
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-emerald-600/80 to-teal-600/80 backdrop-blur border-b border-white/10 dark:border-white/10">
       <div className="mx-auto flex h-16 items-center px-4">
-        <NavLink to="/dashboard" className="flex items-center text-white">
+        <NavLink to="/homeoverview" className="flex items-center text-white">
           <Logo size="lg" />
           <span className="ml-2 text-xl font-semibold">FY</span>
         </NavLink>
         <nav className="ml-6 flex items-center gap-2">
           <NavLink
-            to="/dashboard"
+            to="/homeoverview"
             className={({ isActive }) =>
               isActive || location.pathname === '/' ? activeLink : baseLink
             }

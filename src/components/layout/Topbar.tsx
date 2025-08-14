@@ -15,7 +15,7 @@ import {
 
 import { useAuth } from "@/contexts/AuthContext";
 
-export default function AppTopbar() {
+export default function Topbar() {
   const { user, signOut } = useAuth();
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? "";
 
@@ -40,13 +40,13 @@ export default function AppTopbar() {
       className={`sticky top-0 z-50 backdrop-blur-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600/90 dark:ring-1 dark:ring-white/10 ${scrolled ? "shadow-md" : ""}`}
     >
       <div className="mx-auto flex h-full items-center px-4">
-        <NavLink to="/dashboard" className="flex items-center text-white">
+        <NavLink to="/homeoverview" className="flex items-center text-white">
           <Logo size="lg" />
           <span className="ml-2 text-xl font-semibold">FY</span>
         </NavLink>
         <nav className="ml-6 flex items-center gap-2">
           <NavLink
-            to="/dashboard"
+            to="/homeoverview"
             end
             className={({ isActive }) =>
               `${navLinkBase} ${isActive ? navLinkActive : ""}`

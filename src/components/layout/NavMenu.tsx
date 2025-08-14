@@ -34,7 +34,7 @@ export interface NavMenuItem {
 }
 
 export const defaultNavItems: NavMenuItem[] = [
-  { label: "Visão geral", icon: LayoutDashboard, to: "/dashboard" },
+  { label: "Visão geral", icon: LayoutDashboard, to: "/homeoverview" },
   {
     label: "Finanças",
     icon: WalletCards,
