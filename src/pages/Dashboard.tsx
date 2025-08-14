@@ -20,15 +20,12 @@ import {
   TrendingUp,
   CreditCard,
   ChevronRight,
-  Landmark,
-  CalendarRange,
-  Target,
-  Plane,
   PieChart as PieChartIcon,
 } from "lucide-react";
 
 import BrandIcon from "@/components/BrandIcon";
 import FilterBar from "@/components/FilterBar";
+import HeroSection from "@/components/dashboard/HeroSection";
 import { usePeriod } from "@/state/periodFilter";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -178,7 +175,7 @@ export default function Dashboard() {
     <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
       {/* HERO --------------------------------------------------- */}
       <motion.div variants={item}>
-        <HeroHeader />
+        <HeroSection title="Finanças do Yago" />
       </motion.div>
 
       {/* FILTRO CENTRALIZADO ------------------------------------ */}
@@ -383,21 +380,6 @@ export default function Dashboard() {
         </motion.div>
       </motion.div>
 
-      {/* ACESSOS RÁPIDOS ---------------------------------------- */}
-      <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" variants={container}>
-        <motion.div variants={item}>
-          <QuickLink to="/financas/mensal" icon={<CalendarRange className="h-5 w-5" />} title="Finanças do mês" desc="Entradas, saídas e extratos" />
-        </motion.div>
-        <motion.div variants={item}>
-          <QuickLink to="/investimentos" icon={<Landmark className="h-5 w-5" />} title="Resumo de investimentos" desc="Distribuição e aportes" />
-        </motion.div>
-        <motion.div variants={item}>
-          <QuickLink to="/metas" icon={<Target className="h-5 w-5" />} title="Metas e projetos" desc="Progresso e cronograma" />
-        </motion.div>
-        <motion.div variants={item}>
-          <QuickLink to="/milhas/livelo" icon={<Plane className="h-5 w-5" />} title="Milhas e pontos" desc="Livelo, Latam Pass, Azul" />
-        </motion.div>
-      </motion.div>
     </motion.div>
   );
 }
@@ -474,25 +456,5 @@ function CardFooterAction({ to, label }: { to: string; label: string }) {
     <Link to={to} className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:underline">
       {label} <ChevronRight className="size-4" />
     </Link>
-  );
-}
-
-function QuickLink({ to, icon, title, desc }: { to: string; icon: ReactNode; title: string; desc: string }) {
-  return (
-    <Card className="group h-full border-0 bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-[0_2px_12px_-3px_rgba(16,185,129,0.3)] transition hover:scale-[1.01]">
-      <div className="mb-2 flex items-center gap-3">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
-          {icon}
-        </span>
-        <span className="font-semibold">{title}</span>
-      </div>
-      <div className="mb-4 text-sm text-white/80">{desc}</div>
-      <Link
-        to={to}
-        className="inline-block rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/30"
-      >
-        Abrir
-      </Link>
-    </Card>
   );
 }
