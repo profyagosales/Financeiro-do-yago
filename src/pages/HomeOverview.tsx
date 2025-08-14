@@ -38,14 +38,11 @@ import {
   WidgetFooterAction,
   WidgetHeader,
 } from "@/components/dashboard/WidgetCard";
+import { useRecurrences } from "@/hooks/useRecurrences";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { formatCurrency } from "@/lib/utils";
 import { usePeriod } from "@/state/periodFilter";
-import { useInsights } from "@/hooks/useInsights";
-import { useForecast } from "@/hooks/useForecast";
-import { useRecurrences } from "@/hooks/useRecurrences";
-import { useAlerts } from "@/hooks/useAlerts";
+import { KpiCard } from "@/components/financas";
 
 
 // Garantir decorativos não interativos
@@ -139,10 +136,13 @@ export default function HomeOverview() {
     { data: "2025-07-28", tipo: "Cripto", ativo: "BTC", qtd: 0.005, preco: 355000 },
   ];
 
-  const { data: insights, isLoading: insightsLoading } = useInsights();
-  const { data: forecastData, isLoading: forecastLoading } = useForecast();
-  const { data: recurrences, isLoading: recurrencesLoading } = useRecurrences();
-  const { data: alerts, isLoading: alertsLoading } = useAlerts();
+  const insightMessage = "Você economizou 15% a mais este mês.";
+  const forecastData = base.slice(-6).map((d) => ({ month: d.m, in: d.in, out: d.out }));
+  const { data: recurrences } = useRecurrences();
+  const alerts = [
+    { message: "Conta de luz vence em 3 dias" },
+    { message: "Orçamento de lazer excedido" },
+  ];
 
   const shortcuts = [
     {
@@ -183,7 +183,52 @@ export default function HomeOverview() {
     },
   ];
 
+  const kpiItems = [
+    {
+      title: "Saldo do mês",
+      icon: <Wallet className="size-5" />,
+      value: kpis.saldoMes,
+      delta: 320,
+    },
+    {
+      title: "Entradas",
+      icon: <TrendingUp className="size-5" />,
+      value: kpis.entradasMes,
+      delta: 120,
+    },
+    {
+      title: "Saídas",
+      icon: <CreditCard className="size-5" />,
+      value: kpis.saidasMes,
+      delta: -80,
+    },
+    {
+      title: "Investido total",
+      icon: <PiggyBank className="size-5" />,
+      value: kpis.investidoTotal,
+    },
+  ];
+
   const { mode, month, year } = usePeriod();
+  const insights = useInsights(
+    { year, month },
+    {
+      transactions: [],
+      categories: [],
+      bills: contasAVencer.map((c, i) => ({
+        id: String(i),
+        description: c.nome,
+        amount: c.valor,
+        due_date: c.vencimento,
+        paid: false,
+        account_id: null,
+        card_id: null,
+        category_id: null,
+      })),
+      goals: [],
+      miles: [],
+    }
+  );
 
   const fluxoTitle = `Fluxo de caixa — ${mode === "monthly" ? `${monthShortPtBR(month)} ${year}` : `Ano ${year}`}`;
 
@@ -198,36 +243,18 @@ export default function HomeOverview() {
     const t = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(t);
   }, []);
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-40 w-full" />
-        <div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-[136px] w-full" />
-          ))}
-        </div>
-        <Skeleton className="h-64 w-full" />
-        <Skeleton className="h-64 w-full" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    );
-  }
-
-
-    return (
-      <>
-        <motion.div
-          key={`${mode}-${month}-${year}`}
-          className="space-y-6"
-          variants={container}
-          initial="hidden"
-          animate="show"
-        >
+  return (
+    <>
+      <motion.div
+        key={`${mode}-${month}-${year}`}
+        className="space-y-6"
+        variants={container}
+        initial="hidden"
+        animate="show"
+      >
           {/* HERO --------------------------------------------------- */}
           <motion.div variants={item}>
-            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-600/40 to-teal-600/40 p-8 text-white shadow-lg backdrop-blur-sm">
+            <div className="hero-gradient relative overflow-hidden rounded-2xl border border-white/15 p-8 text-neutral-100 shadow-lg">
               <div className="grid gap-8 md:grid-cols-2 md:items-center">
                 <div className="flex flex-col items-center gap-4 text-center md:items-start md:text-left">
                   <Logo size="lg" />
@@ -238,11 +265,11 @@ export default function HomeOverview() {
                     <motion.div key={title} variants={item}>
                       <Link
                         to={href}
-                        className="group block rounded-xl border border-white/20 bg-white/10 p-4 transition hover:-translate-y-0.5 hover:ring-2 hover:ring-white/40"
+                        className="glass group block rounded-xl p-4 shadow-sm transition hover:scale-[1.01]"
                       >
-                        <Icon className="mb-2 h-6 w-6" />
-                        <div className="font-medium">{title}</div>
-                        <div className="text-sm text-white/80">{subtitle}</div>
+                        <Icon className="mb-2 h-6 w-6 text-neutral-200" />
+                        <div className="font-medium tracking-wide text-neutral-200">{title}</div>
+                        <div className="text-sm tracking-wide text-neutral-400">{subtitle}</div>
                       </Link>
                     </motion.div>
                   ))}
@@ -257,55 +284,16 @@ export default function HomeOverview() {
           </motion.div>
 
           {/* KPIs --------------------------------------------------- */}
-          <motion.div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-4" variants={container}>
-        <motion.div variants={item}>
-          <KpiCard
-            title="Saldo do mês"
-            icon={<Wallet className="size-5" />}
-            colorFrom="hsl(var(--chart-emerald))"
-            colorTo="hsl(var(--chart-emerald)/.7)"
-            value={kpis.saldoMes}
-            spark={sparkSaldo}
-            sparkColor="hsl(var(--chart-emerald))"
-          />
-        </motion.div>
-        <motion.div variants={item}>
-          <KpiCard
-            title="Entradas"
-            icon={<TrendingUp className="size-5" />}
-            colorFrom="hsl(var(--chart-blue))"
-            colorTo="hsl(var(--chart-blue)/.7)"
-            value={kpis.entradasMes}
-            trend="up"
-            spark={sparkIn}
-            sparkColor="hsl(var(--chart-blue))"
-          />
-        </motion.div>
-        <motion.div variants={item}>
-          <KpiCard
-            title="Saídas"
-            icon={<CreditCard className="size-5" />}
-            colorFrom="hsl(var(--chart-rose))"
-            colorTo="hsl(var(--chart-amber))"
-            value={kpis.saidasMes}
-            trend="down"
-            spark={sparkOut}
-            sparkColor="hsl(var(--chart-rose))"
-          />
-        </motion.div>
-        <motion.div variants={item}>
-          <KpiCard
-            title="Investido total"
-            icon={<PiggyBank className="size-5" />}
-            colorFrom="hsl(var(--chart-violet))"
-            colorTo="hsl(var(--chart-blue))"
-            value={kpis.investidoTotal}
-            spark={sparkInv}
-            sparkColor="hsl(var(--chart-violet))"
-          />
-        </motion.div>
-
-      </motion.div>
+          <motion.div
+            className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-4"
+            variants={container}
+          >
+            {kpiItems.map((k) => (
+              <motion.div key={k.title} variants={item}>
+                <KpiCard {...k} isLoading={loading} />
+              </motion.div>
+            ))}
+          </motion.div>
 
       {/* WIDGETS ----------------------------------------------- */}
       <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={container}>
@@ -316,7 +304,11 @@ export default function HomeOverview() {
           <ForecastMiniChart data={forecastData} isLoading={forecastLoading} />
         </motion.div>
         <motion.div variants={item}>
-          <RecurrenceWidget items={recurrences} isLoading={recurrencesLoading} />
+
+          <RecurrenceList
+            items={recurrences.map((r) => ({ name: r.description, amount: r.amount }))}
+            onClick={() => setActiveWidget('recurrence')}
+          />
         </motion.div>
         <motion.div variants={item}>
           <BalanceForecast current={kpis.saldoMes} forecast={kpis.saldoMes + 1000} />
@@ -568,6 +560,26 @@ export default function HomeOverview() {
         </motion.div>
       </motion.div>
     </motion.div>
+
+    {activeWidget && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        onClick={() => setActiveWidget(null)}
+      >
+        <div
+          className="rounded-xl bg-white p-4 shadow-lg dark:bg-zinc-900"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <p className="mb-2 font-semibold">Widget: {activeWidget}</p>
+          <button
+            className="mt-2 rounded bg-emerald-600 px-3 py-1 text-sm text-neutral-100"
+            onClick={() => setActiveWidget(null)}
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    )}
   </>
   );
 }

@@ -1,37 +1,36 @@
 import { useMemo, useState } from "react";
-import { Plus, Download, Coins, TrendingUp, TrendingDown, PieChart, CalendarClock } from "lucide-react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { Plus, Download, Coins, TrendingUp, TrendingDown, PieChart, CalendarClock, Info } from "lucide-react";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Legend } from "recharts";
 
 import PageHeader from "@/components/PageHeader";
-import { KpiCard, type KpiItem } from "@/components/dashboard/KPIStrip";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { WidgetCard, WidgetHeader, WidgetFooterAction } from "@/components/dashboard/WidgetCard";
 import DailyBars from "@/components/charts/DailyBars";
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import AlertList from "@/components/dashboard/AlertList";
-import ForecastMiniChart from "@/components/dashboard/ForecastMiniChart";
-import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
-import RecurrenceWidget from "@/components/dashboard/RecurrenceWidget";
+import RecurrenceList from "@/components/dashboard/RecurrenceList";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SkeletonLine } from "@/components/ui/SkeletonLine";
 import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";
 import { usePeriod } from "@/state/periodFilter";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useBills } from "@/hooks/useBills";
 import { useCategories } from "@/hooks/useCategories";
-import { useForecast } from "@/hooks/useForecast";
-import { useRecurrences } from "@/hooks/useRecurrences";
-import { useAlerts } from "@/hooks/useAlerts";
+import InsightBar from "@/components/financas/InsightBar";
+import { useInsights } from "@/hooks/useInsights";
 import { exportTransactionsPDF } from "@/utils/pdf";
 import { formatCurrency } from "@/lib/utils";
 import { getMonthlyAggregates, getLast12MonthsAggregates, getUpcomingBills, getBudgetUsage } from "@/lib/finance";
 import type { UITransaction } from "@/components/TransactionsTable";
+import { KpiCard } from "@/components/financas";
 
 export default function FinancasResumo() {
   const { month, year } = usePeriod();
-  const { data: transacoes, addSmart, list } = useTransactions(year, month);
+  const { data: transacoes, addSmart, list, loading: transLoading } = useTransactions(year, month);
   const { data: contas } = useBills(year, month);
   const { flat: categorias } = useCategories();
+  const { data: recurrences } = useRecurrences();
   const [modalOpen, setModalOpen] = useState(false);
   const { data: forecastData, isLoading: forecastLoading } = useForecast();
   const { data: recurrences, isLoading: recurrencesLoading } = useRecurrences();
@@ -59,6 +58,10 @@ export default function FinancasResumo() {
   const upcomingBills = useMemo(() => getUpcomingBills(contas).map(b => ({ nome: b.description, vencimento: b.due_date, valor: b.amount })), [contas]);
   const budgetUsage = useMemo(() => getBudgetUsage(categorias, transacoes), [categorias, transacoes]);
   const last12 = useMemo(() => getLast12MonthsAggregates(transacoes).map(m => ({ mes: m.key.slice(5), entradas: m.income, saidas: m.expense })), [transacoes]);
+  const insights = useInsights(
+    { year, month },
+    { transactions: transacoes, categories: categorias, bills: contas, goals: [], miles: [] }
+  );
 
   const handlePDF = () => {
     exportTransactionsPDF(
@@ -86,46 +89,26 @@ export default function FinancasResumo() {
       title: "Saldo",
       icon: <Coins className="size-5" />,
       value: monthlyAgg.balance,
-      colorFrom: "hsl(var(--chart-emerald))",
-      colorTo: "hsl(var(--chart-emerald))",
-      spark: [0, monthlyAgg.balance],
-      sparkColor: "#10b981",
     },
     {
       title: "Entradas",
       icon: <TrendingUp className="size-5" />,
       value: monthlyAgg.income,
-      colorFrom: "hsl(var(--chart-blue))",
-      colorTo: "hsl(var(--chart-blue))",
-      spark: [0, monthlyAgg.income],
-      sparkColor: "#2563eb",
     },
     {
       title: "Saídas",
       icon: <TrendingDown className="size-5" />,
       value: monthlyAgg.expense,
-      colorFrom: "hsl(var(--chart-rose))",
-      colorTo: "hsl(var(--chart-rose))",
-      spark: [0, monthlyAgg.expense],
-      sparkColor: "#dc2626",
     },
     {
       title: "Orçamento",
       icon: <PieChart className="size-5" />,
       value: budgetUsage.reduce((s, b) => s + b.spent, 0),
-      colorFrom: "hsl(var(--chart-amber))",
-      colorTo: "hsl(var(--chart-amber))",
-      spark: [0, budgetUsage.reduce((s, b) => s + b.spent, 0)],
-      sparkColor: "#f59e0b",
     },
     {
       title: "Contas a vencer",
       icon: <CalendarClock className="size-5" />,
       value: upcomingBills.reduce((s, b) => s + b.valor, 0),
-      colorFrom: "hsl(var(--chart-violet))",
-      colorTo: "hsl(var(--chart-violet))",
-      spark: [0, upcomingBills.reduce((s, b) => s + b.valor, 0)],
-      sparkColor: "#8b5cf6",
     },
   ];
 
@@ -144,16 +127,43 @@ export default function FinancasResumo() {
         </Button>
       </div>
 
-      <div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {kpiItems.map((k) => (
           <KpiCard key={k.title} {...k} />
         ))}
       </div>
 
+      {insights.length > 0 && <InsightBar insights={insights} />}
+
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <WidgetCard className="glass-card">
+          <div className="mb-3 flex items-center gap-2">
+            <h3 className="text-lg font-semibold">Previsão — 30 dias</h3>
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="size-4 text-zinc-400" />
+                </TooltipTrigger>
+                <TooltipContent>Estimativa simples baseada na média dos últimos dias</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          {transacoes.length > 0 ? (
+            <>
+              <ForecastMiniChart data={forecastData} isLoading={transLoading} />
+              <p className="mt-2 text-sm text-zinc-500">
+                Saldo no fim do mês: {formatCurrency(forecastBalance)}
+              </p>
+            </>
+          ) : (
+            <EmptyState title="Sem dados" />
+          )}
+        </WidgetCard>
+        <WidgetCard className="glass-card">
           <WidgetHeader title="Fluxo de caixa mensal" />
-          {uiTransacoes.length > 0 ? (
+          {loadingTrans ? (
+            <DailyBars isLoading />
+          ) : uiTransacoes.length > 0 ? (
             <DailyBars transacoes={uiTransacoes} mes={`${year}-${String(month).padStart(2, "0")}`} />
           ) : (
             <EmptyState
@@ -165,15 +175,17 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Entradas vs saídas (12 meses)" />
-          {uiTransacoes.length > 0 ? (
+          {loadingTrans ? (
+            <SkeletonLine className="h-56 w-full" />
+          ) : uiTransacoes.length > 0 ? (
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={last12}>
                   <XAxis dataKey="mes" />
                   <YAxis />
-                  <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                  <RechartsTooltip formatter={(v: number) => formatCurrency(v)} />
                   <Legend />
                   <Bar dataKey="entradas" fill="#10b981" />
                   <Bar dataKey="saidas" fill="#ef4444" />
@@ -190,9 +202,11 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/anual" label="Ver detalhes" />
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Despesas por categoria" />
-          {budgetUsage.length > 0 ? (
+          {loadingTrans ? (
+            <CategoryDonut isLoading />
+          ) : budgetUsage.length > 0 ? (
             <CategoryDonut categoriesData={budgetUsage.map(b => ({ category: b.category, value: b.spent }))} />
           ) : (
             <EmptyState
@@ -204,7 +218,7 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Contas a vencer" />
           {upcomingBills.length > 0 ? (
             <AlertList items={upcomingBills} />
@@ -217,14 +231,19 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
+        <RecurrenceList
+          className="glass-card"
+          items={recurrences.map((r) => ({ name: r.description, amount: r.amount }))}
+        />
+
         <WidgetCard className="glass-card">
           <WidgetHeader title="Lançamentos recentes" />
           {uiTransacoes.length > 0 ? (
-            <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60">
+            <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-700/60">
               {uiTransacoes.slice(0, 5).map(t => (
                 <li key={t.id} className="flex justify-between py-2 text-sm">
                   <span className="truncate pr-2">{t.description}</span>
-                  <span className={t.type === "income" ? "text-emerald-600" : "text-rose-600"}>
+                  <span className={t.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}>
                     {formatCurrency(t.value * (t.type === "income" ? 1 : -1))}
                   </span>
                 </li>
@@ -239,7 +258,7 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Orçamento do mês" />
           {budgetUsage.length > 0 ? (
             <ul className="space-y-2">
@@ -259,9 +278,19 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
 
-        <ForecastMiniChart data={forecastData} isLoading={forecastLoading} />
-        <RecurrenceWidget items={recurrences} isLoading={recurrencesLoading} />
-        <AlertsDrawer alerts={alerts} isLoading={alertsLoading} />
+
+        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
+          <WidgetHeader title="Alertas" />
+          {upcomingBills.length > 0 ? (
+            <AlertList items={upcomingBills} />
+          ) : (
+            <EmptyState
+              title="Nenhum alerta"
+              action={<Button size="sm" onClick={() => setModalOpen(true)}>Nova transação</Button>}
+            />
+          )}
+          <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
+        </WidgetCard>
       </div>
 
       <ModalTransacao open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleSubmit} />

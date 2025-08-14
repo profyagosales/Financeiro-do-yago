@@ -15,7 +15,7 @@ interface RecurrenceListProps {
 export default function RecurrenceList({ items, ...rest }: RecurrenceListProps) {
   return (
     <WidgetCard {...rest}>
-      <WidgetHeader title="Despesas fixas" />
+      <WidgetHeader title="Recorrências detectadas" />
       <ul className="space-y-1 text-sm">
         {items.map((r) => (
           <li key={r.name} className="flex justify-between">
@@ -24,7 +24,7 @@ export default function RecurrenceList({ items, ...rest }: RecurrenceListProps) 
           </li>
         ))}
       </ul>
-      <WidgetFooterAction to="/financas/mensal">Ver detalhes</WidgetFooterAction>
+      <WidgetFooterAction to="/financas/recorrencias">Ver/editar</WidgetFooterAction>
     </WidgetCard>
   );
 }

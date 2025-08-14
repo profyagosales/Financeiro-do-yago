@@ -6,6 +6,7 @@ import App from '@/App'
 import AppErrorBoundary from '@/components/AppErrorBoundary'
 import { Toaster } from '@/components/ui/Toasts'
 import '@/index.css'
+import '@/styles/glass.css'
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   navigator.serviceWorker.register('/sw.js').catch((err) => {
