@@ -44,6 +44,8 @@ export const defaultNavItems: NavMenuItem[] = [
       { label: "Cripto", to: "/investimentos/cripto" },
     ],
   },
+  { label: "Metas & Projetos", icon: Target, to: "/metas" },
+  { label: "Milhas", icon: Plane, to: "/milhas" },
   { label: "Desejos", icon: Heart, to: "/desejos" },
   { label: "Compras", icon: ShoppingCart, to: "/compras" },
 ];
