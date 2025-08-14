@@ -131,3 +131,6 @@ function KpiCard({
     </motion.div>
   );
 }
+
+export { KpiCard };
+export type { KpiItem };

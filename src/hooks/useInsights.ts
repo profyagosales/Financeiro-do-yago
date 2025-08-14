@@ -175,4 +175,3 @@ export function useInsights(
 }
 
 export type UseInsightsReturn = ReturnType<typeof useInsights>;
-

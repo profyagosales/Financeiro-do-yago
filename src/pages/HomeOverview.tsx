@@ -24,12 +24,15 @@ import {
 
 import { Logo } from "@/components/Logo";
 import MetasSummary from "@/components/MetasSummary";
-import AlertList from "@/components/dashboard/AlertList";
 import BalanceForecast from "@/components/dashboard/BalanceForecast";
-import ForecastChart from "@/components/dashboard/ForecastChart";
-import InsightCard from "@/components/dashboard/InsightCard";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
-import RecurrenceList from "@/components/dashboard/RecurrenceList";
+import InsightBar from "@/components/dashboard/InsightBar";
+import ForecastMiniChart from "@/components/dashboard/ForecastMiniChart";
+import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
+import RecurrenceWidget from "@/components/dashboard/RecurrenceWidget";
+import AlertList from "@/components/dashboard/AlertList";
+import InsightCard from "@/components/dashboard/InsightCard";
+import { KpiCard } from "@/components/dashboard/KPIStrip";
 import {
   WidgetCard,
   WidgetFooterAction,
@@ -94,6 +97,17 @@ export default function HomeOverview() {
   },
   // eslint-disable-next-line react-hooks/exhaustive-deps -- base is static
   []);
+
+  const sparkIn = base.slice(-8).map((d) => d.in);
+  const sparkOut = base.slice(-8).map((d) => d.out);
+  const sparkSaldo = fluxo.slice(-8).map((d) => d.saldo);
+  const sparkInv = useMemo(() => {
+    let inv = 30000;
+    return base.slice(-8).map((d) => {
+      inv += Math.max(0, d.in - d.out) * 0.35;
+      return inv;
+    });
+  }, []);
 
 
   const carteira = [
@@ -224,7 +238,6 @@ export default function HomeOverview() {
   };
   const item = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
 
-  const [activeWidget, setActiveWidget] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1000);
@@ -285,22 +298,23 @@ export default function HomeOverview() {
       {/* WIDGETS ----------------------------------------------- */}
       <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={container}>
         <motion.div variants={item}>
-          <InsightCard message={insightMessage} onClick={() => setActiveWidget('insight')} />
+          <InsightBar items={insights} isLoading={insightsLoading} />
         </motion.div>
         <motion.div variants={item}>
-          <ForecastChart data={forecastData} onClick={() => setActiveWidget('forecast')} />
+          <ForecastMiniChart data={forecastData} isLoading={forecastLoading} />
         </motion.div>
         <motion.div variants={item}>
+
           <RecurrenceList
             items={recurrences.map((r) => ({ name: r.description, amount: r.amount }))}
             onClick={() => setActiveWidget('recurrence')}
           />
         </motion.div>
         <motion.div variants={item}>
-          <BalanceForecast current={kpis.saldoMes} forecast={kpis.saldoMes + 1000} onClick={() => setActiveWidget('balance')} />
+          <BalanceForecast current={kpis.saldoMes} forecast={kpis.saldoMes + 1000} />
         </motion.div>
         <motion.div variants={item}>
-          <AlertList alerts={alerts} onClick={() => setActiveWidget('alerts')} />
+          <AlertsDrawer alerts={alerts} isLoading={alertsLoading} />
         </motion.div>
       </motion.div>
 
@@ -546,6 +560,7 @@ export default function HomeOverview() {
         </motion.div>
       </motion.div>
     </motion.div>
+
     {activeWidget && (
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"

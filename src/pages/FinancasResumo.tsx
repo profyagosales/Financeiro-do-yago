@@ -32,6 +32,9 @@ export default function FinancasResumo() {
   const { flat: categorias } = useCategories();
   const { data: recurrences } = useRecurrences();
   const [modalOpen, setModalOpen] = useState(false);
+  const { data: forecastData, isLoading: forecastLoading } = useForecast();
+  const { data: recurrences, isLoading: recurrencesLoading } = useRecurrences();
+  const { data: alerts, isLoading: alertsLoading } = useAlerts();
 
   const uiTransacoes: UITransaction[] = useMemo(() => {
     return transacoes.map(t => ({
@@ -81,7 +84,7 @@ export default function FinancasResumo() {
     setModalOpen(false);
   };
 
-  const kpiItems = [
+  const kpiItems: KpiItem[] = [
     {
       title: "Saldo",
       icon: <Coins className="size-5" />,
@@ -274,6 +277,7 @@ export default function FinancasResumo() {
           )}
           <WidgetFooterAction to="/financas/mensal" label="Ver detalhes" />
         </WidgetCard>
+
 
         <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
           <WidgetHeader title="Alertas" />
