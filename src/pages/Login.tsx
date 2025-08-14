@@ -45,7 +45,6 @@ export default function Login() {
     const el = pwdRef.current;
     if (!el) return;
     const handle = (e: KeyboardEvent) => {
-      // @ts-expect-error Chrome
       const isCaps = e.getModifierState?.('CapsLock');
       setCapsOn(!!isCaps);
     };

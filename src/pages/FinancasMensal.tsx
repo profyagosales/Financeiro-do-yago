@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import CategoryDonut from '@/components/charts/CategoryDonut';
 import DailyBars from '@/components/charts/DailyBars';
-import { ModalTransacao } from '@/components/ModalTransacao';
+import { ModalTransacao, type BaseData } from '@/components/ModalTransacao';
 import PageHeader from '@/components/PageHeader';
 import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
 import CategoryPicker from '@/components/CategoryPicker';
@@ -26,8 +26,6 @@ import { useTransactions, type Transaction, type TransactionInput } from '@/hook
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
-// Shims rápidos para compilar. Depois podemos trocar pelos tipos reais.
-type BaseData = Record<string, any>;
 
 // utils simples p/ busca sem acento
 const norm = (s: string) =>

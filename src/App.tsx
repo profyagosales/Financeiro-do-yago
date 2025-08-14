@@ -7,6 +7,7 @@ import AppHotkeys from '@/components/AppHotkeys';
 import RouteLoader from '@/components/RouteLoader';
 import Sidebar from '@/components/Sidebar';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { PeriodProvider } from '@/contexts/PeriodContext';
 /* ---------- lazy imports de páginas ---------- */
 const Dashboard      = lazy(() => import('./pages/Dashboard'));
 const FinancasMensal = lazy(() => import('./pages/FinancasMensal'));
@@ -39,11 +40,13 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
-        {/* Toaster global */}
-        <Toaster richColors position="top-right" />
-        <AppRoutes />
-      </Router>
+      <PeriodProvider>
+        <Router>
+          {/* Toaster global */}
+          <Toaster richColors position="top-right" />
+          <AppRoutes />
+        </Router>
+      </PeriodProvider>
     </AuthProvider>
   );
 }
