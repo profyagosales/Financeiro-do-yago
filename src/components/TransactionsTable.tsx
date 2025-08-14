@@ -76,7 +76,7 @@ const brl = (n: number) => (Number(n) || 0).toLocaleString('pt-BR', { style: 'cu
   onDuplicateMany?: (ids: number[], targetYYYYMM: string) => Promise<void>;
   /** Importar CSV (texto). Se não vier, o botão some. */
   onImportCSV?: (csvText: string) => Promise<void>;
-  /** Exportar selecionadas (ids). Se não vier, usamos fallback interno que baixa CSV. */
+  /** Exportar selecionadas (ids). Se não vier, usamos fallback interno que baixa PDF. */
   onExportSelected?: (ids: number[]) => void;
   /** Notifica a seleção externa (opcional) */
   onSelectionChange?: (ids: number[]) => void;
@@ -232,7 +232,8 @@ export default function TransactionsTable({
       toast.info("Nada para exportar.");
       return;
     }
-    exportTransactionsPDF(rows, {}, dayjs().format("YYYY-MM"));
+    const currentPeriod = dayjs().format('YYYY-MM');
+    exportTransactionsPDF(rows, {}, currentPeriod);
   };
 
   const onClickImport = () => fileRef.current?.click();
@@ -304,7 +305,7 @@ export default function TransactionsTable({
               </>
             )}
             <Button variant="outline" size="sm" onClick={exportSelected} disabled={selected.size === 0} className="inline-flex items-center gap-2">
-              <Download className="h-4 w-4"/> Exportar selecionadas
+              <Download className="h-4 w-4"/> Exportar PDF
             </Button>
             {onDuplicateMany && (
               <Button variant="outline" size="sm" onClick={handleDuplicateOpen} disabled={selected.size === 0} className="inline-flex items-center gap-2">
