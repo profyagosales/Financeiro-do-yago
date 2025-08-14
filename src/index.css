@@ -241,7 +241,7 @@ body::after {
     @apply text-2xl sm:text-3xl font-semibold tracking-tight;
   }
   .glass-card {
-    @apply bg-white/60 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)];
+    @apply bg-white/60 dark:bg-gray-950/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)];
   }
 }
 
