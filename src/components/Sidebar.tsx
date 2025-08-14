@@ -6,9 +6,18 @@ import {
   CandlestickChart, Coins, Target, Plane, Gift, ShoppingCart, Settings,
   ChevronDown, ChevronsLeft, ChevronsRight,
 } from "lucide-react";
+import Avatar from "boring-avatars";
 
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
+
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 type NavLeaf = { type: "item"; label: string; to: string; icon?: React.ElementType; title?: string; };
 type NavGroup = { type: "group"; label: string; icon?: React.ElementType; children: NavLeaf[]; };
@@ -17,16 +26,14 @@ type Section = { label: string; items: (NavLeaf | NavGroup)[] };
 const sections: Section[] = [
   {
     label: "Geral",
+    items: [{ type: "item", label: "Visão geral", to: "/dashboard", icon: LayoutDashboard }],
+  },
+  {
+    label: "Finanças",
     items: [
-      { type: "item", label: "Visão geral", to: "/dashboard", icon: LayoutDashboard },
-      {
-        type: "group", label: "Finanças", icon: Wallet,
-        children: [
-          { type: "item", label: "Resumo", to: "/financas/resumo", icon: LayoutDashboard },
-          { type: "item", label: "Mensal", to: "/financas/mensal", icon: CalendarRange },
-          { type: "item", label: "Anual", to: "/financas/anual", icon: CalendarRange },
-        ],
-      },
+      { type: "item", label: "Resumo", to: "/financas/resumo", icon: LayoutDashboard },
+      { type: "item", label: "Mensal", to: "/financas/mensal", icon: CalendarRange },
+      { type: "item", label: "Anual", to: "/financas/anual", icon: CalendarRange },
     ],
   },
   {
@@ -78,6 +85,7 @@ export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const navRef = React.useRef<HTMLElement | null>(null);
+  const { user, signOut } = useAuth();
 
   const [collapsed, setCollapsed] = React.useState<boolean>(() =>
     typeof window !== "undefined" && localStorage.getItem(COL_KEY) === "1"
@@ -128,13 +136,12 @@ export function Sidebar() {
       <aside
         data-collapsed={collapsed ? "true" : "false"}
         className={[
-          "sticky top-0 h-screen shrink-0 border-r border-slate-800 bg-slate-950/95 backdrop-blur text-slate-200 transition-[width]",
+          "sticky top-0 flex h-screen shrink-0 flex-col border-r border-slate-800 bg-slate-950/95 backdrop-blur text-slate-200 transition-[width]",
           collapsed ? "w-20" : "w-72",
         ].join(" ")}
       >
         <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-800">
-          {/* Logo não aceita className; envolve em uma div */}
-          <div className="h-7 w-7">
+          <div className="h-9 w-9">
             <Logo />
           </div>
           {!collapsed && (
@@ -144,19 +151,26 @@ export function Sidebar() {
             </div>
           )}
           <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={() => navigate("/configuracoes")}
+              title="Configurações"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-300 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+            >
+              <Settings className="h-4 w-4" />
+            </button>
             <button
               aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
               title={collapsed ? "Expandir menu" : "Recolher menu"}
               onClick={() => setCollapsed((v) => !v)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-white/5 text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-300 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
             >
               {collapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
             </button>
-            <ThemeToggle />
           </div>
         </div>
 
-        <nav ref={navRef} className="px-2 py-3 overflow-y-auto h-[calc(100vh-56px)]">
+        <nav ref={navRef} className="flex-1 overflow-y-auto px-2 py-3">
           {sections.map((section) => (
             <div key={section.label} className="mt-4 first:mt-0">
               {!collapsed && (
@@ -234,6 +248,24 @@ export function Sidebar() {
             </div>
           ))}
         </nav>
+
+        <div className="border-t border-slate-800 p-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-slate-300 hover:bg-white/5 hover:text-white">
+                <Avatar size={32} name={user?.email ?? "Usuário"} variant="beam" />
+                {!collapsed && (
+                  <span className="text-sm font-medium">{user?.user_metadata?.name ?? user?.email}</span>
+                )}
+                <ChevronDown className="ml-auto h-4 w-4 text-slate-400" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="top" align="start" className="w-40">
+              <DropdownMenuItem onClick={() => navigate("/perfil")}>Ver perfil</DropdownMenuItem>
+              <DropdownMenuItem onClick={signOut}>Sair</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </aside>
     </RTooltip.Provider>
   );
@@ -252,7 +284,7 @@ function NavLeafLink({ leaf, collapsed }: { leaf: NavLeaf; collapsed?: boolean }
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40",
           collapsed ? "justify-center" : "",
           isActive
-            ? "sb-active bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
+            ? `sb-active bg-emerald-500/15 text-emerald-300 ring-1 ${leaf.label === "Visão geral" ? "ring-emerald-400/40" : "ring-emerald-500/30"}`
             : "text-slate-300 hover:text-white hover:bg-white/5",
         ].join(" ")
       }
