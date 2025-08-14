@@ -3,6 +3,8 @@ import { Toaster } from 'sonner';
 
 import AvatarMenu from './AvatarMenu';
 import NavItem from './NavItem';
+import MobileNavDrawer from './MobileNavDrawer';
+
 
 import { Logo } from '@/components/Logo';
 import { Settings } from '@/components/icons';
@@ -20,6 +22,7 @@ export default function Topbar() {
           <Logo size="lg" />
           <span className="ml-2 text-xl font-semibold">FY</span>
         </NavLink>
+        <MobileNavDrawer />
         <nav className="ml-6 flex items-center gap-2 text-white">
           {navRoutes.map((item) => (
             <NavItem key={item.to} to={item.to} variant={item.variant}>
