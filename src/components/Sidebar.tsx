@@ -10,12 +10,11 @@ import {
   CandlestickChart,
   Coins,
   Gift,
-  ShoppingCart,
-  Settings,
   ChevronDown,
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
+
 
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
@@ -26,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
+import { ShoppingCart, Settings, Target, Plane } from "@/components/icons";
 import { useAuth } from "@/contexts/AuthContext";
 
 type NavLeaf = { type: "item"; label: string; to: string; icon?: React.ElementType; title?: string };

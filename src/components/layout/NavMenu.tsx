@@ -5,20 +5,17 @@ import {
   LayoutDashboard,
   WalletCards,
   TrendingUp,
-  ShoppingCart,
-  Heart,
   ChevronDown,
-  Target,
-  Plane,
   PieChart,
   CalendarDays,
   CalendarRange,
-  LineChart,
   Landmark,
   Building2,
   CandlestickChart,
   Bitcoin,
 } from "lucide-react";
+
+import { ShoppingCart, Heart, Target, Plane, LineChart } from "@/components/icons";
 
 export interface NavMenuChild {
   label: string;
