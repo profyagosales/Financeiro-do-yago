@@ -1,20 +1,5 @@
 import * as React from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import * as RTooltip from "@radix-ui/react-tooltip";
-import {
-  LayoutDashboard,
-  CalendarRange,
-  PiggyBank,
-  Landmark,
-  Building2,
-  CandlestickChart,
-  Coins,
-  Gift,
-  ChevronDown,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
-
+import { Link, useMatch } from "react-router-dom";
 
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
@@ -22,317 +7,188 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-import { ShoppingCart, Settings, Target, Plane } from "@/components/icons";
+import {
+  Home,
+  Wallet,
+  TrendingUp,
+  Target,
+  Plane,
+  ShoppingCart,
+  Heart,
+  Settings,
+  ChevronDown,
+} from "@/components/icons";
 import { useAuth } from "@/contexts/AuthContext";
 
-type NavLeaf = { type: "item"; label: string; to: string; icon?: React.ElementType; title?: string };
-type NavGroup = { type: "group"; label: string; icon?: React.ElementType; children: NavLeaf[] };
-type Section = { label: string; items: (NavLeaf | NavGroup)[] };
-
-const sections: Section[] = [
-  {
-    label: "Geral",
-    items: [{ type: "item", label: "Visão geral", to: "/homeoverview", icon: LayoutDashboard }],
-  },
-  {
-    label: "Finanças",
-    items: [
-      { type: "item", label: "Resumo", to: "/financas/resumo", icon: LayoutDashboard },
-      { type: "item", label: "Mensal", to: "/financas/mensal", icon: CalendarRange },
-      { type: "item", label: "Anual", to: "/financas/anual", icon: CalendarRange },
-    ],
-  },
-  {
-    label: "Investimentos",
-    items: [
-      { type: "item", label: "Resumo", to: "/investimentos/resumo", icon: PiggyBank },
-      {
-        type: "group",
-        label: "Carteira",
-        icon: Landmark,
-        children: [
-          { type: "item", label: "Renda Fixa", to: "/investimentos/renda-fixa", icon: Landmark },
-          { type: "item", label: "FIIs", to: "/investimentos/fiis", icon: Building2 },
-          { type: "item", label: "Bolsa", to: "/investimentos/bolsa", icon: CandlestickChart },
-          { type: "item", label: "Cripto", to: "/investimentos/cripto", icon: Coins },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Planejamento",
-    items: [
-      { type: "item", label: "Metas & Projetos", to: "/metas", icon: Target },
-      { type: "item", label: "Milhas", to: "/milhas", icon: Plane },
-      { type: "item", label: "Desejos", to: "/desejos", icon: Gift },
-      { type: "item", label: "Lista de Compras", to: "/compras", icon: ShoppingCart },
-    ],
-  },
-];
-
-const OPEN_KEY = "sb:navOpen";
-const COL_KEY = "sb:collapsed";
-
-function flattenLeaves(): NavLeaf[] {
-  const leaves: NavLeaf[] = [];
-  sections.forEach((sec) => {
-    sec.items.forEach((it) => {
-      if (it.type === "group") leaves.push(...it.children);
-      else leaves.push(it);
-    });
-  });
-  return leaves;
-}
-
 export function Sidebar() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const navRef = React.useRef<HTMLElement | null>(null);
   const { user, signOut } = useAuth();
-  const initials = user?.email?.slice(0, 2).toUpperCase() ?? "";
-
-  const [collapsed, setCollapsed] = React.useState<boolean>(() =>
-    typeof window !== "undefined" && localStorage.getItem(COL_KEY) === "1"
-  );
-
-  const [open, setOpen] = React.useState<Record<string, boolean>>(() => {
-    try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem(OPEN_KEY) : null;
-      return raw ? JSON.parse(raw) : {};
-    } catch {
-      return {};
-    }
-  });
-
-  React.useEffect(() => {
-    localStorage.setItem(COL_KEY, collapsed ? "1" : "0");
-  }, [collapsed]);
-  React.useEffect(() => {
-    localStorage.setItem(OPEN_KEY, JSON.stringify(open));
-  }, [open]);
-
-  React.useEffect(() => {
-    const next: Record<string, boolean> = {};
-    sections.forEach((sec) => {
-      sec.items.forEach((it) => {
-        if (it.type === "group") {
-          const activeChild = it.children.some((c) => location.pathname.startsWith(c.to));
-          if (activeChild) next[it.label] = true;
-        }
-      });
-    });
-    setOpen((prev) => ({ ...prev, ...next }));
-  }, [location.pathname]);
-
-  React.useEffect(() => {
-    const active = navRef.current?.querySelector(".sb-active") as HTMLElement | null;
-    active?.scrollIntoView({ block: "nearest", inline: "nearest" });
-  }, [location.pathname, collapsed]);
-
-  React.useEffect(() => {
-    const leaves = flattenLeaves();
-    const path = location.pathname;
-    let best: NavLeaf | null = null;
-    for (const leaf of leaves)
-      if (path.startsWith(leaf.to) && (!best || leaf.to.length > best.to.length)) best = leaf;
-    const label = best?.label ?? "Financeiro do Yago";
-    document.title = `${label} — Financeiro do Yago`;
-  }, [location.pathname]);
-
-  const handleGroupClick = (group: NavGroup) => {
-    if (collapsed) {
-      const first = group.children[0];
-      if (first) navigate(first.to);
-      return;
-    }
-    setOpen((p) => ({ ...p, [group.label]: !p[group.label] }));
-  };
+  const initials = React.useMemo(() => {
+    const name: string =
+      (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  }, [user]);
+  const displayName =
+    (user?.user_metadata?.full_name as string | undefined) || user?.email || "";
 
   return (
-    <RTooltip.Provider delayDuration={200} skipDelayDuration={200}>
-      <aside
-        data-collapsed={collapsed ? "true" : "false"}
-        className={[
-          "sticky top-0 h-screen shrink-0 border-r border-slate-800/60 bg-slate-950/60 backdrop-blur text-slate-200 transition-[width]",
-          collapsed ? "w-20" : "w-72",
-        ].join(" ")}
-      >
-        <div className="flex h-full flex-col">
-          <div className="m-3 flex items-center rounded-2xl sidebar-header p-5 ring-1 ring-white/10">
-            <Logo size="lg" />
-            {!collapsed && <span className="ml-2 text-xl font-semibold">FY</span>}
-            <div className="ml-auto flex items-center gap-2">
-              <ThemeToggle className="bg-white/20 text-white hover:bg-white/30" />
-              <NavLink
-                to="/configuracoes"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 text-white hover:bg-white/30"
-                title="Configurações"
-              >
-                <Settings className="h-4 w-4" />
-              </NavLink>
-              <button
-                aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
-                title={collapsed ? "Expandir menu" : "Recolher menu"}
-                onClick={() => setCollapsed((v) => !v)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 text-white hover:bg-white/30"
-              >
-                {collapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
-              </button>
-            </div>
+    <aside className="flex h-screen w-64 flex-col border-r border-white/10 bg-background/60 text-foreground backdrop-blur">
+      <div className="mx-3 mt-3 rounded-2xl p-4 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 backdrop-blur ring-1 ring-black/5 dark:ring-white/5 shadow-sm flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Logo className="h-8 w-8" />
+          <div className="text-sm">
+            <div className="font-semibold tracking-wide">Financeiro Yago</div>
+            <div className="text-muted-foreground text-xs">painel • pessoal</div>
           </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <ThemeToggle aria-label="Alternar tema" />
+          <button
+            aria-label="Configurações"
+            className="rounded-lg p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
+          >
+            <Settings className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
 
-          <nav ref={navRef} className="flex-1 overflow-y-auto scrollbar-none px-3 py-6">
-            {sections.map((section) => (
-              <div key={section.label} className="mt-4 first:mt-0">
-                {!collapsed && (
-                  <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400/70">
-                    {section.label}
-                  </div>
-                )}
+      <nav className="mt-6 flex-1 space-y-6 px-3">
+        <NavItem to="/dashboard" icon={Home} highlight>
+          Visão geral
+        </NavItem>
 
-                <ul className="space-y-1">
-                  {section.items.map((item) => {
-                    if (item.type === "group") {
-                      const Icon = item.icon;
-                      const isOpen = !!open[item.label];
+        <div>
+          <div className="mb-1 px-3 text-xs font-semibold uppercase text-muted-foreground">
+            Finanças
+          </div>
+          <div className="space-y-1">
+            <NavItem to="/financas/resumo" icon={Wallet}>
+              Resumo
+            </NavItem>
+            <NavItem to="/financas/mensal" icon={Wallet}>
+              Mensal
+            </NavItem>
+            <NavItem to="/financas/anual" icon={Wallet}>
+              Anual
+            </NavItem>
+          </div>
+        </div>
 
-                      const ButtonEl = (
-                        <button
-                          onClick={() => handleGroupClick(item)}
-                          className={[
-                            "group flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-slate-300 hover:bg-emerald-600/10 hover:text-white transition",
-                            collapsed ? "justify-center" : "",
-                          ].join(" ")}
-                          aria-expanded={isOpen}
-                          title={collapsed ? item.label : undefined}
-                          aria-label={collapsed ? item.label : undefined}
-                        >
-                          <span className="flex items-center gap-3">
-                            {Icon && <Icon className="h-4 w-4 text-slate-400 group-hover:text-white" />}
-                            {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
-                          </span>
-                          {!collapsed && (
-                            <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
-                          )}
-                        </button>
-                      );
+        <div>
+          <div className="mb-1 px-3 text-xs font-semibold uppercase text-muted-foreground">
+            Investimentos
+          </div>
+          <div className="space-y-1">
+            <NavItem to="/investimentos" icon={TrendingUp}>
+              Resumo
+            </NavItem>
+            <NavItem to="/carteira-renda-fixa" icon={TrendingUp}>
+              Renda Fixa
+            </NavItem>
+            <NavItem to="/carteira-fiis" icon={TrendingUp}>
+              FIIs
+            </NavItem>
+            <NavItem to="/carteira-bolsa" icon={TrendingUp}>
+              Bolsa
+            </NavItem>
+            <NavItem to="/carteira-cripto" icon={TrendingUp}>
+              Cripto
+            </NavItem>
+          </div>
+        </div>
 
-                      return (
-                        <li key={item.label}>
-                          <div className="relative">
-                            {collapsed ? (
-                              <RTooltip.Root>
-                                <RTooltip.Trigger asChild>{ButtonEl}</RTooltip.Trigger>
-                                <RTooltip.Content
-                                  side="right"
-                                  sideOffset={8}
-                                  className="rounded-md bg-slate-900 px-2 py-1 text-xs text-white shadow-lg ring-1 ring-black/20 data-[state=delayed-open]:animate-in data-[state=closed]:animate-out data-[side=right]:slide-in-from-left-1"
-                                >
-                                  {item.label}
-                                  <RTooltip.Arrow className="fill-slate-900" />
-                                </RTooltip.Content>
-                              </RTooltip.Root>
-                            ) : (
-                              ButtonEl
-                            )}
-                          </div>
+        <NavItem to="/metas" icon={Target}>
+          Metas & Projetos
+        </NavItem>
 
-                          {!collapsed && isOpen && (
-                            <ul className="mt-1 space-y-1 pl-8">
-                              {item.children.map((child) => (
-                                <li key={child.to}>
-                                  <NavLeafLink leaf={child} />
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </li>
-                      );
-                    }
+        <div>
+          <NavItem to="/milhas" icon={Plane}>
+            Milhas
+          </NavItem>
+          <div className="mt-1 space-y-1">
+            <NavItem to="/milhas/livelo" className="ml-6">
+              Livelo
+            </NavItem>
+            <NavItem to="/milhas/latampass" className="ml-6">
+              LatamPass
+            </NavItem>
+            <NavItem to="/milhas/azul" className="ml-6">
+              Azul
+            </NavItem>
+          </div>
+        </div>
 
-                    return (
-                      <li key={item.to}>
-                        <NavLeafLink leaf={item} collapsed={collapsed} />
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
-          </nav>
+        <NavItem to="/compras" icon={ShoppingCart}>
+          Lista de compras
+        </NavItem>
 
-          <div className="p-2">
+        <NavItem to="/desejos" icon={Heart}>
+          Lista de desejos
+        </NavItem>
+      </nav>
+
+      <div className="mx-3 mb-3 mt-auto rounded-xl border border-white/10 p-3 bg-background/40 backdrop-blur">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-8 rounded-full bg-emerald-600 text-white grid place-items-center text-sm">
+            {initials}
+          </div>
+          <div className="text-sm">
+            <div className="font-medium">{displayName}</div>
+            <div className="text-muted-foreground text-xs">online</div>
+          </div>
+          <div className="ms-auto">
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex w-full items-center gap-3 rounded-2xl p-2 text-left hover:bg-emerald-600/10 transition">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold text-white">
-                    {initials}
-                  </div>
-                  {!collapsed && (
-                    <div className="flex min-w-0 flex-col">
-                      <span className="truncate text-sm font-medium">
-                        {user?.user_metadata?.full_name || user?.email}
-                      </span>
-                      <span className="truncate text-xs text-slate-400">{user?.email}</span>
-                    </div>
-                  )}
-                  {!collapsed && <ChevronDown className="ml-auto h-4 w-4 text-slate-400" />}
-                </button>
+              <DropdownMenuTrigger className="rounded-lg p-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50">
+                <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" side="top" className="w-40">
-                <DropdownMenuItem onSelect={() => navigate("/perfil")}>Perfil</DropdownMenuItem>
-                <DropdownMenuItem onSelect={signOut}>Sair</DropdownMenuItem>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <a href="/perfil">Perfil</a>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut}>Sair</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
-      </aside>
-    </RTooltip.Provider>
+      </div>
+    </aside>
   );
 }
 
-function NavLeafLink({ leaf, collapsed }: { leaf: NavLeaf; collapsed?: boolean }) {
-  const Icon = leaf.icon;
-  const LinkEl = (
-    <NavLink
-      to={leaf.to}
-      title={collapsed ? leaf.label : leaf.title}
-      aria-label={collapsed ? leaf.label : undefined}
-      className={({ isActive }) =>
-        [
-          "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40",
-          collapsed ? "justify-center" : "",
-          isActive
-            ? leaf.to === "/homeoverview"
-              ? "sb-active bg-gradient-to-r from-emerald-600/20 to-emerald-400/20 text-emerald-200 ring-2 ring-emerald-400/60"
-              : "sb-active bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
-            : "text-slate-300 hover:text-white hover:bg-emerald-600/10",
-        ].join(" ")
-      }
-    >
-      {Icon ? <Icon className="h-4 w-4 text-slate-400 group-[.sb-active]:text-emerald-300 group-hover:text-white" /> : null}
-      {!collapsed && <span>{leaf.label}</span>}
-    </NavLink>
-  );
+interface NavItemProps {
+  to: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  children: React.ReactNode;
+  highlight?: boolean;
+  className?: string;
+}
 
-  return collapsed ? (
-    <RTooltip.Root>
-      <RTooltip.Trigger asChild>{LinkEl}</RTooltip.Trigger>
-      <RTooltip.Content
-        side="right"
-        sideOffset={8}
-        className="rounded-md bg-slate-900 px-2 py-1 text-xs text-white shadow-lg ring-1 ring-black/20 data-[state=delayed-open]:animate-in data-[state=closed]:animate-out data-[side=right]:slide-in-from-left-1"
-      >
-        {leaf.label}
-        <RTooltip.Arrow className="fill-slate-900" />
-      </RTooltip.Content>
-    </RTooltip.Root>
-  ) : (
-    LinkEl
+function NavItem({ to, icon: Icon, children, highlight, className }: NavItemProps) {
+  const isActive = useMatch(to);
+  return (
+    <Link
+      to={to}
+      aria-current={isActive ? "page" : undefined}
+      className={[
+        "group flex items-center gap-3 rounded-xl px-3 py-2 text-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 hover:bg-background/40 hover:backdrop-blur hover:scale-[1.01]",
+        highlight || isActive
+          ? "bg-gradient-to-r from-emerald-500/20 to-teal-500/20 ring-1 ring-emerald-500/30 shadow-sm"
+          : "",
+        className || "",
+      ].join(" ")}
+    >
+      {Icon && <Icon className="h-5 w-5 opacity-90" />}
+      <span className="text-sm">{children}</span>
+    </Link>
   );
 }
 
