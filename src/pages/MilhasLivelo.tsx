@@ -4,11 +4,11 @@ import { toast } from 'sonner';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 import MilesHeader, { type MilesProgram } from '@/components/miles/MilesHeader';
-import { MotionCard } from '@/components/ui/MotionCard';
+import MilesPendingList from '@/components/miles/MilesPendingList';
+import ModalMilesMovement, { type MilesMovement } from '@/components/ModalMilesMovement';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
-import ModalMilesMovement, { type MilesMovement } from '@/components/ModalMilesMovement';
-import MilesPendingList from '@/components/miles/MilesPendingList';
+import { MotionCard } from '@/components/ui/MotionCard';
 
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
