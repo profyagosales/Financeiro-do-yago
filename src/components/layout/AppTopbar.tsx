@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 import { Logo } from "../Logo";
 import { ThemeToggle } from "../ui/ThemeToggle";
+import AlertsDrawer from "../financas/AlertsDrawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,6 +56,7 @@ export default function AppTopbar() {
           </NavLink>
         </nav>
         <div className="ml-auto flex items-center gap-2">
+          <AlertsDrawer />
           <ThemeToggle className="focus:outline-none focus:ring-2 focus:ring-emerald-400/70 dark:focus:ring-emerald-300/50" />
           <NavLink
             to="/configuracoes"
