@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-import logoSvg from "../../public/icons/icon-512.svg?raw";
+import logoSvg from "../icons/icon-512.svg?raw";
 
 export function exportTransactionsPDF(rows: any[], filtros: any, period: string) {
   const doc = new jsPDF();
