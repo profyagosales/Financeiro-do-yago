@@ -1,17 +1,24 @@
 // src/pages/Investments.tsx  (RESUMO)
+import { PieChart as PieIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
-  ResponsiveContainer, PieChart, Pie, Cell, Legend,
-  BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell, Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis, YAxis,
 } from "recharts";
-import { PieChart as PieIcon } from "lucide-react";
 
-import { supabase } from "@/lib/supabaseClient";
-import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
 
 
 /* ---------------- utils ---------------- */
@@ -166,7 +173,7 @@ export default function InvestmentsResumo() {
           <CardHeader><CardTitle>Distribuição por classe</CardTitle></CardHeader>
           <CardContent className="h-[300px]">
             {byType.length === 0 ? (
-              <div className="text-sm text-muted-foreground">Sem dados.</div>
+              <div className="text-sm text-fg-muted">Sem dados.</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>

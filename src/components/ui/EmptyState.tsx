@@ -12,7 +12,7 @@ export function EmptyState({ icon, title, message, action, className }: EmptySta
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-2 py-10 text-center text-muted-foreground",
+  "flex flex-col items-center justify-center gap-2 py-10 text-center text-fg-muted",
         className
       )}
     >

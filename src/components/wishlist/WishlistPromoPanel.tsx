@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export type PromoItem = {
   id: string;
@@ -24,7 +24,7 @@ export default function WishlistPromoPanel({ promos }: WishlistPromoPanelProps) 
             </div>
           ))
         ) : (
-          <div className="text-sm text-muted-foreground">Nenhuma promoção</div>
+          <div className="text-sm text-fg-muted">Nenhuma promoção</div>
         )}
       </CardContent>
     </Card>

@@ -1,6 +1,6 @@
-import * as React from "react";
+// React import removed (automatic JSX runtime)
 import * as Dialog from "@radix-ui/react-dialog";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import type { WishlistItem } from "./WishlistNewItemModal";
 
@@ -26,7 +26,7 @@ export default function WishlistDrawer({ item, open, onOpenChange }: Props) {
                   <h2 className="text-lg font-semibold leading-tight line-clamp-2">
                     {item.titulo}
                   </h2>
-                  <p className="text-sm text-muted-foreground">{item.vendedor}</p>
+                  <p className="text-sm text-fg-muted">{item.vendedor}</p>
                 </div>
               </div>
               <div className="h-40">
@@ -40,7 +40,7 @@ export default function WishlistDrawer({ item, open, onOpenChange }: Props) {
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Sem histórico de preço.</p>
+                  <p className="text-sm text-fg-muted">Sem histórico de preço.</p>
                 )}
               </div>
               {item.notas && (

@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { Card } from '@/components/ui/card';
 import type { UITransaction } from '@/components/TransactionsTable';
-import { formatCurrency } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
 import { forecastCashflowNext30 } from '@/hooks/useForecast';
+import { formatCurrency } from '@/lib/utils';
 
 // Wrapper to comply with forecast.forecast30d API
 const forecast = { forecast30d: forecastCashflowNext30 };
@@ -66,7 +66,7 @@ export default function ForecastCard({ transacoes = [] }: Props) {
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className="h-24 flex items-center justify-center text-sm text-muted-foreground">
+  <div className="h-24 flex items-center justify-center text-sm text-fg-muted">
           Dados insuficientes
         </div>
       )}

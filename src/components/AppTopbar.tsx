@@ -6,7 +6,8 @@ import NavItem from './layout/NavItem';
 import { Logo } from '@/components/Logo';
 import { Settings } from '@/components/icons';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { navRoutes, NavRoute } from '@/routes/nav';
+import type { NavRoute } from '@/routes/nav';
+import { navRoutes } from '@/routes/nav';
 
 function getNavItem(item: NavRoute) {
   return (

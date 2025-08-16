@@ -1,9 +1,8 @@
-import * as React from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+// React import removed (automatic JSX runtime)
 import { ChevronDown, Settings } from 'lucide-react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import AlertsDrawer from './financas/AlertsDrawer';
-import { ThemeToggle } from './ui/ThemeToggle';
 import { Logo } from './Logo';
 import {
   DropdownMenu,
@@ -11,12 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { ThemeToggle } from './ui/ThemeToggle';
 
 import { useAuth } from '@/contexts/AuthContext';
 import {
   dashboardNavItem,
-  navGroups,
   getNavItem,
+  navGroups,
 } from '@/routes/nav';
 
 const activeLink =
@@ -110,4 +110,5 @@ export default function TopNav() {
   );
 }
 
-export { dashboardNavItem, navGroups, getNavItem };
+export { dashboardNavItem, getNavItem, navGroups };
+

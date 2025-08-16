@@ -1,11 +1,11 @@
-import * as React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Bell } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { useAlerts, AlertType } from '@/hooks/useAlerts';
+import { Switch } from '@/components/ui/switch';
+import type { AlertType } from '@/hooks/useAlerts';
+import { useAlerts } from '@/hooks/useAlerts';
 
 const labels: Record<AlertType, { name: string; to: string }> = {
   bills: { name: 'Contas a vencer', to: '/financas/mensal' },
@@ -39,7 +39,7 @@ export default function AlertsDrawer() {
           <Dialog.Title className="text-lg font-semibold">Alertas</Dialog.Title>
           <div className="mt-4 flex-1 overflow-auto">
             {activeAlerts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Sem alertas ativos.</p>
+              <p className="text-sm text-fg-muted">Sem alertas ativos.</p>
             ) : (
               <ul className="space-y-2 text-sm">
                 {activeAlerts.map((a) => (

@@ -1,4 +1,4 @@
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { usePeriod, type Mode } from "@/state/periodFilter";
 
 const options: { value: Mode; label: string }[] = [
@@ -12,7 +12,7 @@ export default function PeriodSelector() {
   const { mode, setMode } = usePeriod();
   return (
     <Select value={mode} onValueChange={(v) => setMode(v as Mode)}>
-      <SelectTrigger className="w-44">
+      <SelectTrigger className="w-full sm:w-44">
         <SelectValue placeholder="Período" />
       </SelectTrigger>
       <SelectContent>

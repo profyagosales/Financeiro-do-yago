@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import '@fontsource-variable/inter'
+// Font import removed; install '@fontsource-variable/inter' or re-add if desired
 
 import App from '@/App'
 import AppErrorBoundary from '@/components/AppErrorBoundary'

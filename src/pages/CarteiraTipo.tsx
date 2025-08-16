@@ -1,19 +1,19 @@
 // src/pages/CarteiraTipo.tsx
+import { Coins, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, MoreHorizontal, Pencil, Trash2, Coins } from "lucide-react";
 
-import { toast } from "@/components/ui/Toasts";
-import { supabase } from "@/lib/supabaseClient";
-import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/PageHeader";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/Toasts";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
 
 type Props = { tipo: "Renda fixa" | "FIIs" | "Ações" | "Cripto" | "Outros" };
 
@@ -176,12 +176,12 @@ export default function CarteiraTipo({ tipo }: Props) {
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <CardTitle className="text-base truncate">
-                    {it.name} {it.symbol ? <span className="text-muted-foreground">({it.symbol})</span> : null}
+                    {it.name} {it.symbol ? <span className="text-fg-muted">({it.symbol})</span> : null}
                   </CardTitle>
                   <CardDescription className="mt-1 flex flex-wrap items-center gap-2">
                     <Badge>{tipo}</Badge>
-                    {it.broker ? <span className="text-xs text-muted-foreground">• {it.broker}</span> : null}
-                    <span className="text-xs text-muted-foreground">• {new Date(it.date).toLocaleDateString("pt-BR")}</span>
+                    {it.broker ? <span className="text-xs text-fg-muted">• {it.broker}</span> : null}
+                    <span className="text-xs text-fg-muted">• {new Date(it.date).toLocaleDateString("pt-BR")}</span>
                   </CardDescription>
                 </div>
                 <DropdownMenu>
@@ -194,11 +194,11 @@ export default function CarteiraTipo({ tipo }: Props) {
               </div>
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
-              <div><div className="text-muted-foreground">Quantidade</div><div className="font-medium">{it.quantity}</div></div>
-              <div><div className="text-muted-foreground">Preço unit.</div><div className="font-medium">{BRL(it.price)}</div></div>
-              <div><div className="text-muted-foreground">Taxas</div><div className="font-medium">{BRL(it.fees ?? 0)}</div></div>
-              <div><div className="text-muted-foreground">Investido</div><div className="font-medium">{BRL(it.quantity * it.price + (it.fees ?? 0))}</div></div>
-              <div><div className="text-muted-foreground">Obs.</div><div className="truncate">{it.note || "-"}</div></div>
+              <div><div className="text-fg-muted">Quantidade</div><div className="font-medium">{it.quantity}</div></div>
+              <div><div className="text-fg-muted">Preço unit.</div><div className="font-medium">{BRL(it.price)}</div></div>
+              <div><div className="text-fg-muted">Taxas</div><div className="font-medium">{BRL(it.fees ?? 0)}</div></div>
+              <div><div className="text-fg-muted">Investido</div><div className="font-medium">{BRL(it.quantity * it.price + (it.fees ?? 0))}</div></div>
+              <div><div className="text-fg-muted">Obs.</div><div className="truncate">{it.note || "-"}</div></div>
             </CardContent>
           </Card>
         ))}

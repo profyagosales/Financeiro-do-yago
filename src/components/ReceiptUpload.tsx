@@ -46,7 +46,7 @@ export default function ReceiptUpload({ onExtract }: Props) {
         type="button"
         onClick={extract}
         disabled={!file}
-        className="rounded bg-emerald-600 px-4 py-2 text-white disabled:opacity-50"
+  className="rounded bg-emerald-600 px-4 py-2 text-white disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))]"
       >
         Extrair dados
       </button>

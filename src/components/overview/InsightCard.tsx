@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 
 interface InsightCardProps {
   icon: ReactNode;
@@ -29,7 +29,7 @@ export default function InsightCard({ icon, title, subtitle, onClick }: InsightC
       <span className="text-2xl">{icon}</span>
       <div className="flex flex-col">
         <span className="font-medium leading-none">{title}</span>
-        <span className="text-sm text-muted-foreground">{subtitle}</span>
+  <span className="text-sm text-fg-muted">{subtitle}</span>
       </div>
     </motion.div>
   );

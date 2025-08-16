@@ -1,16 +1,16 @@
 // src/pages/CarteiraFIIs.tsx
+import { Building2, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Plus, MoreHorizontal, Pencil, Trash2, Building2 } from "lucide-react";
 
-import { toast } from "@/components/ui/Toasts";
-import { useInvestments } from "@/hooks/useInvestments";
 import ModalInvest from "@/components/ModalInvest";
 import PageHeader from "@/components/PageHeader";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/Toasts";
+import { useInvestments } from "@/hooks/useInvestments";
 
 // Formatter BRL
 const BRL = (v: number | null | undefined) => (v ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -117,12 +117,12 @@ export default function CarteiraFIIs() {
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <CardTitle className="text-base truncate">
-                    {it.name} {it.symbol ? <span className="text-muted-foreground">({it.symbol})</span> : null}
+                    {it.name} {it.symbol ? <span className="text-fg-muted">({it.symbol})</span> : null}
                   </CardTitle>
                   <CardDescription className="mt-1 flex flex-wrap items-center gap-2">
                     <Badge>FIIs</Badge>
-                    {it.broker ? <span className="text-xs text-muted-foreground">• {it.broker}</span> : null}
-                    <span className="text-xs text-muted-foreground">• {new Date(it.date).toLocaleDateString("pt-BR")}</span>
+                    {it.broker ? <span className="text-xs text-fg-muted">• {it.broker}</span> : null}
+                    <span className="text-xs text-fg-muted">• {new Date(it.date).toLocaleDateString("pt-BR")}</span>
                   </CardDescription>
                 </div>
                 <DropdownMenu>
@@ -142,23 +142,23 @@ export default function CarteiraFIIs() {
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
               <div>
-                <div className="text-muted-foreground">Quantidade</div>
+                <div className="text-fg-muted">Quantidade</div>
                 <div className="font-medium">{it.quantity}</div>
               </div>
               <div>
-                <div className="text-muted-foreground">Preço unit.</div>
+                <div className="text-fg-muted">Preço unit.</div>
                 <div className="font-medium">{BRL(it.price)}</div>
               </div>
               <div>
-                <div className="text-muted-foreground">Taxas</div>
+                <div className="text-fg-muted">Taxas</div>
                 <div className="font-medium">{BRL(it.fees)}</div>
               </div>
               <div>
-                <div className="text-muted-foreground">Investido</div>
+                <div className="text-fg-muted">Investido</div>
                 <div className="font-medium">{BRL(it.quantity * it.price + (it.fees ?? 0))}</div>
               </div>
               <div>
-                <div className="text-muted-foreground">Obs.</div>
+                <div className="text-fg-muted">Obs.</div>
                 <div className="truncate">{(it as any).note || (it as any).notes || "-"}</div>
               </div>
             </CardContent>

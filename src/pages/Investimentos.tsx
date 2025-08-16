@@ -1,35 +1,35 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import {
-  PieChart as PieIcon,
-  Landmark,
   Building2,
   CandlestickChart,
   Coins,
+  Landmark,
+  PieChart as PieIcon,
 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  PieChart,
-  Pie,
+  Bar,
+  BarChart,
+  CartesianGrid,
   Cell,
+  Pie,
+  PieChart,
   Tooltip as RTooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
 } from "recharts";
 
 import { LineChart as LineIcon } from "@/components/icons";
 import PageHeader from "@/components/PageHeader";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useInvestments } from "@/hooks/useInvestments";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useInvestments } from "@/hooks/useInvestments";
 
 
 // Helpers
@@ -254,7 +254,7 @@ export default function InvestimentosResumo() {
         </CardHeader>
         <CardContent className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-left text-muted-foreground">
+            <thead className="text-left text-fg-muted">
               <tr>
                 <th className="py-2 pr-3">Ativo</th>
                 <th className="py-2 pr-3">Tipo</th>
@@ -282,7 +282,7 @@ export default function InvestimentosResumo() {
                     <tr key={(a.symbol || a.name) as string} className="border-t">
                       <td className="py-2 pr-3">
                         <div className="font-medium">{a.name}</div>
-                        {a.symbol ? <div className="text-muted-foreground">{a.symbol}</div> : null}
+                        {a.symbol ? <div className="text-fg-muted">{a.symbol}</div> : null}
                       </td>
                       <td className="py-2 pr-3"><Badge variant="secondary">{a.type}</Badge></td>
                       <td className="py-2 pr-3">{BRL(a.total)}</td>
@@ -301,7 +301,7 @@ export default function InvestimentosResumo() {
         </CardHeader>
         <CardContent className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-left text-muted-foreground">
+            <thead className="text-left text-fg-muted">
               <tr>
                 <th className="py-2 pr-3">Data</th>
                 <th className="py-2 pr-3">Tipo</th>
@@ -338,7 +338,7 @@ export default function InvestimentosResumo() {
                     <td className="py-2 pr-3"><Badge variant="secondary">{String(r.type)}</Badge></td>
                     <td className="py-2 pr-3">
                       <div className="font-medium">{r.name}</div>
-                      <div className="text-muted-foreground">{r.symbol}</div>
+                      <div className="text-fg-muted">{r.symbol}</div>
                     </td>
                     <td className="py-2 pr-3">{r.quantity}</td>
                     <td className="py-2 pr-3">{BRL(r.price)}</td>

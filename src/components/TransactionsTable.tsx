@@ -1,35 +1,35 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import dayjs from "dayjs";
 import {
-  Pencil,
-  Trash2,
+  ArrowUpDown,
+  CheckSquare,
   ChevronLeft,
   ChevronRight,
-  ArrowUpDown,
-  CreditCard,
-  Upload,
-  Download,
   Copy,
-  CheckSquare,
-  Square,
+  CreditCard,
+  Download,
+  Pencil,
   Plus,
+  Square,
+  Trash2,
+  Upload,
 } from "lucide-react";
-import dayjs from "dayjs";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { toast } from "@/components/ui/Toasts";
 import { Wallet } from "@/components/icons";
-import { exportTransactionsPDF } from "@/utils/pdf";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import { useAccounts } from '@/hooks/useAccounts';
-import { useCreditCards } from '@/hooks/useCreditCards';
+import { toast } from "@/components/ui/Toasts";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Account } from '@/hooks/useAccounts';
+import { useAccounts } from '@/hooks/useAccounts';
 import type { CreditCard as CardModel } from '@/hooks/useCreditCards';
-import { Badge } from '@/components/ui/badge';
+import { useCreditCards } from '@/hooks/useCreditCards';
+import { exportTransactionsPDF } from "@/utils/pdf";
 
 // Tipo de linha exibida na tabela (shape de UI vindo de FinancasMensal)
 type SourceRef =
@@ -415,7 +415,7 @@ export default function TransactionsTable({
                                 <Badge variant="secondary" className="gap-1">
                                   <CreditCard size={12} />
                                   <span className="max-w-[80px] truncate">{short}</span>
-                                  {brand && <span className="text-[10px] uppercase opacity-70">{brand}</span>}
+                                  {brand && <span className="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">{brand}</span>}
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>{name}</TooltipContent>

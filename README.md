@@ -121,3 +121,53 @@ Arquivos gerados:
 ## Licença
 
 Distribuído sob licença MIT. Veja `LICENSE` para mais informações.
+
+## Design Tokens & Contraste
+
+Este projeto padroniza cores e estados via *CSS Custom Properties* e utilitários Tailwind para garantir acessibilidade e consistência entre claro/escuro.
+
+### Principais tokens
+
+| Token | Uso |
+| ----- | ---- |
+| `--foreground` | Texto primário (alto contraste) |
+| `--muted-foreground` | Texto secundário / meta (`.text-fg-muted`) |
+| `--disabled-bg` | Plano de fundo de controles desabilitados |
+| `--disabled-fg` | Texto/ícone de controles desabilitados |
+| `--primary` / `--primary-foreground` | Ações principais |
+| `--accent` / `--accent-foreground` | Realces neutros / hovers |
+
+Os tokens são definidos em `src/index.css` em `@layer base` para compatibilidade com o ecossistema shadcn + Tailwind.
+
+### Utilitários customizados
+
+- `.text-fg-muted` → aplica `color: var(--color-fg-muted)`
+- `.placeholder-fg-muted` → harmoniza cor de placeholder com texto secundário
+
+Estados desabilitados usam diretamente tokens: `disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))]` evitando hardcode de escalas `neutral-*` e garantindo contraste adequado tanto no tema claro quanto escuro.
+
+### Boas práticas
+
+**FAÇA**
+- Reutilize tokens: `text-[hsl(var(--disabled-fg))]` em vez de `text-neutral-500`.
+- Prefira utilitários sem opacidade artificial (evita problemas de contraste no dark).
+- Use `.text-fg-muted` para labels secundários, descrições, métricas contextuais.
+
+**NÃO FAÇA**
+- Definir `text-neutral-400/50` para “muted” (perde legibilidade em dark).
+- Misturar escalas (`slate`, `zinc`, `neutral`) para disabled; use os tokens.
+- Aplicar opacidade em containers para “desabilitar” (afeta filhos involuntariamente).
+
+### Migrando componentes
+
+1. Remova classes `text-muted-foreground` → substitua por `.text-fg-muted`.
+2. Converta `disabled:bg-neutral-200 disabled:text-neutral-500 ...` → tokens `--disabled-*`.
+3. Ajuste placeholders para `.placeholder-fg-muted`.
+
+### Acessibilidade
+
+Os valores de `--muted-foreground` foram ajustados para manter contraste mínimo ~4.5:1 sobre o background nos dois temas. Evite reduzir opacidade adicional (ex: `opacity-60`) em texto informativo; use sempre a cor correta.
+
+### Futuro
+
+Planeja-se adicionar testes visuais (Chromatic ou Playwright) para validar contrastes ao alterar tokens.

@@ -1,10 +1,10 @@
 import { WidgetCard, WidgetHeader } from './WidgetCard';
 
 import { Skeleton } from '@/components/ui/Skeleton';
-import type { Alert } from '@/hooks/useAlerts';
+import type { ActiveAlert } from '@/hooks/useAlerts';
 
 interface Props {
-  alerts: Alert[];
+  alerts: ActiveAlert[];
   isLoading?: boolean;
 }
 

@@ -1,9 +1,11 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import React from 'react';
+
 import { Button } from "@/components/ui/button";
-import WishlistNewItemModal, { WishlistItem } from "@/components/wishlist/WishlistNewItemModal";
-import WishlistSimulateModal from "@/components/wishlist/WishlistSimulateModal";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import WishlistDrawer from "@/components/wishlist/WishlistDrawer";
 import WishlistFilters from "@/components/wishlist/WishlistFilters";
+import WishlistNewItemModal, { WishlistItem } from "@/components/wishlist/WishlistNewItemModal";
+import WishlistSimulateModal from "@/components/wishlist/WishlistSimulateModal";
 
 export default function Desejos() {
   const [items, setItems] = React.useState<WishlistItem[]>([

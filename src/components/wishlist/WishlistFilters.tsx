@@ -1,11 +1,11 @@
-import React from "react";
+// React import removed (automatic JSX runtime)
 
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 
 export type WishlistFiltersProps = {
