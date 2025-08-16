@@ -1,4 +1,3 @@
-// React import removed (automatic JSX runtime)
 import { ChevronDown, Settings } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
@@ -13,16 +12,14 @@ import {
 import { ThemeToggle } from './ui/ThemeToggle';
 
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  dashboardNavItem,
-  getNavItem,
-  navGroups,
-} from '@/routes/nav';
+import { cn } from '@/lib/utils';
+import { navRoutes } from '@/routes/nav';
 
-const activeLink =
-  'text-white font-semibold ring-1 ring-white/30 rounded-lg px-3 py-1 bg-white/10';
-const baseLink =
-  'text-white/80 hover:text-white px-3 py-1 rounded-lg transition';
+const buttonStyles = {
+  base: "inline-flex items-center justify-center whitespace-nowrap gap-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  active: "bg-white/20 text-white hover:bg-white/30",
+  inactive: "text-white/70 hover:text-white hover:bg-white/10"
+};
 
 export default function TopNav() {
   const location = useLocation();
@@ -30,85 +27,111 @@ export default function TopNav() {
   const { user, signOut } = useAuth();
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? '';
 
-  const activeItem = getNavItem(location.pathname);
-
   return (
-    <header className="topbar-glass sticky top-0 z-50 border-b border-white/10 bg-gradient-to-r from-emerald-600/80 to-teal-600/80 backdrop-blur">
-      <div className="mx-auto flex h-16 items-center px-4">
-        <NavLink to={dashboardNavItem.to} className="flex items-center text-white">
-          <Logo size="lg" />
-          <span className="ml-2 text-xl font-semibold">FY</span>
-        </NavLink>
-        <nav className="ml-6 flex items-center gap-2">
-          <NavLink
-            to={dashboardNavItem.to}
-            className={({ isActive }) => (isActive ? activeLink : baseLink)}
-          >
-            {dashboardNavItem.label}
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-gradient-to-r from-emerald-600/90 to-teal-600/90 backdrop-blur-sm">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <div className="flex items-center gap-6">
+          <NavLink to="/dashboard" className="flex items-center text-white">
+            <Logo size="lg" />
+            <span className="ml-2 text-xl font-semibold">FY</span>
           </NavLink>
-          {navGroups.map((group) => {
-            const isActive = group.items.some((it) => it.to === activeItem?.to);
-            return (
-              <DropdownMenu key={group.label}>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    className={`${isActive ? activeLink : baseLink} flex items-center gap-1`}
-                  >
-                    {group.label}
-                    <ChevronDown className="h-4 w-4" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  {group.items.map((it) => (
-                    <DropdownMenuItem
-                      key={it.to}
-                      onSelect={() => navigate(it.to)}
+
+          <nav className="flex items-center gap-1">
+            {navRoutes.map((route) => {
+              const isActive = location.pathname === route.to || 
+                             route.children?.some(child => child.to === location.pathname);
+
+              if (route.children) {
+                return (
+                  <DropdownMenu key={route.to}>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className={cn(
+                          buttonStyles.base,
+                          "px-3 py-2 rounded-lg",
+                          isActive ? buttonStyles.active : buttonStyles.inactive
+                        )}
+                      >
+                        <span>{route.label}</span>
+                        <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      sideOffset={4}
+                      alignOffset={-3}
+                      className="w-48 p-1"
                     >
-                      {it.label}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            );
-          })}
-        </nav>
-        <div className="ml-auto flex items-center gap-2">
+                      {route.children.map((item) => (
+                        <DropdownMenuItem
+                          key={item.to}
+                          onClick={() => navigate(item.to)}
+                          className={cn(
+                            "cursor-pointer rounded-md px-2 py-2 text-sm",
+                            location.pathname === item.to && "bg-accent font-medium"
+                          )}
+                        >
+                          {item.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                );
+              }
+
+              return (
+                <NavLink
+                  key={route.to}
+                  to={route.to}
+                  className={({ isActive }) =>
+                    cn(
+                      buttonStyles.base,
+                      "px-3 py-2 rounded-lg",
+                      isActive ? buttonStyles.active : buttonStyles.inactive
+                    )
+                  }
+                >
+                  {route.label}
+                </NavLink>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-2">
           <AlertsDrawer />
           <ThemeToggle />
           <NavLink
             to="/configuracoes"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-white hover:bg-white/20"
+            className={cn(
+              buttonStyles.base,
+              "p-2 rounded-lg",
+              location.pathname === '/configuracoes' ? buttonStyles.active : buttonStyles.inactive
+            )}
             title="Configurações"
           >
             <Settings className="h-4 w-4" />
           </NavLink>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 rounded-xl px-2 py-1 text-white hover:bg-white/20">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold">
-                  {initials}
-                </div>
-                <div className="hidden md:flex min-w-0 flex-col text-left">
-                  <span className="truncate text-sm font-medium">
-                    {user?.user_metadata?.full_name || user?.email}
-                  </span>
-                  <span className="truncate text-xs text-white/80">{user?.email}</span>
-                </div>
-                <ChevronDown className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem onSelect={() => navigate('/perfil')}>
-                Perfil
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={signOut}>Sair</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <button
+            onClick={signOut}
+            className={cn(
+              buttonStyles.base,
+              "gap-2 rounded-lg px-2 py-1",
+              buttonStyles.inactive
+            )}
+          >
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-white text-sm font-semibold">
+              {initials}
+            </div>
+            <div className="hidden md:flex min-w-0 flex-col text-left">
+              <span className="truncate text-sm font-medium text-white">
+                {user?.user_metadata?.full_name || user?.email}
+              </span>
+              <span className="truncate text-xs text-white/80">{user?.email}</span>
+            </div>
+          </button>
         </div>
       </div>
     </header>
   );
 }
-
-export { dashboardNavItem, getNavItem, navGroups };
-

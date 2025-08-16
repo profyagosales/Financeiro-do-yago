@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`KPIStat snapshot > básico 1`] = `
+<div
+  class="flex items-center gap-3 p-4 lg:col-span-3"
+  data-mock="MotionCard"
+>
+  <div
+    class="flex flex-col min-w-0"
+  >
+    <span
+      class="text-sm text-fg-muted truncate"
+    >
+      Saldo
+    </span>
+    <span
+      class="font-medium text-base sm:text-lg tabular-nums"
+    >
+      R$ 10
+    </span>
+  </div>
+</div>
+`;

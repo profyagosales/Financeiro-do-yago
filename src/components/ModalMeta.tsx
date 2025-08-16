@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Base = {
   title: string;
@@ -50,7 +50,7 @@ export default function ModalMeta({ open, onClose, initial, onSubmit }: Props) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o)=>!o && onClose()}>
+  <Dialog open={open} onOpenChange={(o)=>{ if(!o) onClose(); }}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader><DialogTitle>{initial ? 'Editar meta' : 'Nova meta'}</DialogTitle></DialogHeader>
         <div className="grid gap-4 py-2">

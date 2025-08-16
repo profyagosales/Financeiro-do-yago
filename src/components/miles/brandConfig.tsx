@@ -1,16 +1,26 @@
 import type { ReactElement } from "react";
 
-import { LiveloLogo, LatamPassLogo, AzulLogo } from "./BrandLogos";
+import { AzulLogo, LatamPassLogo, LiveloLogo } from "./BrandLogos";
 
 export type MilesProgram = 'livelo' | 'latampass' | 'azul';
 
-export const BRANDS: Record<MilesProgram, { label: string; gradient: string; soft: string; softDark: string; Logo: (props: { className?: string }) => ReactElement }> = {
+export const BRANDS: Record<MilesProgram, {
+  label: string;
+  gradient: string; // classes antigas (fallback / legacy)
+  soft: string;
+  softDark: string;
+  Logo: (props: { className?: string }) => ReactElement;
+  realFrom: string; // novas cores de branding solicitadas
+  realTo: string;
+}> = {
   livelo: {
     label: 'Livelo',
     gradient: 'from-[#7A1FA2] to-[#FF2D8D] dark:from-[#7A1FA2CC] dark:to-[#FF2D8D99]',
     soft: '#F7F1FA',
     softDark: '#7A1FA21A',
     Logo: LiveloLogo,
+    realFrom: '#F3007B',
+    realTo: '#B311FF',
   },
   latampass: {
     label: 'LATAM Pass',
@@ -18,6 +28,8 @@ export const BRANDS: Record<MilesProgram, { label: string; gradient: string; sof
     soft: '#FBF2F4',
     softDark: '#8626331A',
     Logo: LatamPassLogo,
+    realFrom: '#B40037',
+    realTo: '#E61B47',
   },
   azul: {
     label: 'Azul',
@@ -25,6 +37,8 @@ export const BRANDS: Record<MilesProgram, { label: string; gradient: string; sof
     soft: '#EEF8FF',
     softDark: '#1BA1E21A',
     Logo: AzulLogo,
+    realFrom: '#009BDF',
+    realTo: '#0056A7',
   },
 };
 

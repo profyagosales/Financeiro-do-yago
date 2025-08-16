@@ -46,7 +46,7 @@ export default function UpcomingBills({ items, limit = 5 }: UpcomingBillsProps) 
     .slice(0, limit);
 
   return (
-    <section role="region" className="glass-card space-y-2 p-4">
+  <section role="region" className="u-card-base space-y-2 p-4">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-medium">Próximas contas</h3>
         <Link to="/bills" className="text-sm text-emerald-700 hover:underline">

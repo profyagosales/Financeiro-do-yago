@@ -1,11 +1,12 @@
 import { Suspense, lazy } from 'react';
-import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { Toaster } from '@/components/ui/Toasts';
 import AppHotkeys from '@/components/AppHotkeys';
-import RouteLoader from '@/components/RouteLoader';
 import AppShell from '@/components/AppShell';
 import Topbar from '@/components/layout/Topbar';
+import { ModalRoot } from '@/components/ModalRoot';
+import RouteLoader from '@/components/RouteLoader';
+import { Toaster } from '@/components/ui/Toasts';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { PeriodProvider } from '@/contexts/PeriodContext';
 /* ---------- lazy imports de páginas ---------- */
@@ -18,7 +19,7 @@ const FinancasAnual  = lazy(() => import('./pages/FinancasAnual'));
 // ✅ manter apenas a página em PT-BR
 const Investimentos  = lazy(() => import('./pages/Investimentos'));
 
-const CarteiraRendaFixa = lazy(() => import('./pages/CarteiraRendaFixa'));
+// const CarteiraRendaFixa = lazy(() => import('./pages/CarteiraRendaFixa')); // removido da landing
 const CarteiraFIIs      = lazy(() => import('./pages/CarteiraFIIs'));
 const CarteiraBolsa     = lazy(() => import('./pages/CarteiraBolsa'));
 const CarteiraCripto    = lazy(() => import('./pages/CarteiraCripto'));
@@ -44,9 +45,9 @@ export default function App() {
   return (
     <AuthProvider>
       <PeriodProvider>
-        <Router>
+        <ModalRoot>
           <AppRoutes />
-        </Router>
+        </ModalRoot>
       </PeriodProvider>
     </AuthProvider>
   );
@@ -91,17 +92,19 @@ function AppRoutes() {
             <Route path="/financas/resumo" element={<FinancasResumo />} />
             <Route path="/financas/mensal" element={<FinancasMensal />} />
             <Route path="/financas/anual"  element={<FinancasAnual />} />
+            <Route path="/financas" element={<Navigate to="/financas/resumo" replace />} />
             <Route
               path="/resumo-financas"
               element={<Navigate to="/financas/resumo" replace />}
             />
 
-            {/* Investimentos */}
+            {/* Investimentos (landing usa componente Investimentos) */}
             <Route path="/investimentos/resumo" element={<Investimentos />} />
+            <Route path="/investimentos/renda-fixa" element={<Investimentos />} />
             <Route path="/investimentos" element={<Navigate to="/investimentos/resumo" replace />} />
             <Route path="/investments" element={<Navigate to="/investimentos/resumo" replace />} />
             <Route path="/carteira" element={<Navigate to="/investimentos/resumo" replace />} />
-            <Route path="/investimentos/renda-fixa" element={<CarteiraRendaFixa />} />
+            {/* Página específica de renda fixa removida (CarteiraRendaFixa) para evitar duplicidade de landing */}
             <Route path="/investimentos/fiis"       element={<CarteiraFIIs />} />
             <Route path="/investimentos/bolsa"      element={<CarteiraBolsa />} />
             <Route path="/investimentos/cripto"     element={<CarteiraCripto />} />

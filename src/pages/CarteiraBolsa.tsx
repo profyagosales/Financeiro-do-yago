@@ -69,7 +69,7 @@ export default function CarteiraBolsa() {
         title="Carteira — Bolsa"
         subtitle="Lançamentos e aportes desta classe."
         icon={<CandlestickChart className="h-5 w-5" />}
-        breadcrumbs={[{ label: "Investimentos", href: "/investimentos/resumo" }, { label: "Carteira", href: "/investimentos/bolsa" }, { label: "Bolsa" }]}
+  breadcrumbs={[{ label: "Investimentos", href: "/investimentos/renda-fixa" }, { label: "Carteira", href: "/investimentos/bolsa" }, { label: "Bolsa" }]}
         actions={<Button className="gap-2" onClick={() => setOpenNew(true)}><Plus className="h-4 w-4" /> Novo investimento</Button>}
       />
 

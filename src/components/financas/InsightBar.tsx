@@ -40,7 +40,7 @@ export default function InsightBar({ insights }: InsightBarProps) {
       {insights.map((ins) => (
         <div
           key={ins.id}
-          className="snap-center w-full shrink-0 p-4 text-sm card-surface"
+          className="snap-center w-full shrink-0 p-4 text-sm u-card-base"
         >
           {ins.message}
         </div>

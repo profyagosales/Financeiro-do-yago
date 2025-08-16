@@ -1,6 +1,6 @@
-import { formatCurrency } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Progress } from '@/components/ui/progress';
+import { formatCurrency } from '@/lib/utils';
 
 export type OrcamentoItem = {
   categoria: string;
@@ -15,7 +15,7 @@ export type OrcamentoProgressProps = {
 
 export default function OrcamentoProgress({ orcamentos, onViewDetails }: OrcamentoProgressProps) {
   return (
-    <div className="card-surface p-4">
+  <div className="u-card-base p-4">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-medium">Orçamento</h3>
         <button onClick={onViewDetails} className="text-sm text-emerald-700 hover:underline">

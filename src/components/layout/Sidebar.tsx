@@ -1,52 +1,18 @@
 import { motion } from 'framer-motion';
-import {
-  CalendarDays,
-  CalendarRange,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Heart,
-  LayoutDashboard,
-  Plane,
-  Settings,
-  ShoppingCart,
-  Target,
-  TrendingUp,
-  Wallet,
-} from "lucide-react";
-import { useState, type ComponentType, type SVGProps } from "react";
-import { NavLink } from "react-router-dom";
-import { NavLink as RouterNavLink } from 'react-router-dom';
+import { ChevronDown, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
+import { useState } from 'react';
+import { NavLink, NavLink as RouterNavLink } from "react-router-dom";
 
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useAuth } from "@/contexts/AuthContext";
 import useRouteVisits, { clearVisits, incrementVisit, writeWindowDays } from '@/hooks/useRouteVisits';
 import { cn } from "@/lib/utils";
-
-interface NavItem {
-  label: string;
-  to?: string;
-  icon: ComponentType<SVGProps<SVGSVGElement>>;
-  children?: NavItem[];
-}
-
-const items: NavItem[] = [
-  { label: "Visão Geral", to: "/", icon: LayoutDashboard },
-  { label: "Finanças", icon: Wallet, children: [
-      { label: "Resumo", to: "/financas/resumo", icon: CalendarDays },
-      { label: "Mensal", to: "/financas/mensal", icon: CalendarDays },
-      { label: "Anual", to: "/financas/anual", icon: CalendarRange },
-    ]},
-  { label: "Investimentos", to: "/investimentos/resumo", icon: TrendingUp },
-  { label: "Metas", to: "/metas", icon: Target },
-  { label: "Milhas", to: "/milhas", icon: Plane },
-  { label: "Compras", to: "/compras", icon: ShoppingCart },
-  { label: "Desejos", to: "/desejos", icon: Heart },
-];
+import { navRoutes } from '@/routes/nav';
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [open, setOpen] = useState(false);
+  // estado de expansão por seção (label -> boolean)
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const { user } = useAuth();
   const { countsLastN, totalVisits, top, userWindow } = useRouteVisits();
   const [snackbar, setSnackbar] = useState<string | null>(null);
@@ -71,7 +37,15 @@ export default function Sidebar() {
     >
       <div className="flex items-center gap-3 p-4">
         <RouterNavLink to="/" className="flex items-center gap-3">
-          <LayoutDashboard className="h-8 w-8 text-emerald-400" />
+          {/* Ícone fixo: primeira seção (Visão geral) */}
+          {(() => {
+            const Icon = navRoutes[0]?.icon;
+            return Icon ? <div className="h-8 w-8 text-emerald-400 flex items-center justify-center">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </div> : null;
+          })()}
           {!collapsed && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.18 }}>
               <div className="text-lg font-bold">Financeiro do Yago</div>
@@ -153,16 +127,30 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 space-y-1 px-2">
-          {items.map((item) => {
-          const Icon = item.icon;
+      {navRoutes.map((item) => {
+          const iconName = item.icon || 'Home';
+          const IconComponent = ({ className }: { className?: string }) => {
+            const icons: Record<string, React.ReactElement> = {
+              Home: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />,
+              Wallet: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />,
+              Landmark: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />,
+              Plane: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />,
+              Target: <><circle cx="12" cy="12" r="10" strokeWidth={2}/><circle cx="12" cy="12" r="6" strokeWidth={2}/><circle cx="12" cy="12" r="2" strokeWidth={2}/></>,
+              Heart: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />,
+              ShoppingCart: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8" />
+            };
+            return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">{icons[iconName] || icons.Home}</svg>;
+          };
+          
           if (item.children) {
+    const expanded = openSections[item.label] ?? false;
             return (
               <div key={item.label}>
                 <button
-                  onClick={() => setOpen(!open)}
+      onClick={() => setOpenSections(s => ({ ...s, [item.label]: !expanded }))}
                   className="flex w-full items-center rounded-md p-2 text-sm hover:bg-white/10 dark:hover:bg-black/10 transition-all duration-200 ease-out"
                 >
-                  <Icon className="h-5 w-5" />
+                  <IconComponent className="h-5 w-5" />
                   {!collapsed && (
                     <span className="ml-3 flex-1 text-left">{item.label}</span>
                   )}
@@ -170,7 +158,7 @@ export default function Sidebar() {
                     <ChevronDown
                       className={cn(
                         "h-4 w-4 transition-transform",
-                        open ? "rotate-180" : ""
+        expanded ? "rotate-180" : ""
                       )}
                     />
                   )}
@@ -178,12 +166,11 @@ export default function Sidebar() {
                 {!collapsed && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
-                    animate={open ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
+        animate={expanded ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
                     transition={{ duration: 0.18 }}
                     className="ml-6 mt-1 space-y-1 overflow-hidden"
                   >
                     {item.children.map((child) => {
-                      const ChildIcon = child.icon;
                       const cnt = countsLastN[child.to!] ?? 0
                       return (
                         <NavLink
@@ -198,7 +185,7 @@ export default function Sidebar() {
                           }
                         >
                           <motion.div whileHover={{ scale: 1.03 }} className="flex w-full items-center gap-2">
-                            <ChildIcon className="h-4 w-4" />
+                            <span className="h-4 w-4 rounded-full bg-white/20"></span>
                             {!collapsed && <span className="ml-2">{child.label}</span>}
                             {!collapsed && cnt > 0 && (
                               <span className="ml-auto inline-flex items-center justify-center rounded-full bg-emerald-600 text-xs font-semibold text-white px-2">{cnt}</span>
@@ -222,11 +209,11 @@ export default function Sidebar() {
                 cn(
                   "flex items-center rounded-md p-2 text-sm hover:bg-white/10 dark:hover:bg-black/10 transition-all duration-200 ease-out",
                   isActive && "bg-white/20 dark:bg-black/20",
-                  item.to === '/' && "text-emerald-400"
+                  item.to === '/dashboard' && "text-emerald-400"
                 )
               }
             >
-              <Icon className="h-5 w-5" />
+               <IconComponent className="h-5 w-5" />
               {!collapsed && <span className="ml-3">{item.label}</span>}
               {!collapsed && (countsLastN[item.to!] ?? 0) > 0 && (
                 <span className="ml-auto inline-flex items-center justify-center rounded-full bg-emerald-600 text-xs font-semibold text-white px-2">{countsLastN[item.to!]}</span>

@@ -1,11 +1,11 @@
+import { FileDown, Pencil, ShoppingCart, Trash2 } from "lucide-react";
 import * as React from "react";
-import { ShoppingCart, Pencil, Trash2, FileDown } from "lucide-react";
 
 import type { WishlistItem } from "./WishlistNewItemModal";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -37,7 +37,13 @@ export default function WishlistCard({
         : "bg-green-100 text-green-800";
 
   return (
-    <Card className={cn("overflow-hidden flex flex-col", className)} {...props}>
+    <Card
+      className={cn(
+        "overflow-hidden flex flex-col border border-white/10 rounded-2xl transition-transform hover:scale-[1.02]",
+        className
+      )}
+      {...props}
+    >
       {item.imagem && (
         <img src={item.imagem} alt={item.titulo} className="h-40 w-full object-cover" />
       )}

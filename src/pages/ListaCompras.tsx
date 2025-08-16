@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import PageHeader from '@/components/PageHeader';
-import { Switch } from '@/components/ui/switch';
+import ShoppingCard from '@/components/shopping/ShoppingCard';
 import { supabase } from '@/lib/supabaseClient';
 
 interface ShoppingItem {
@@ -59,17 +59,11 @@ export default function Compras() {
     if (loading) return <p>Carregando…</p>;
     if (!items.length) return <p>Nenhum item na lista.</p>;
     return (
-      <ul className="space-y-2">
-        {items.map((item) => (
-          <li key={item.id} className="flex items-center justify-between rounded border p-2">
-            <span className={item.purchased ? 'line-through text-fg-muted' : ''}>{item.name}</span>
-            <Switch
-              checked={item.purchased}
-              onCheckedChange={(checked) => void togglePurchased(item, checked)}
-            />
-          </li>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map(item => (
+          <ShoppingCard key={item.id} item={item} onToggle={togglePurchased} />
         ))}
-      </ul>
+      </div>
     );
   };
 

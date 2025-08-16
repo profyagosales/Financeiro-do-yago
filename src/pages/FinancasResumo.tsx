@@ -210,24 +210,22 @@ export default function FinancasResumo() {
         />
       </div>
 
-      <div className="grid grid-cols-12 gap-4">
+  <div className="grid grid-cols-12 gap-5">
         {kpis.map((k) => (
           <div
             key={k.title}
-            className="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-2xl shadow/soft bg-background/60 backdrop-blur border border-white/10 dark:border-white/5 p-4"
+            className="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl border border-white/10 dark:border-white/5 bg-background/70 backdrop-blur p-4 flex flex-col justify-center min-h-[110px]"
           >
             <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-primary/90 p-2 text-primary-foreground">
+              <div className="rounded-lg bg-primary/90 p-2 text-primary-foreground">
                 {k.icon}
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">{k.title}</span>
+              <div className="flex flex-col leading-tight">
+                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{k.title}</span>
                 {transLoading ? (
                   <SkeletonLine className="mt-1 h-6 w-24" />
                 ) : (
-                  <span className="text-xl font-semibold">
-                    {k.fmt(k.value)}
-                  </span>
+                  <span className="text-xl font-semibold tabular-nums">{k.fmt(k.value)}</span>
                 )}
               </div>
             </div>
@@ -237,8 +235,8 @@ export default function FinancasResumo() {
 
       {insights.length > 0 && <InsightBar insights={insights} />}
 
-      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-        <WidgetCard className="glass-card">
+      <div className="grid gap-6 lg:grid-cols-12">
+  <WidgetCard className="u-card-base lg:col-span-6">
           <div className="mb-3 flex items-center gap-2">
             <h3 className="text-lg font-semibold">Previsão — 30 dias</h3>
             <TooltipProvider delayDuration={200}>
@@ -261,7 +259,7 @@ export default function FinancasResumo() {
             <EmptyState title="Sem dados" />
           )}
         </WidgetCard>
-        <WidgetCard className="glass-card">
+  <WidgetCard className="u-card-base lg:col-span-6">
           <WidgetHeader title="Fluxo de caixa mensal" />
           {loadingTrans ? (
             <DailyBars isLoading />
@@ -277,7 +275,7 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal">Ver detalhes</WidgetFooterAction>
         </WidgetCard>
 
-        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
+  <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30 lg:col-span-6">
           <WidgetHeader title="Entradas vs saídas (12 meses)" />
           {loadingTrans ? (
             <SkeletonLine className="h-56 w-full" />
@@ -304,7 +302,7 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/anual">Ver detalhes</WidgetFooterAction>
         </WidgetCard>
 
-        <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30">
+  <WidgetCard className="glass bg-gradient-to-br from-white/60 to-white/30 dark:from-slate-950/60 dark:to-slate-950/30 lg:col-span-4">
           <WidgetHeader title="Despesas por categoria" />
           {loadingTrans ? (
             <CategoryDonut isLoading />
@@ -333,7 +331,7 @@ export default function FinancasResumo() {
           <WidgetFooterAction to="/financas/mensal">Ver detalhes</WidgetFooterAction>
         </WidgetCard>
 
-        <WidgetCard className="glass-card">
+  <WidgetCard className="u-card-base lg:col-span-4">
           <WidgetHeader title="Impacto de desejos comprados" />
           {wishlistImpact > 0 ? (
             <p className="px-4 py-6 text-3xl font-semibold">
@@ -345,11 +343,11 @@ export default function FinancasResumo() {
         </WidgetCard>
 
         <RecurrenceList
-          className="glass-card"
+          className="u-card-base lg:col-span-4"
           items={recurrences.map((r) => ({ name: r.description, amount: r.amount }))}
         />
 
-        <WidgetCard className="glass-card">
+  <WidgetCard className="u-card-base lg:col-span-6">
           <WidgetHeader title="Lançamentos recentes" />
           {uiTransacoes.length > 0 ? (
             <div className="overflow-x-auto">

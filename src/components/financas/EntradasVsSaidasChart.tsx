@@ -1,7 +1,7 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { formatCurrency } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { formatCurrency } from '@/lib/utils';
 
 export type EntradasVsSaidasPoint = {
   mes: string;
@@ -16,7 +16,7 @@ export type EntradasVsSaidasChartProps = {
 
 export default function EntradasVsSaidasChart({ data, onViewDetails }: EntradasVsSaidasChartProps) {
   return (
-    <div className="card-surface p-4">
+  <div className="u-card-base p-4">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-medium">Entradas vs Saídas</h3>
         <button onClick={onViewDetails} className="text-sm text-emerald-700 hover:underline">

@@ -1,7 +1,7 @@
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
-import { formatCurrency } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { formatCurrency } from '@/lib/utils';
 
 export type DespesaCategoria = {
   categoria: string;
@@ -17,7 +17,7 @@ const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#6366f1', '#8b5cf6'
 
 export default function DespesasPorCategoriaChart({ data, onViewDetails }: DespesasPorCategoriaChartProps) {
   return (
-    <div className="card-surface p-4">
+  <div className="u-card-base p-4">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-medium">Despesas por categoria</h3>
         <button onClick={onViewDetails} className="text-sm text-emerald-700 hover:underline">
