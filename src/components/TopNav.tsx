@@ -60,18 +60,24 @@ export default function TopNav() {
                       align="start"
                       sideOffset={4}
                       alignOffset={-3}
-                      className="w-48 p-1"
+                      className="w-52 p-1 bg-background/95 backdrop-blur-sm border-border/50 shadow-lg"
                     >
                       {route.children.map((item) => (
                         <DropdownMenuItem
                           key={item.to}
                           onClick={() => navigate(item.to)}
                           className={cn(
-                            "cursor-pointer rounded-md px-2 py-2 text-sm",
-                            location.pathname === item.to && "bg-accent font-medium"
+                            "cursor-pointer rounded-md px-3 py-2 text-sm transition-colors",
+                            location.pathname === item.to 
+                              ? "bg-emerald-50 font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" 
+                              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                           )}
                         >
-                          {item.label}
+                          <span className="flex-1">{item.label}</span>
+                          {/* Active indicator */}
+                          {location.pathname === item.to && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                          )}
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>

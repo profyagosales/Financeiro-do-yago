@@ -73,7 +73,7 @@ export function NavMenu() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
-                    className="w-52 bg-background"
+                    className="w-56 bg-background/95 backdrop-blur-sm border-border/50 shadow-lg"
                     sideOffset={8}
                     align="start"
                     alignOffset={0}
@@ -88,13 +88,21 @@ export function NavMenu() {
                           to={child.to}
                           className={({ isActive }) =>
                             cn(
-                              "flex w-full items-center py-1.5 text-sm",
-                              isActive && "font-medium text-foreground",
-                              !isActive && "text-muted-foreground"
+                              "flex w-full items-center gap-2 py-2 px-2 text-sm rounded-md transition-colors",
+                              isActive && "bg-emerald-50 font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+                              !isActive && "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                             )
                           }
                         >
-                          {child.label}
+                          {({ isActive }) => (
+                            <>
+                              <span className="flex-1">{child.label}</span>
+                              {/* Active indicator */}
+                              {isActive && (
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                              )}
+                            </>
+                          )}
                         </NavLink>
                       </DropdownMenuItem>
                     ))}
