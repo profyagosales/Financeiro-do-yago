@@ -34,7 +34,7 @@ export default class AppErrorBoundary extends Component<Props, State> {
         <div className="flex h-screen flex-col items-center justify-center gap-4 bg-background p-6 text-center text-foreground">
           <h1 className="text-2xl font-bold">Algo deu errado</h1>
           {this.state.error && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-fg-muted">
               {this.state.error.message}
             </p>
           )}

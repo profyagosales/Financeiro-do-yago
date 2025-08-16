@@ -1,5 +1,5 @@
-import { formatCurrency } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { formatCurrency } from '@/lib/utils';
 
 export type Lancamento = {
   id: string;
@@ -30,7 +30,7 @@ export default function LancamentosRecentesTable({ lancamentos, onViewDetails }:
             {lancamentos.map((l) => (
               <li key={l.id} className="min-w-[14rem] rounded-md border p-3 text-sm">
                 <div className="mb-1 font-medium">{l.descricao}</div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-fg-muted">
                   {new Date(l.data).toLocaleDateString('pt-BR')}
                 </div>
                 <div className="mt-1 text-right font-medium">

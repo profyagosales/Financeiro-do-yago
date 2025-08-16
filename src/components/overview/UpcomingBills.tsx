@@ -54,7 +54,7 @@ export default function UpcomingBills({ items, limit = 5 }: UpcomingBillsProps) 
         </Link>
       </div>
       {bills.length === 0 ? (
-        <p className="text-sm text-muted-foreground">sem dados</p>
+  <p className="text-sm text-fg-muted">sem dados</p>
       ) : (
         <ul className="divide-y divide-zinc-100/60 dark:divide-zinc-800/60 text-sm">
           {bills.map((b) => (

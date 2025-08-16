@@ -25,12 +25,12 @@ export default function AlertList({ items }: { items: AlertItem[] }) {
           >
             <BrandIcon name={c.nome} />
             <div className="min-w-0">
-              <div className="truncate font-medium">{c.nome}</div>
-              <div className="text-xs text-muted-foreground">
+              <div className="truncate font-medium text-[var(--foreground)]">{c.nome}</div>
+              <div className="text-xs text-[var(--muted-foreground)]">
                 vence em {new Date(c.vencimento).toLocaleDateString("pt-BR")}
               </div>
             </div>
-            <div className="ml-auto font-medium">{formatCurrency(c.valor)}</div>
+            <div className="ml-auto font-medium text-[var(--foreground)]">{formatCurrency(c.valor)}</div>
           </li>
         ))}
       </ul>

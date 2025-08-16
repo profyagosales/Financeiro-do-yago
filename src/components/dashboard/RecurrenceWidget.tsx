@@ -18,8 +18,8 @@ export default function RecurrenceWidget({ items, isLoading }: Props) {
       ) : (
         <ul className="space-y-1 text-sm">
           {items.map((r) => (
-            <li key={r.name} className="flex justify-between">
-              <span>{r.name}</span>
+            <li key={r.description} className="flex justify-between">
+              <span>{r.description}</span>
               <span className="font-medium">{formatCurrency(r.amount)}</span>
             </li>
           ))}

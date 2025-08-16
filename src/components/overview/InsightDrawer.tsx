@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface InsightDrawerProps {
   title: string;
@@ -25,13 +25,13 @@ export default function InsightDrawer({
           <div className="space-y-2">
             <Dialog.Title className="text-lg font-semibold">{title}</Dialog.Title>
             {description && (
-              <Dialog.Description className="text-sm text-muted-foreground">
+              <Dialog.Description className="text-sm text-fg-muted">
                 {description}
               </Dialog.Description>
             )}
           </div>
           <div className="mt-4 overflow-y-auto">{children}</div>
-          <Dialog.Close className="absolute top-4 right-4 rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+          <Dialog.Close className="absolute top-4 right-4 rounded-sm text-neutral-500 dark:text-neutral-400 transition-colors hover:text-neutral-700 dark:hover:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </Dialog.Close>

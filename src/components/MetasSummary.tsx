@@ -15,7 +15,7 @@ export default function MetasSummary() {
         return (
           <div key={g.id}>
             <div className="mb-1 flex justify-between text-sm">
-              <span className="text-muted-foreground">{g.title}</span>
+              <span className="text-fg-muted">{g.title}</span>
               <span className="text-foreground">{pct}%</span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-primary/20">

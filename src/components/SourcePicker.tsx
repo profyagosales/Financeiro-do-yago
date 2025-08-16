@@ -1,16 +1,16 @@
-import { useEffect, useMemo, useState, useId } from "react";
 import { CreditCard, Plus } from "lucide-react";
+import { useEffect, useId, useMemo, useState } from "react";
 
-import { toast } from "@/components/ui/Toasts";
 import { Wallet } from "@/components/icons";
-import { useAccounts } from "@/hooks/useAccounts";
-import { useCreditCards, cycleFor as cardCycleFor } from "@/hooks/useCreditCards";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/components/ui/Toasts";
+import { useAccounts } from "@/hooks/useAccounts";
 import type { CreditCard as CardModel } from "@/hooks/useCreditCards";
+import { cycleFor as cardCycleFor, useCreditCards } from "@/hooks/useCreditCards";
 
 // Evite value=""
 // Garanta que o estado controlado use "all" para representar "todas"
@@ -122,7 +122,7 @@ export default function SourcePicker({
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                   <span className="font-medium">{a.name}</span>
                   {a.institution && (
-                    <span className="ml-1 text-xs opacity-70">{a.institution}</span>
+                    <span className="ml-1 text-xs text-neutral-500 dark:text-neutral-400">{a.institution}</span>
                   )}
                 </span>
               </SelectItem>
@@ -150,7 +150,7 @@ export default function SourcePicker({
                     <span className="h-2.5 w-2.5 rounded-full bg-sky-500" />
                     <span className="font-medium">{c.name}</span>
                     {typeof c.limit_amount === "number" && (
-                      <span className="ml-1 text-xs opacity-70">limite {brl(c.limit_amount)}</span>
+                      <span className="ml-1 text-xs text-neutral-500 dark:text-neutral-400">limite {brl(c.limit_amount)}</span>
                     )}
                   </span>
                 </SelectItem>

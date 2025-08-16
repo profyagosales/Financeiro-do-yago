@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
-import { Coins, TrendingUp, TrendingDown, CalendarRange } from "lucide-react";
+import { CalendarRange, Coins, TrendingDown, TrendingUp } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
+import CategoryDonut from "@/components/charts/CategoryDonut";
 import PageHeader from "@/components/PageHeader";
-import { MotionCard } from "@/components/ui/MotionCard";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { Button } from "@/components/ui/button";
+import { MotionCard } from "@/components/ui/MotionCard";
 import {
   Select,
   SelectContent,
@@ -14,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import CategoryDonut from "@/components/charts/CategoryDonut";
 import {
   Table,
   TableBody,
@@ -23,12 +24,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { useCategories } from "@/hooks/useCategories";
 import { getYearSummary, type YearSummary } from "@/hooks/useTransactions";
 
 // Dark mode labels: garanta contraste
-// aplique text-neutral-200/300 nos labels e text-muted-foreground em subtítulos
+// TODO: usar classes utilitárias (ex: text-fg-muted) para subtítulos; labels já usam neutros
 
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');

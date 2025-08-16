@@ -62,7 +62,7 @@ export default function Compras() {
       <ul className="space-y-2">
         {items.map((item) => (
           <li key={item.id} className="flex items-center justify-between rounded border p-2">
-            <span className={item.purchased ? 'line-through text-muted-foreground' : ''}>{item.name}</span>
+            <span className={item.purchased ? 'line-through text-fg-muted' : ''}>{item.name}</span>
             <Switch
               checked={item.purchased}
               onCheckedChange={(checked) => void togglePurchased(item, checked)}

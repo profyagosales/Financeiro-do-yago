@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 
 import { Plane } from '@/components/icons';
-import PageHeader from '@/components/PageHeader';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import MilesPendingList from '@/components/miles/MilesPendingList';
 import MilesMonthlyTotals from '@/components/miles/MilesMonthlyTotals';
+import MilesPendingList from '@/components/miles/MilesPendingList';
+import PageHeader from '@/components/PageHeader';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function MilhasHome() {
   const saldoTotal = 12000;
@@ -42,7 +42,7 @@ export default function MilhasHome() {
                 </li>
               ))}
               {ultimos.length === 0 && (
-                <li className="text-muted-foreground">Sem lançamentos.</li>
+                <li className="text-fg-muted">Sem lançamentos.</li>
               )}
             </ul>
           </CardContent>

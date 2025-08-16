@@ -67,7 +67,10 @@
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  /* Disabled tokens (light) */
+  --disabled-bg: 214.3 31.8% 91.4%;
+  --disabled-fg: 215.4 16.3% 46.9%;
     --accent: 210 40% 96%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 72% 51%;
@@ -96,6 +99,10 @@
     --chart-tooltip-bg: 0 0% 100%;
     --chart-tooltip-fg: 222.2 47.4% 11.2%;
 
+  /* Derived full color tokens (allow direct var(--color-fg) usage in class utilities) */
+  --color-fg: hsl(var(--foreground));
+  --color-fg-muted: hsl(var(--muted-foreground));
+
     --font-sans:
       "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
       Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
@@ -115,7 +122,11 @@
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+  /* Slightly boosted contrast for dark muted foreground */
+  --muted-foreground: 215 22% 72%;
+  /* Disabled tokens (dark) */
+  --disabled-bg: 217.2 32.6% 22%;
+  --disabled-fg: 215 20.2% 65.1%;
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 84% 60%;
@@ -207,6 +218,8 @@ body::after {
 
 /* Cards “glass” utilitário opcional */
 @layer utilities {
+  .placeholder-fg-muted::placeholder { color: var(--color-fg-muted); }
+  .placeholder-fg-muted::-ms-input-placeholder { color: var(--color-fg-muted); }
   .sidebar-header {
     @apply bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white;
   }
@@ -235,7 +248,8 @@ body::after {
     );
   }
   .kpi-title {
-    @apply text-sm text-muted-foreground;
+  @apply text-sm;
+  color: var(--color-fg-muted);
   }
   .kpi-value {
     @apply text-2xl sm:text-3xl font-semibold tracking-tight;
@@ -243,6 +257,7 @@ body::after {
   .glass-card {
     @apply bg-white/60 dark:bg-gray-950/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)];
   }
+  .text-fg-muted { color: var(--color-fg-muted); }
 }
 
 /* Ajuste fino para sidebar */

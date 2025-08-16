@@ -1,60 +1,60 @@
 // src/pages/Metas.tsx
-import { useEffect, useMemo, useState } from "react";
 import {
-  Plus,
-  CalendarDays,
-  TrendingUp,
-  PiggyBank,
-  MoreHorizontal,
-  CheckCircle2,
-  Archive,
-  Trash2,
-  HandCoins,
   AlertTriangle,
+  Archive,
+  CalendarDays,
+  CheckCircle2,
   Clock,
+  HandCoins,
+  MoreHorizontal,
+  PiggyBank,
+  Plus,
   Search,
+  Trash2,
+  TrendingUp,
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
-import { toast } from "@/components/ui/Toasts";
 import { Target } from "@/components/icons";
-import { supabase } from "@/lib/supabaseClient";
-import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/PageHeader";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardHeader,
   CardContent,
-  CardFooter,
-  CardTitle,
   CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/Toasts";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
 
 
 /* ----------------------------- Tipos ----------------------------- */
@@ -383,7 +383,7 @@ export default function Metas() {
             <CardDescription>Patrimônio alvo</CardDescription>
             <CardTitle className="text-2xl">{BRL(kpis.totalTarget)}</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 text-muted-foreground flex items-center gap-2">
+          <CardContent className="pt-0 text-fg-muted flex items-center gap-2">
             <Target className="h-4 w-4" /> total de todas as metas
           </CardContent>
         </Card>
@@ -393,7 +393,7 @@ export default function Metas() {
             <CardDescription>Aportado</CardDescription>
             <CardTitle className="text-2xl">{BRL(kpis.totalContrib)}</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 text-muted-foreground flex items-center gap-2">
+          <CardContent className="pt-0 text-fg-muted flex items-center gap-2">
             <PiggyBank className="h-4 w-4" /> soma de contribuições
           </CardContent>
         </Card>
@@ -403,7 +403,7 @@ export default function Metas() {
             <CardDescription>Conclusão média</CardDescription>
             <CardTitle className="text-2xl">{kpis.avgPct}%</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 text-muted-foreground flex items-center gap-2">
+          <CardContent className="pt-0 text-fg-muted flex items-center gap-2">
             <TrendingUp className="h-4 w-4" /> média do progresso
           </CardContent>
         </Card>
@@ -413,7 +413,7 @@ export default function Metas() {
             <CardDescription>Metas ativas</CardDescription>
             <CardTitle className="text-2xl">{kpis.activeCount}</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 text-muted-foreground flex items-center gap-2">
+          <CardContent className="pt-0 text-fg-muted flex items-center gap-2">
             <CalendarDays className="h-4 w-4" /> em andamento
           </CardContent>
         </Card>
@@ -431,7 +431,7 @@ export default function Metas() {
         </Tabs>
 
         <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-muted" />
           <Input
             className="pl-9"
             placeholder="Buscar por título, categoria…"
@@ -496,7 +496,7 @@ export default function Metas() {
 
               <CardContent className="pt-0">
                 <div className="mb-2 flex justify-between text-sm">
-                  <span className="text-muted-foreground">Progresso</span>
+                  <span className="text-fg-muted">Progresso</span>
                   <span className="font-medium">{Math.round(g.progress_pct)}%</span>
                 </div>
                 <Progress
@@ -506,19 +506,19 @@ export default function Metas() {
 
                 <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
                   <div className="rounded-md border p-2">
-                    <div className="text-muted-foreground">Aportado</div>
+                    <div className="text-fg-muted">Aportado</div>
                     <div className="font-medium">{BRL(g.contributed)}</div>
                   </div>
                   <div className="rounded-md border p-2">
-                    <div className="text-muted-foreground">Alvo</div>
+                    <div className="text-fg-muted">Alvo</div>
                     <div className="font-medium">{BRL(g.target_value)}</div>
                   </div>
                   <div className="rounded-md border p-2">
-                    <div className="text-muted-foreground">Sugerido/mês</div>
+                    <div className="text-fg-muted">Sugerido/mês</div>
                     <div className="font-medium">{BRL(g.suggested_monthly)}</div>
                   </div>
                   <div className="rounded-md border p-2">
-                    <div className="text-muted-foreground">Dias restantes</div>
+                    <div className="text-fg-muted">Dias restantes</div>
                     <div className="font-medium">{g.days_remaining}</div>
                   </div>
                 </div>

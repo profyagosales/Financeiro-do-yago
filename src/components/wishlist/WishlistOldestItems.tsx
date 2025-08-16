@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export type OldItem = {
   id: string;
@@ -25,7 +25,7 @@ export default function WishlistOldestItems({ items, limit = 5 }: WishlistOldest
           {sorted.map((item) => (
             <li key={item.id} className="text-sm">
               {item.title}{" "}
-              <span className="text-muted-foreground">
+              <span className="text-fg-muted">
                 ({new Date(item.addedAt).toLocaleDateString()})
               </span>
             </li>

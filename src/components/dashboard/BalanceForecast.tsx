@@ -14,7 +14,7 @@ export default function BalanceForecast({ current, forecast, ...rest }: BalanceF
     <WidgetCard {...rest}>
       <WidgetHeader title="Saldo em 30 dias" />
       <p className="text-2xl font-semibold">{formatCurrency(forecast)}</p>
-      <p className="text-sm text-muted-foreground">
+  <p className="text-sm text-fg-muted">
         {diff >= 0 ? '+' : '-'}{formatCurrency(Math.abs(diff))} em relação ao atual
       </p>
       <WidgetFooterAction to="/financas/anual">Ver detalhes</WidgetFooterAction>

@@ -119,20 +119,24 @@ export function buildOverviewInsights(transactions: Transaction[]): Insight[] {
     new Set(transactions.map((t) => t.category).filter(Boolean) as string[])
   );
 
-  let top: { cat: string; pct: number } | null = null;
-  categories.forEach((cat) => {
+  type TopCat = { cat: string; pct: number } | null;
+  let top: TopCat = null;
+  for (const cat of categories) {
     const pct = compareCategoryMoM(transactions, cat);
-    if (pct === null) return;
+    if (pct === null) continue;
     if (!top || Math.abs(pct) > Math.abs(top.pct)) top = { cat, pct };
-  });
+  }
 
-  if (top && Math.abs(top.pct) >= 20) {
-    insights.push({
-      id: `cat-${slugify(top.cat)}`,
-      message: `Gastos em ${top.cat} ${
-        top.pct >= 0 ? "aumentaram" : "diminuíram"
-      } ${Math.abs(top.pct).toFixed(0)}% em relação ao mês anterior.`,
-    });
+  if (top) {
+    const pct = top.pct;
+    if (Math.abs(pct) >= 20) {
+      insights.push({
+        id: `cat-${slugify(top.cat)}`,
+        message: `Gastos em ${top.cat} ${pct >= 0 ? "aumentaram" : "diminuíram"} ${Math.abs(
+          pct
+        ).toFixed(0)}% em relação ao mês anterior.`,
+      });
+    }
   }
 
   detectRecurringBills(transactions)

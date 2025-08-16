@@ -1,6 +1,6 @@
+import { motion } from "framer-motion";
 import type { ElementType } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 
 export interface QuickShortcut {
   title: string;
@@ -28,7 +28,7 @@ export default function QuickShortcuts({ items, className }: QuickShortcutsProps
               <Icon aria-hidden="true" className="size-8 text-emerald-600 dark:text-emerald-400" />
               <div className="text-left">
                 <div className="font-medium">{title}</div>
-                <div className="text-sm text-muted-foreground">{description}</div>
+                <div className="text-sm text-fg-muted">{description}</div>
               </div>
             </div>
           </Link>

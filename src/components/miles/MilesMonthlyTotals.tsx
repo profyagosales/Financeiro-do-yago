@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import BRANDS, { type MilesProgram } from "@/components/miles/brandConfig";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface MonthlyTotal {
   program: MilesProgram;
@@ -22,7 +22,7 @@ export default function MilesMonthlyTotals() {
       <CardContent className="pt-2">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="text-left text-muted-foreground">
+            <thead className="text-left text-fg-muted">
               <tr>
                 <th className="py-2">Programa</th>
                 <th className="py-2 text-right">Total</th>

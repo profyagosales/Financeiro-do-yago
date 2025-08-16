@@ -1,21 +1,22 @@
-import * as React from "react";
-import { NavLink, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  LayoutDashboard,
-  WalletCards,
-  TrendingUp,
-  ChevronDown,
-  PieChart,
+  Bitcoin,
+  Building2,
   CalendarDays,
   CalendarRange,
-  Landmark,
-  Building2,
   CandlestickChart,
-  Bitcoin,
+  ChevronDown,
+  Landmark,
+  LayoutDashboard,
+  PieChart,
+  TrendingUp,
+  WalletCards,
 } from "lucide-react";
+import * as React from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
-import { ShoppingCart, Heart, Target, Plane, LineChart } from "@/components/icons";
+import { Heart, LineChart, Plane, ShoppingCart, Target } from "@/components/icons";
+import { useAlerts } from '@/hooks/useAlerts';
 
 export interface NavMenuChild {
   label: string;
@@ -68,6 +69,7 @@ export function NavMenu({
   items?: NavMenuItem[];
 }) {
   const location = useLocation();
+  const { count: alertsCount } = useAlerts();
   const [open, setOpen] = React.useState<string | null>(null);
 
   const activeTop = React.useMemo(() => {
@@ -123,7 +125,14 @@ export function NavMenu({
                   ].join(" ")}
                 >
                   <Icon className="h-4 w-4" strokeWidth={1.5} />
-                  <span>{item.label}</span>
+                  <span className="inline-flex items-center gap-2">
+                    <span>{item.label}</span>
+                    {item.label === 'Finanças' && alertsCount ? (
+                      <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-600 px-1.5 text-xs font-semibold text-white">
+                        {alertsCount}
+                      </span>
+                    ) : null}
+                  </span>
                   <ChevronDown
                     className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
                     strokeWidth={1.5}
@@ -194,7 +203,14 @@ export function NavMenu({
                     ].join(" ")}
                   >
                     <Icon className="h-4 w-4" strokeWidth={1.5} />
-                    <span>{item.label}</span>
+                    <span className="inline-flex items-center gap-2">
+                      <span>{item.label}</span>
+                      {item.label === 'Finanças' && alertsCount ? (
+                        <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-600 px-1.5 text-xs font-semibold text-white">
+                          {alertsCount}
+                        </span>
+                      ) : null}
+                    </span>
                     {isActive && (
                       <>
                         <motion.span

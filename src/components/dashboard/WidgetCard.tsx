@@ -1,5 +1,5 @@
-import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { Link } from "react-router-dom";
 
@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 export function WidgetCard({ className, children }: PropsWithChildren<{ className?: string }>) {
   return (
     <motion.div
-      className={`card-surface p-5 sm:p-6 ${className ?? ""}`}
+      className={`card-surface p-5 sm:p-6 ${className ?? ""} text-[var(--foreground)]`}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
@@ -21,8 +21,8 @@ export function WidgetCard({ className, children }: PropsWithChildren<{ classNam
 export function WidgetHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-3">
-      <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">{title}</h3>
-      {subtitle && <p className="text-sm text-zinc-600 dark:text-zinc-400">{subtitle}</p>}
+  <h3 className="text-lg font-semibold">{title}</h3>
+  {subtitle && <p className="text-sm text-[var(--muted-foreground)]">{subtitle}</p>}
     </div>
   );
 }

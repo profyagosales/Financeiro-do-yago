@@ -1,12 +1,13 @@
-import { ReactNode, useState } from "react";
-import { LineChart, Line, ResponsiveContainer } from "recharts";
+import type { ReactNode } from 'react';
+import { useState } from "react";
+import { Line, LineChart, ResponsiveContainer } from "recharts";
 
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { formatCurrency } from "@/lib/utils";

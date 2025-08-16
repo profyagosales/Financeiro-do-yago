@@ -1,28 +1,28 @@
-import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import {
-  Wallet,
-  TrendingUp,
-  CreditCard,
-  CalendarRange,
-  Landmark,
-  Target,
-  Plane,
-  ShoppingCart,
-  Heart,
-  Bell,
+    Bell,
+    CalendarRange,
+    CreditCard,
+    Heart,
+    Landmark,
+    Plane,
+    ShoppingCart,
+    Target,
+    TrendingUp,
+    Wallet,
 } from "lucide-react";
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
 
 
-import Logo from "@/components/Logo";
-import KPIBar, { type KPIItem } from "@/components/Overview/KPIBar";
-import OverviewChart, { type OverviewPoint } from "@/components/Overview/OverviewChart";
-import InsightCard from "@/components/Overview/InsightCard";
 import AlertList, { type AlertItem } from "@/components/dashboard/AlertList";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
+import Logo from "@/components/Logo";
+import InsightCard from "@/components/overview/InsightCard";
+import KPIBar, { type KPIItem } from "@/components/Overview/KPIBar";
+import OverviewChart, { type OverviewPoint } from "@/components/Overview/OverviewChart";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { usePeriod, periodRange } from "@/state/periodFilter";
+import { periodRange, usePeriod } from "@/state/periodFilter";
 
 const container = {
   hidden: { opacity: 0 },
@@ -31,7 +31,7 @@ const container = {
 
 const item = {
   hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: ("easeOut" as any) } },
 };
 
 export default function HomeOverview() {
@@ -178,7 +178,7 @@ export default function HomeOverview() {
   }, [alerts.length]);
 
   const heroLinks = [
-    { to: "/financas/resumo", label: "Finanças", icon: <Wallet className="h-5 w-5" /> },
+    { to: "/financas/resumo", label: "Finanças", icon: <Wallet className="h-5 w-5" />, badge: alerts.length },
     { to: "/metas", label: "Metas", icon: <Target className="h-5 w-5" /> },
     { to: "/milhas", label: "Milhas", icon: <Plane className="h-5 w-5" /> },
     { to: "/compras", label: "Compras", icon: <ShoppingCart className="h-5 w-5" /> },
@@ -195,15 +195,22 @@ export default function HomeOverview() {
         >
           <Logo size="lg" />
         </motion.div>
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
+        <div className="mt-4 w-full grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-center">
           {heroLinks.map((l) => (
             <Link
               key={l.to}
               to={l.to}
-              className="flex items-center gap-1 rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20"
+              className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20 justify-center"
             >
-              {l.icon}
-              {l.label}
+              <div className="relative inline-flex items-center">
+                {l.icon}
+                {l.badge ? (
+                  <span className="absolute -top-2 -right-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-xs font-semibold leading-none text-white">
+                    {l.badge}
+                  </span>
+                ) : null}
+              </div>
+              <span className="truncate">{l.label}</span>
             </Link>
           ))}
         </div>
@@ -275,7 +282,14 @@ export default function HomeOverview() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-12">
             {insights.map((card) => (
               <motion.div key={card.title} variants={item} className="lg:col-span-3">
-                <InsightCard {...card} />
+                <InsightCard
+                  icon={card.icon}
+                  title={card.title}
+                  subtitle={card.desc}
+                  onClick={() => {
+                    if (card.link) window.location.href = card.link;
+                  }}
+                />
               </motion.div>
             ))}
           </div>

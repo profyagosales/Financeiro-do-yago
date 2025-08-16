@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 
-import { usePeriod, periodRange } from "@/state/periodFilter";
 import { Badge } from "@/components/ui/badge";
+import { periodRange, usePeriod } from "@/state/periodFilter";
 
 // Placeholder pending miles; replace with data from useMiles when backend is ready
 const MOCK_PENDING = [
@@ -27,7 +27,7 @@ export default function MilesPendingWidget() {
       to="/milhas"
       className="glass-card block rounded-xl p-4 text-center transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
     >
-      <div className="text-sm text-muted-foreground">Milhas</div>
+  <div className="text-sm text-fg-muted">Milhas</div>
       {total > 0 ? (
         <div className="mt-1 flex items-baseline justify-center gap-2">
           <span className="text-2xl font-bold">{total.toLocaleString("pt-BR")}</span>
@@ -36,7 +36,7 @@ export default function MilesPendingWidget() {
           </Badge>
         </div>
       ) : (
-        <div className="mt-1 text-2xl font-bold text-muted-foreground">—</div>
+  <div className="mt-1 text-2xl font-bold text-fg-muted">—</div>
       )}
     </Link>
   );
