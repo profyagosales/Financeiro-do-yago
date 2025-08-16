@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -32,7 +32,7 @@ export default function ModalAporteMeta({ open, onClose, onSubmit, initial }: Pr
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o)=>!o && onClose()}>
+  <Dialog open={open} onOpenChange={(o)=>{ if(!o) onClose(); }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader><DialogTitle>Novo aporte</DialogTitle></DialogHeader>
         <div className="grid gap-4 py-2">

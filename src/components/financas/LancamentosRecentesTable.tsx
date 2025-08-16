@@ -15,7 +15,7 @@ export type LancamentosRecentesTableProps = {
 
 export default function LancamentosRecentesTable({ lancamentos, onViewDetails }: LancamentosRecentesTableProps) {
   return (
-    <div className="card-surface p-4">
+  <div className="u-card-base p-4">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-medium">Lançamentos recentes</h3>
         <button onClick={onViewDetails} className="text-sm text-emerald-700 hover:underline">

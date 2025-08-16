@@ -1,11 +1,11 @@
-import { NavLink } from 'react-router-dom';
-import type { NavLinkProps } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
+import type { NavLinkProps } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import { cn } from '@/lib/utils';
 
 interface Props extends NavLinkProps {
-  variant?: 'pill' | 'ghost';
+  variant?: 'secondary' | 'ghost';
   children: React.ReactNode;
 }
 
@@ -23,12 +23,12 @@ export default function NavItem({
       className={({ isActive }) =>
         cn(
           'relative rounded-full px-3 py-1 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
-          variant === 'pill'
-            ? 'text-white/80 hover:text-white'
+          variant === 'secondary'
+            ? 'bg-white/20 text-white'
             : 'text-white/80 hover:text-white hover:bg-white/10',
           isActive &&
-            (variant === 'pill'
-              ? 'bg-white/20 text-white'
+            (variant === 'secondary'
+              ? 'bg-white/30 text-white'
               : 'text-white'),
           className,
         )

@@ -1,22 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 
 // Tipos aceitos no projeto (compatível com snake_case e PT-BR)
@@ -154,7 +154,7 @@ export default function ModalInvest({ open, onClose, initial, defaultType, onSub
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+  <Dialog open={open} onOpenChange={(o) => { if(!o) onClose(); }}>
       <DialogContent className="sm:max-w-lg" onKeyDown={onKeyDown}>
         <DialogHeader>
           <DialogTitle>{initial ? "Editar investimento" : "Novo investimento"}</DialogTitle>

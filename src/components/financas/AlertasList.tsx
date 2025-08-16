@@ -12,7 +12,7 @@ export type AlertasListProps = {
 
 export default function AlertasList({ alertas, onViewDetails }: AlertasListProps) {
   return (
-    <div className="card-surface p-4">
+  <div className="u-card-base p-4">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-medium">Alertas</h3>
         <button onClick={onViewDetails} className="text-sm text-emerald-700 hover:underline">

@@ -3,26 +3,26 @@ import { CalendarRange, Clock, Coins, Copy, Download, Plus, Search, TrendingDown
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { toast } from '@/components/ui/Toasts';
+import CategoryPicker from "@/components/CategoryPicker";
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import DailyBars from "@/components/charts/DailyBars";
 import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";
-import CategoryPicker from "@/components/CategoryPicker";
-import { Skeleton } from "@/components/ui/Skeleton";
-import EmptyState from "@/components/ui/EmptyState";
-import SourcePicker, { type SourceValue } from "@/components/SourcePicker";
 import PageHeader from "@/components/PageHeader";
+import SourcePicker, { type SourceValue } from "@/components/SourcePicker";
 import TransactionsTable, { type UITransaction } from "@/components/TransactionsTable";
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import EmptyState from "@/components/ui/EmptyState";
 import { Input } from '@/components/ui/input';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from "@/components/ui/Skeleton";
+import { toast } from '@/components/ui/Toasts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useAuth } from '@/contexts/AuthContext';
 import { useCategories } from '@/hooks/useCategories';
 import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
-import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { exportTransactionsPDF } from '@/utils/pdf';
 
@@ -395,7 +395,7 @@ export default function FinancasMensal() {
       </PageHeader>
 
       {/* ======= ACTION BAR ======= */}
-      <section className="card-surface p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-3 justify-between">
+  <section className="u-card-base p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-3 justify-between">
         <div className="text-xs sm:text-sm text-emerald-900/80 dark:text-emerald-100/80">
           {transacoesFiltradas.length} lançamentos filtrados
         </div>
@@ -421,10 +421,10 @@ export default function FinancasMensal() {
         </div>
       ) : (
         <TooltipProvider delayDuration={200}>
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-6 lg:grid-cols-12">
             <Tooltip>
               <TooltipTrigger asChild>
-                <MotionCard>
+                <MotionCard className="lg:col-span-3">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-full bg-emerald-600 text-white">
                       <Coins size={18} />
@@ -441,7 +441,7 @@ export default function FinancasMensal() {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <MotionCard>
+                <MotionCard className="lg:col-span-3">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-full bg-blue-600 text-white">
                       <TrendingUp size={18} />
@@ -458,7 +458,7 @@ export default function FinancasMensal() {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <MotionCard>
+                <MotionCard className="lg:col-span-3">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-full bg-rose-500 text-white">
                       <TrendingDown size={18} />
@@ -473,7 +473,7 @@ export default function FinancasMensal() {
               <TooltipContent>Saídas = soma das despesas</TooltipContent>
             </Tooltip>
 
-            <MotionCard>
+            <MotionCard className="lg:col-span-3">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-full bg-amber-500 text-white">
                   <Clock size={18} />
@@ -489,8 +489,8 @@ export default function FinancasMensal() {
       )}
 
       {/* Gráficos */}
-      <section className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <section className="grid gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-6">
           {loading ? (
             <Skeleton className="h-72 w-full" />
           ) : transacoesFiltradas.length === 0 ? (
@@ -499,7 +499,7 @@ export default function FinancasMensal() {
             <DailyBars transacoes={transacoesFiltradas} mes={mesAtual} />
           )}
         </div>
-        <div className="lg:col-span-1">
+  <div className="lg:col-span-6">
           {loading ? (
             <Skeleton className="h-72 w-full" />
           ) : transacoesFiltradas.filter((t): t is UITransaction & { category: string } => !!t.category).length === 0 ? (

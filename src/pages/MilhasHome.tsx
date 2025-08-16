@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom';
 
 import { Plane } from '@/components/icons';
+// import { BRANDS } from '@/components/miles/brandConfig'; // não usado diretamente aqui
 import MilesMonthlyTotals from '@/components/miles/MilesMonthlyTotals';
 import MilesPendingList from '@/components/miles/MilesPendingList';
+import MilesProgramCard from '@/components/miles/MilesProgramCard';
 import PageHeader from '@/components/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -21,6 +22,16 @@ export default function MilhasHome() {
         icon={<Plane className="h-5 w-5" />}
       />
 
+      {/* Tabs / cards dos programas (branding real) */}
+      <div className="grid gap-4 sm:grid-cols-3" aria-label="Programas de milhas" role="list">
+        {(['livelo','latampass','azul'] as const).map(key => (
+          <div role="listitem" key={key}>
+            <MilesProgramCard program={key} />
+          </div>
+        ))}
+      </div>
+
+      {/* Resumo principal */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-1">
@@ -53,29 +64,7 @@ export default function MilhasHome() {
 
       <MilesPendingList />
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Link to="/milhas/livelo" className="block">
-          <Card className="hover:bg-muted/50">
-            <CardHeader className="text-center">
-              <CardTitle>Livelo</CardTitle>
-            </CardHeader>
-          </Card>
-        </Link>
-        <Link to="/milhas/latampass" className="block">
-          <Card className="hover:bg-muted/50">
-            <CardHeader className="text-center">
-              <CardTitle>LATAM Pass</CardTitle>
-            </CardHeader>
-          </Card>
-        </Link>
-        <Link to="/milhas/azul" className="block">
-          <Card className="hover:bg-muted/50">
-            <CardHeader className="text-center">
-              <CardTitle>Azul</CardTitle>
-            </CardHeader>
-          </Card>
-        </Link>
-      </div>
+  {/* (cards antigos removidos – substituídos pelos novos brand tabs no topo) */}
     </div>
   );
 }

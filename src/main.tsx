@@ -4,8 +4,10 @@ import { createRoot } from 'react-dom/client'
 
 import App from '@/App'
 import AppErrorBoundary from '@/components/AppErrorBoundary'
+
 import '@/index.css'
 import '@/styles/glass.css'
+import { BrowserRouter } from 'react-router-dom'
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   navigator.serviceWorker.register('/sw.js').catch((err) => {
@@ -16,7 +18,9 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppErrorBoundary>
-      <App />
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <App />
+      </BrowserRouter>
     </AppErrorBoundary>
   </StrictMode>
 );

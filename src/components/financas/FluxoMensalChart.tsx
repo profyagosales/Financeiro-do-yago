@@ -1,7 +1,7 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { formatCurrency } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { formatCurrency } from '@/lib/utils';
 
 export type FluxoMensalPoint = {
   mes: string;
@@ -15,7 +15,7 @@ export type FluxoMensalChartProps = {
 
 export default function FluxoMensalChart({ data, onViewDetails }: FluxoMensalChartProps) {
   return (
-    <div className="card-surface p-4">
+  <div className="u-card-base p-4">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-medium">Fluxo mensal</h3>
         <button onClick={onViewDetails} className="text-sm text-emerald-700 hover:underline">

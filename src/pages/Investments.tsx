@@ -150,17 +150,17 @@ export default function InvestmentsResumo() {
 
       {/* KPIs */}
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        <Card className="glass-card">
+  <Card className="u-card-base">
           <CardHeader className="pb-2"><CardDescription>Total investido</CardDescription>
             <CardTitle className="text-2xl">{BRL(kpis.invested)}</CardTitle>
           </CardHeader>
         </Card>
-        <Card className="glass-card">
+  <Card className="u-card-base">
           <CardHeader className="pb-2"><CardDescription>Operações no período</CardDescription>
             <CardTitle className="text-2xl">{kpis.ops}</CardTitle>
           </CardHeader>
         </Card>
-        <Card className="glass-card">
+  <Card className="u-card-base">
           <CardHeader className="pb-2"><CardDescription>Ativos diferentes</CardDescription>
             <CardTitle className="text-2xl">{kpis.ativos}</CardTitle>
           </CardHeader>
@@ -169,7 +169,7 @@ export default function InvestmentsResumo() {
 
       {/* Gráficos */}
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <Card className="glass-card">
+  <Card className="u-card-base">
           <CardHeader><CardTitle>Distribuição por classe</CardTitle></CardHeader>
           <CardContent className="h-[300px]">
             {byType.length === 0 ? (
@@ -188,7 +188,7 @@ export default function InvestmentsResumo() {
           </CardContent>
         </Card>
 
-        <Card className="glass-card">
+  <Card className="u-card-base">
           <CardHeader><CardTitle>Aportes nos últimos 12 meses</CardTitle></CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -205,7 +205,7 @@ export default function InvestmentsResumo() {
       </div>
 
       {!loading && items.length === 0 && (
-        <Card className="glass-card mt-6 p-6">
+  <Card className="u-card-base mt-6 p-6">
           <CardTitle className="text-base">Nenhum dado ainda</CardTitle>
           <CardDescription>Cadastre seus aportes nas páginas de Carteira (Renda fixa, FIIs, Ações, Cripto).</CardDescription>
         </Card>

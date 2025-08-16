@@ -8,10 +8,10 @@ const WINDOW_KEY = 'routeVisitsWindow'
 type Store = Record<string, number[]> // path -> array of timestamps
 
 function readStore(): Store {
-  const visits: Store = {}
+  let visits: Store = {}
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) visitsRef.current = JSON.parse(raw);
+    if (raw) visits = JSON.parse(raw) as Store;
   } catch (err) {
     if (process.env.NODE_ENV !== 'production') {
       console.warn('[useRouteVisits] parse visitas falhou', err);

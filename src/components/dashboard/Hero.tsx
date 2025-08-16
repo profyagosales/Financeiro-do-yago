@@ -19,7 +19,7 @@ export default function Hero() {
             Ver Finanças
           </Link>
           <Link
-            to="/investimentos/resumo"
+            to="/investimentos/renda-fixa"
             className="rounded-xl bg-white/15 px-4 py-2 font-medium text-white ring-1 ring-white/30 transition hover:bg-white/20"
           >
             Ver Investimentos

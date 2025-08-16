@@ -1,16 +1,16 @@
 // src/components/FilterBar.tsx
+import { motion } from 'framer-motion';
+import { Calendar, CalendarBlank } from 'phosphor-react';
 import { useCallback, type KeyboardEvent } from 'react';
-import { CalendarBlank, Calendar } from 'phosphor-react'
-import { motion } from 'framer-motion'
 
-import { usePeriod } from "@/state/periodFilter";
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
+import { usePeriod } from "@/state/periodFilter";
 
 /**
  * Barra de filtro com selects premium (shadcn/ui) e navegação por teclado.
@@ -74,7 +74,7 @@ export default function FilterBar({ variant = "default", className = "" }: Props
 
   return (
     <motion.div
-      className={`card-surface ${pad} ${gap} mx-auto flex w-full max-w-xl flex-wrap items-center justify-center ${className}`}
+  className={`u-card-base ${pad} ${gap} mx-auto flex w-full max-w-xl flex-wrap items-center justify-center ${className}`}
       aria-label="Filtro de período"
       role="group"
       onKeyDown={onKeyDown}

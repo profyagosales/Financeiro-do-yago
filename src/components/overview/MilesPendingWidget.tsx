@@ -25,7 +25,7 @@ export default function MilesPendingWidget() {
   return (
     <Link
       to="/milhas"
-      className="glass-card block rounded-xl p-4 text-center transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+  className="u-card-base block rounded-xl p-4 text-center transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
     >
   <div className="text-sm text-fg-muted">Milhas</div>
       {total > 0 ? (

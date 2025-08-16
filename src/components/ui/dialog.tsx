@@ -5,7 +5,9 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-const Dialog = DialogPrimitive.Root
+const Dialog = (props: React.ComponentProps<typeof DialogPrimitive.Root>) => {
+  return <DialogPrimitive.Root {...props} />
+}
 
 const DialogTrigger = DialogPrimitive.Trigger
 
@@ -13,7 +15,8 @@ const DialogPortal = DialogPrimitive.Portal
 
 const DialogClose = DialogPrimitive.Close
 
-const MotionOverlay = motion(DialogPrimitive.Overlay)
+// uso de motion.create para evitar deprecation de motion(Component)
+const MotionOverlay = motion.create(DialogPrimitive.Overlay)
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
@@ -30,34 +33,42 @@ const DialogOverlay = React.forwardRef<
 ))
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
-const MotionContent = motion(DialogPrimitive.Content)
+const MotionContent = motion.create(DialogPrimitive.Content)
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-  <MotionContent
-      ref={ref}
-      className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-2xl border border-white/40 bg-white/70 p-6 shadow-2xl backdrop-blur dark:border-white/10 dark:bg-white/5",
-        className
-      )}
-  initial={{ opacity: 0, scale: 0.95 }}
-  animate={{ opacity: 1, scale: 1 }}
-  exit={{ opacity: 0, scale: 0.95 }}
-  transition={{ duration: 0.2 }}
-  {...(props as any)}
-    >
-      {children}
-  <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm text-neutral-500 dark:text-neutral-400 transition-colors hover:text-neutral-700 dark:hover:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-        <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close>
-    </MotionContent>
-  </DialogPortal>
-))
+>(function DialogContent({ className, children, ...props }, ref) {
+  React.useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  return (
+    <DialogPortal>
+      <DialogOverlay />
+      <MotionContent
+        ref={ref}
+        className={cn(
+          "fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl border bg-background/90 p-6 shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-background/70 border-border",
+          className
+        )}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        {...(props as any)}
+      >
+        {children}
+        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Fechar</span>
+        </DialogPrimitive.Close>
+      </MotionContent>
+    </DialogPortal>
+  );
+})
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 const DialogHeader = ({

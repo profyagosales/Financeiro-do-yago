@@ -13,7 +13,11 @@ export type AlertItem = {
 // Renders a list of upcoming payments/alerts.
 export default function AlertList({ items }: { items: AlertItem[] }) {
   if (items.length === 0) {
-    return <EmptyState icon={<CreditCard className="h-6 w-6" />} title="Nenhuma conta a vencer" />;
+    return (
+      <div aria-live="polite">
+        <EmptyState icon={<CreditCard className="h-6 w-6" />} title="Nenhuma conta a vencer" />
+      </div>
+    );
   }
   return (
     <div className="overflow-x-auto">

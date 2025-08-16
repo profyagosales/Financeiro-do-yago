@@ -6,7 +6,7 @@ import { toast } from "@/components/ui/Toasts";
 const map: Record<string, string> = {
   d: "/dashboard",
   f: "/financas/mensal",
-  i: "/investimentos/resumo",
+  i: "/investimentos/renda-fixa",
   m: "/metas",
   c: "/configuracoes",
 };

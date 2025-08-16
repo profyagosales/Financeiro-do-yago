@@ -1,6 +1,6 @@
 # Financeiro do Yago
 
-[![CI](https://img.shields.io/github/actions/workflow/status/YOUR_GITHUB_USERNAME/Financeiro-do-yago/ci.yml?branch=main&label=CI&logo=github)](https://github.com/YOUR_GITHUB_USERNAME/Financeiro-do-yago/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/profyagosales/Financeiro-do-yago/ci.yml?branch=main&label=CI&logo=github)](https://github.com/profyagosales/Financeiro-do-yago/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Node](https://img.shields.io/badge/node-18%2B-339933?logo=node.js&logoColor=white)
 
@@ -47,7 +47,9 @@ _Adicione suas imagens em `docs/screenshots`_
 | `lint`      | Executa o ESLint                                  |
 | `typecheck` | Verificação de tipos com TypeScript               |
 | `format`    | `npx prettier . --write` (não há script dedicado) |
-| `test`      | _não definido_                                    |
+| `test`      | Executa testes Vitest                             |
+| `test:watch`| Roda Vitest em watch mode                         |
+| `test:coverage` | Gera relatório de cobertura (text + lcov + html) |
 
 ## PWA
 
@@ -171,3 +173,49 @@ Os valores de `--muted-foreground` foram ajustados para manter contraste mínimo
 ### Futuro
 
 Planeja-se adicionar testes visuais (Chromatic ou Playwright) para validar contrastes ao alterar tokens.
+
+## Indicadores (KPIStat)
+
+Indicadores financeiros foram unificados no componente `KPIStat`, substituindo a antiga barra horizontal (`KPIBar`).
+
+Características:
+- Tons semânticos centralizados em `src/components/dashboard/kpiTones.ts`.
+- Suporte a estado `loading` (aplicar `loading` prop para reduzir opacidade do valor).
+- Acessível: container pode receber `role="region"` e `aria-labelledby` externamente.
+
+Exemplo rápido:
+```tsx
+<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+   <KPIStat label="Saldo" value="R$ 5.000,00" icon={<Wallet className="size-5" />} tone="emerald" />
+   <KPIStat label="Gastos" value="R$ 2.300,00" icon={<CreditCard className="size-5" />} tone="rose" />
+</div>
+```
+
+> Se ainda existir código legado usando `KPIBar`, migre formatando previamente o número e mapeando para `{ label, value, icon, tone }`.
+
+## Testes
+
+Configuração com **Vitest + Testing Library** (`vitest.config.ts` + `vitest.setup.ts`).
+
+Scripts:
+```bash
+npm run test           # execução única
+npm run test:watch     # modo interativo
+npm run test:coverage  # relatório de cobertura
+```
+
+Relatórios:
+- Texto no terminal
+- HTML em `coverage/index.html`
+- `lcov.info` para integração com Codecov / Sonar.
+
+Thresholds iniciais baixos (lines/statements 4%, funcs 4%, branches 2%) definidos em `vitest.config.ts` para permitir evolução incremental sem travar PRs. Aumente gradualmente conforme novos testes forem adicionados.
+
+### CI
+
+Pipeline GitHub Actions (`.github/workflows/ci.yml`) executa: lint, typecheck e testes com coverage em cada push/PR para `main`. Artefato HTML de cobertura é anexado ao run.
+
+Boas práticas adotadas:
+- Mock de camadas de animação (ex: MotionCard) para simplificar snapshots.
+- Snapshot apenas para componentes estáveis (`KPIStat`).
+- Preferir testes de comportamento (acessibilidade, loading) antes de novos snapshots.

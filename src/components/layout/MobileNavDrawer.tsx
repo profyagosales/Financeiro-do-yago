@@ -1,12 +1,12 @@
-import * as React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, Menu, Settings } from "lucide-react";
+import * as React from "react";
 import { NavLink } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, ChevronDown, Settings } from "lucide-react";
 
 import { ThemeToggle } from "../ui/ThemeToggle";
 
-import { defaultNavItems } from "./NavMenu";
+import { navRoutes } from '@/routes/nav';
 
 export default function MobileNavDrawer() {
   const [open, setOpen] = React.useState(false);
@@ -55,11 +55,8 @@ export default function MobileNavDrawer() {
                   className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col rounded-r-2xl border-r border-white/40 bg-white/70 backdrop-blur shadow-xl dark:border-white/10 dark:bg-white/5"
                 >
                   <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-                    {defaultNavItems.map((item) => {
-                      if (
-                        item.children &&
-                        (item.label === "Finanças" || item.label === "Investimentos")
-                      ) {
+                    {navRoutes.map((item) => {
+                      if (item.children) {
                         const isOpen = accordions[item.label];
                         return (
                           <div key={item.label} className="border-b pb-2">

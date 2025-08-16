@@ -229,35 +229,16 @@ body::after {
   .dark .glass {
     @apply bg-white/5 border-white/10;
   }
-  /* Cards e KPIs padronizados */
-  .card-surface {
-    @apply rounded-2xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-sm;
-  }
-  .dark .card-surface {
-    @apply bg-white/5 border-white/10;
-  }
-  .kpi {
-    @apply card-surface p-5 sm:p-6 flex items-start gap-4;
-  }
-  .kpi-icon {
-    @apply size-10 rounded-xl flex items-center justify-center text-white shadow-md;
-    background: linear-gradient(
-      135deg,
-      hsl(var(--primary) / 0.95),
-      hsl(var(--primary) / 0.7)
-    );
-  }
-  .kpi-title {
-  @apply text-sm;
-  color: var(--color-fg-muted);
-  }
-  .kpi-value {
-    @apply text-2xl sm:text-3xl font-semibold tracking-tight;
-  }
-  .glass-card {
-    @apply bg-white/60 dark:bg-gray-950/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)];
-  }
+  /* (legacy .card-surface, .glass-card, .kpi-* removidos em favor de .u-card-base / .u-card-interactive) */
   .text-fg-muted { color: var(--color-fg-muted); }
+  /* Card unificado */
+  .u-card-base { @apply rounded-2xl border bg-white/70 backdrop-blur shadow-sm border-white/40 dark:bg-white/5 dark:border-white/10; }
+  .u-card-interactive { @apply u-card-base transition-transform duration-200 will-change-transform; }
+  .u-card-interactive:hover { @apply -translate-y-0.5; }
+  .u-card-sm { @apply u-card-base p-4; }
+  .u-card-lg { @apply u-card-base p-8; }
+  .u-card-accent { @apply u-card-base bg-emerald-500/10 dark:bg-emerald-400/10 border-emerald-500/30 dark:border-emerald-400/20; }
+  .u-card-muted { @apply u-card-base bg-neutral-50/70 dark:bg-slate-900/50; }
 }
 
 /* Ajuste fino para sidebar */

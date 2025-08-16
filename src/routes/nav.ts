@@ -1,68 +1,79 @@
 export interface NavItem {
   label: string;
   to: string;
+  icon?: string;
+  children?: NavItem[];
 }
 
 export interface NavRoute extends NavItem {
-  variant?: 'pill' | 'ghost';
+  variant?: 'secondary' | 'ghost';
 }
 
-export interface NavGroup {
-  label: string;
-  items: NavItem[];
-}
-
-export const navGroups: NavGroup[] = [
+export const navRoutes: NavRoute[] = [
+  { 
+    label: 'Visão geral',
+    to: '/dashboard',
+    icon: 'Home',
+    variant: 'secondary'
+  },
   {
     label: 'Finanças',
-    items: [
+    to: '/financas',
+    icon: 'Wallet',
+    children: [
       { label: 'Resumo', to: '/financas/resumo' },
       { label: 'Mensal', to: '/financas/mensal' },
-      { label: 'Anual', to: '/financas/anual' },
-    ],
+      { label: 'Anual', to: '/financas/anual' }
+    ]
   },
   {
     label: 'Investimentos',
-    items: [
+    to: '/investimentos',
+    icon: 'Landmark',
+    children: [
       { label: 'Resumo', to: '/investimentos/resumo' },
-      { label: 'Carteira', to: '/investimentos/carteira' },
       { label: 'Renda Fixa', to: '/investimentos/renda-fixa' },
       { label: 'FIIs', to: '/investimentos/fiis' },
-      { label: 'Bolsa', to: '/investimentos/bolsa' },
-      { label: 'Cripto', to: '/investimentos/cripto' },
-    ],
+      { label: 'Ações', to: '/investimentos/acoes' },
+      { label: 'Cripto', to: '/investimentos/cripto' }
+    ]
   },
   {
-    label: 'Planejamento',
-    items: [
-      { label: 'Metas & Projetos', to: '/metas' },
-      { label: 'Milhas', to: '/milhas' },
-      { label: 'Desejos', to: '/desejos' },
-      { label: 'Compras', to: '/compras' },
-    ],
+    label: 'Milhas',
+    to: '/milhas',
+    icon: 'Plane',
+    children: [
+      { label: 'Resumo', to: '/milhas/resumo' },
+      { label: 'Livelo', to: '/milhas/livelo' },
+      { label: 'LATAM Pass', to: '/milhas/latampass' },
+      { label: 'Azul', to: '/milhas/azul' }
+    ]
   },
+  { 
+    label: 'Metas',
+    to: '/metas',
+    icon: 'Target'
+  },
+  { 
+    label: 'Desejos',
+    to: '/desejos',
+    icon: 'Heart'
+  },
+  { 
+    label: 'Compras',
+    to: '/compras',
+    icon: 'ShoppingCart'
+  }
 ];
-
-export const navRoutes: NavRoute[] = [
-  { label: 'Visão geral', to: '/', variant: 'pill' },
-  { label: 'Finanças', to: '/financas/resumo' },
-  { label: 'Investimentos', to: '/investimentos/resumo' },
-  { label: 'Metas', to: '/metas' },
-  { label: 'Milhas', to: '/milhas' },
-  { label: 'Desejos', to: '/desejos' },
-  { label: 'Compras', to: '/compras' },
-];
-
-export const dashboardNavItem: NavItem = {
-  label: 'Visão geral',
-  to: '/',
-};
 
 export function getNavItem(pathname: string): NavItem | null {
-  if (pathname.startsWith(dashboardNavItem.to)) return dashboardNavItem;
-  for (const group of navGroups) {
-    const item = group.items.find((it) => pathname.startsWith(it.to));
-    if (item) return item;
+  for (const route of navRoutes) {
+    if (pathname === route.to) return route;
+    if (route.children) {
+      const child = route.children.find(child => pathname === child.to);
+      if (child) return child;
+    }
+    if (pathname.startsWith(route.to + '/')) return route;
   }
   return null;
 }

@@ -1,19 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import CategoryPicker from '@/components/CategoryPicker';
+import MoneyInput from '@/components/MoneyInput';
+import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
 import { toast } from '@/components/ui/Toasts';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
-import CategoryPicker from '@/components/CategoryPicker';
-import SourcePicker, { type SourceValue } from '@/components/SourcePicker';
-import { useCategories } from '@/hooks/useCategories';
 import { useAccounts } from '@/hooks/useAccounts';
+import { useCategories } from '@/hooks/useCategories';
 import { useCreditCards } from '@/hooks/useCreditCards';
-import MoneyInput from '@/components/MoneyInput';
 import type { ShoppingItem } from '@/hooks/useTransactions';
 
 // --- Types -----------------------------------------------------------------
@@ -43,7 +43,7 @@ export type BaseData = {
 
 export type Props = {
   open: boolean;
-  onClose: () => void;
+  onClose: () => void; // manter compat externo
   initialData?: BaseData | null;
   onSubmit: (data: BaseData) => Promise<void> | void;
 };
@@ -253,7 +253,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
   }, [cardsById, findAccount]);
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={open} onOpenChange={(o) => { if(!o) onClose(); }}>
       <DialogContent className="sm:max-w-lg p-0">
         <DialogHeader className="p-4 pb-0">
           <DialogTitle>{initialData ? 'Editar Transação' : 'Nova Transação'}</DialogTitle>

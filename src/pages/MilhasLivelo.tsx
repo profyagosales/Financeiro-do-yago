@@ -1,15 +1,15 @@
-import { useMemo, useState, type CSSProperties } from 'react';
 import dayjs from 'dayjs';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { useMemo, useState, type CSSProperties } from 'react';
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
-import { toast } from '@/components/ui/Toasts';
-import MilesHeader, { type MilesProgram } from '@/components/miles/MilesHeader';
-import { BRANDS } from '@/components/miles/brandConfig';
-import { MotionCard } from '@/components/ui/MotionCard';
-import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
-import { Button } from '@/components/ui/button';
 import ModalMilesMovement, { type MilesMovement } from '@/components/ModalMilesMovement';
+import MilesHeader, { type MilesProgram } from '@/components/miles/MilesHeader';
 import MilesPendingList from '@/components/miles/MilesPendingList';
+import { BRANDS } from '@/components/miles/brandConfig';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
+import { MotionCard } from '@/components/ui/MotionCard';
+import { toast } from '@/components/ui/Toasts';
+import { Button } from '@/components/ui/button';
 
 import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
@@ -103,10 +103,11 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
     toast.success('Excluído');
   };
 
+  const cfg = BRANDS[program];
   return (
-    <div
-      className="min-h-full bg-gradient-to-b from-[var(--brand-soft)] to-transparent dark:from-[var(--brand-softDark)] dark:to-transparent"
-      style={{ '--brand-soft': BRANDS[program].soft, '--brand-softDark': BRANDS[program].softDark } as CSSProperties}
+    <section
+      className="rounded-2xl p-6 bg-gradient-to-r text-slate-900 dark:text-slate-100"
+      style={{ backgroundImage: `linear-gradient(120deg, ${cfg.realFrom}, ${cfg.realTo})` } as CSSProperties}
     >
       <div className="space-y-6">
         <MilesHeader program={program} subtitle={`Saldo, expiração e movimentos - ${BRANDS[program].label}`}>
@@ -231,6 +232,6 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
         onSubmit={addOrUpdate}
       />
       </div>
-    </div>
+    </section>
   );
 }

@@ -1,28 +1,31 @@
 import { motion } from "framer-motion";
 import {
-    Bell,
-    CalendarRange,
-    CreditCard,
-    Heart,
-    Landmark,
-    Plane,
-    ShoppingCart,
-    Target,
-    TrendingUp,
-    Wallet,
+  Bell,
+  CalendarRange,
+  CreditCard,
+  Heart,
+  Landmark,
+  Plane,
+  ShoppingCart,
+  Target,
+  TrendingUp,
+  Wallet,
 } from "lucide-react";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
 
 import AlertList, { type AlertItem } from "@/components/dashboard/AlertList";
+import { KPIStat } from "@/components/dashboard/KPIStat";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import Logo from "@/components/Logo";
 import InsightCard from "@/components/overview/InsightCard";
-import KPIBar, { type KPIItem } from "@/components/Overview/KPIBar";
-import OverviewChart, { type OverviewPoint } from "@/components/Overview/OverviewChart";
+import type { OverviewPoint } from "@/components/overview/OverviewChart";
+import { ChartFallback } from '@/components/ui/ChartFallback';
 import { EmptyState } from "@/components/ui/EmptyState";
 import { periodRange, usePeriod } from "@/state/periodFilter";
+import { Suspense, lazy } from 'react';
+const OverviewChart = lazy(() => import("@/components/overview/OverviewChart"));
 
 const container = {
   hidden: { opacity: 0 },
@@ -80,46 +83,37 @@ export default function HomeOverview() {
     });
   }, [startDate, endDate, start, end]);
 
-  const kpis = useMemo<KPIItem[]>(() => {
+  const kpis = useMemo(() => {
     if (transactions.length === 0) return [];
     const balance = income - expense;
     const rent = invested ? (balance / invested) * 100 : 0;
     return [
       {
-        title: "Saldo",
-        icon: <Wallet className="size-5" />,
-        value: balance,
-        spark: Array.from({ length: 8 }, (_, i) => balance + i * 100),
-        sparkColor: "hsl(var(--chart-emerald))",
+        label: "Saldo",
+        value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balance),
+        icon: <Wallet className="size-5" />, tone: 'emerald' as const,
       },
       {
-        title: "Gastos do mês",
-        icon: <CreditCard className="size-5" />,
-        value: expense,
-        spark: Array.from({ length: 8 }, (_, i) => expense + i * 60),
-        sparkColor: "hsl(var(--chart-rose))",
+        label: "Gastos do mês",
+        value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(expense),
+        icon: <CreditCard className="size-5" />, tone: 'rose' as const,
       },
       {
-        title: "Rentabilidade",
-        icon: <TrendingUp className="size-5" />,
-        value: rent,
-        format: "percent",
-        spark: Array.from({ length: 8 }, (_, i) => rent + i * 2),
-        sparkColor: "hsl(var(--chart-blue))",
+        label: "Rentabilidade",
+        value: `${rent.toFixed(2)}%`,
+        icon: <TrendingUp className="size-5" />, tone: 'blue' as const,
       },
       {
-        title: "Metas concluídas",
-        icon: <Target className="size-5" />,
-        value: 0,
-        format: "number",
+        label: "Metas concluídas",
+        value: '0',
+        icon: <Target className="size-5" />, tone: 'violet' as const,
       },
       {
-        title: "Alertas",
-        icon: <Bell className="size-5" />,
-        value: alerts.length,
-        format: "number",
+        label: "Alertas",
+        value: String(alerts.length),
+        icon: <Bell className="size-5" />, tone: 'amber' as const,
       },
-    ];
+    ] as const;
   }, [transactions, income, expense, invested, alerts.length]);
 
   const forecastData = useMemo<OverviewPoint[]>(() => {
@@ -154,7 +148,7 @@ export default function HomeOverview() {
         icon: <Landmark className="h-5 w-5" />,
         title: "Investimentos",
         desc: "Carteira e aportes",
-        link: "/investimentos/resumo",
+  link: "/investimentos/renda-fixa",
       },
       {
         icon: <Target className="h-5 w-5" />,
@@ -224,7 +218,11 @@ export default function HomeOverview() {
           Indicadores
         </h2>
         {kpis.length ? (
-          <KPIBar items={kpis} />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {kpis.map(k => (
+              <KPIStat key={k.label} {...k} />
+            ))}
+          </div>
         ) : (
           <div className="rounded-xl border border-white/10 bg-white/5 p-6">
             <EmptyState icon={<Wallet className="h-8 w-8" />} title="Sem dados" />
@@ -243,7 +241,9 @@ export default function HomeOverview() {
             Fluxo de caixa
           </h2>
           {forecastData.length ? (
-            <OverviewChart data={forecastData} />
+            <Suspense fallback={<ChartFallback className="h-52" />}>
+              <OverviewChart data={forecastData} />
+            </Suspense>
           ) : (
             <EmptyState icon={<Wallet className="h-8 w-8" />} title="Sem dados" />
           )}
