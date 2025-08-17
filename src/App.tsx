@@ -11,7 +11,8 @@ import { PeriodProvider } from '@/contexts/PeriodContext';
 /* ---------- lazy imports de páginas ---------- */
 const FinancasResumo = lazy(() => import('./pages/FinancasResumo'));
 // Visão geral com cartões-resumo dos módulos
-const HomeOverview   = lazy(() => import('./pages/HomeOverview'));
+// Nova Home (Dashboard Resumo Geral)
+const DashboardHome  = lazy(() => import('./pages/dashboard'));
 const FinancasMensal = lazy(() => import('./pages/FinancasMensal'));
 const FinancasAnual  = lazy(() => import('./pages/FinancasAnual'));
 
@@ -82,8 +83,8 @@ function AppRoutes() {
       <Suspense fallback={<RouteLoader />}>
 
         <Routes>
-            {/* Dashboard */}
-            <Route path="/dashboard" element={<HomeOverview />} />
+            {/* Dashboard (Home) */}
+            <Route path="/dashboard" element={<DashboardHome />} />
             <Route path="/home" element={<Navigate to="/dashboard" replace />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
 

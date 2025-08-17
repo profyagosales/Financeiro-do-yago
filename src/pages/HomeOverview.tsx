@@ -3,10 +3,8 @@ import {
   Bell,
   CalendarRange,
   CreditCard,
-  Heart,
   Landmark,
   Plane,
-  ShoppingCart,
   Target,
   TrendingUp,
   Wallet,
@@ -17,7 +15,6 @@ import { Link } from "react-router-dom";
 
 import AlertList, { type AlertItem } from "@/components/dashboard/AlertList";
 import { KPIStat } from "@/components/dashboard/KPIStat";
-import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import { SectionChroming } from "@/components/layout/SectionChroming";
 import Logo from "@/components/Logo";
 import InsightCard from "@/components/overview/InsightCard";
@@ -38,6 +35,7 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: ("easeOut" as any) } },
 };
 
+// LEGADO: Página antiga de overview (mantida temporariamente até migração completa)
 export default function HomeOverview() {
   const { mode, month, year } = usePeriod();
   const { start, end } = periodRange({ mode, month, year });
@@ -172,13 +170,7 @@ export default function HomeOverview() {
     ];
   }, [alerts.length]);
 
-  const heroLinks = [
-    { to: "/financas/resumo", label: "Finanças", icon: <Wallet className="h-5 w-5" />, badge: alerts.length },
-    { to: "/metas", label: "Metas", icon: <Target className="h-5 w-5" /> },
-    { to: "/milhas", label: "Milhas", icon: <Plane className="h-5 w-5" /> },
-  { to: "/mercado", label: "Mercado", icon: <ShoppingCart className="h-5 w-5" /> },
-    { to: "/desejos", label: "Desejos", icon: <Heart className="h-5 w-5" /> },
-  ];
+  // heroLinks removido (legacy)
 
   return (
   <SectionChroming clr="home" decorate className="space-y-6">
@@ -188,7 +180,8 @@ export default function HomeOverview() {
         animate="show"
         className="space-y-6"
       >
-  <section className="hero-surface p-6 text-center text-white">
+  {/* LEGACY HERO (será removido após adoção completa do novo dashboard) */}
+  <section className="hidden">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -196,28 +189,7 @@ export default function HomeOverview() {
         >
           <Logo size="lg" />
         </motion.div>
-        <div className="mt-4 w-full grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-center">
-          {heroLinks.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20 justify-center"
-            >
-              <div className="relative inline-flex items-center">
-                {l.icon}
-                {l.badge ? (
-                  <span className="absolute -top-2 -right-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-xs font-semibold leading-none text-white">
-                    {l.badge}
-                  </span>
-                ) : null}
-              </div>
-              <span className="truncate">{l.label}</span>
-            </Link>
-          ))}
-        </div>
-        <div className="mt-4 flex justify-center">
-          <PeriodSelector />
-        </div>
+  {/* mini-cards e seletor de período ocultados */}
       </section>
 
       <section role="region" aria-labelledby="kpi-heading" className="space-y-4">
