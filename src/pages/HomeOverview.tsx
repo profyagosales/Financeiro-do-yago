@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import {
-  Bell,
-  CalendarRange,
-  CreditCard,
-  Landmark,
-  Plane,
-  Target,
-  TrendingUp,
-  Wallet,
+    Bell,
+    CalendarRange,
+    CreditCard,
+    Landmark,
+    Plane,
+    Target,
+    TrendingUp,
+    Wallet,
 } from "lucide-react";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
