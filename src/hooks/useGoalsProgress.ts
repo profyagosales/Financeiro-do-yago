@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 export interface GoalsProgressData { completed: number; total: number; percent: number; }
 
 async function fetchGoals(): Promise<GoalsProgressData> {
-  await new Promise(r => setTimeout(r, 110));
-  const completed = 5; const total = 12;
-  return { completed, total, percent: (completed/total)*100 };
+  const res = await fetch('/api/metas/status');
+  if (!res.ok) throw new Error('Erro ao carregar metas');
+  return res.json();
 }
 
 export default function useGoalsProgress(){

@@ -3,12 +3,15 @@ import { CalendarDays, Files, TrendingDown, TrendingUp } from 'lucide-react';
 import useFinSummary from '../../hooks/useFinSummary';
 import { currency, percent } from '../../utils/format';
 
+import { Skeleton } from '@/components/ui/Skeleton';
+
 export default function FinSummaryCard(){
-  const { data } = useFinSummary();
+  const { data, isLoading } = useFinSummary();
   const saldo = data?.saldo ?? 0;
   const diff = data?.diff ?? 0;
   const upcoming = data?.upcoming ?? [];
   const up = diff >= 0;
+  if (isLoading) return <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Resumo Financeiro"><Skeleton className="h-24 w-full" /></div>;
   return (
     <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Resumo Financeiro">
       <h3 className="flex items-center gap-2 text-sm font-medium" style={{color:'var(--clr-financas)'}}>

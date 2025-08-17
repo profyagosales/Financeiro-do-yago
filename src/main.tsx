@@ -1,11 +1,17 @@
+import { QueryClientProvider } from '@tanstack/react-query';
+// MSW (somente dev)
+if (import.meta.env.DEV) {
+  import('./mocks/browser').then(({ worker }) => {
+    worker.start({ onUnhandledRequest: 'bypass' });
+  });
+}
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { QueryClientProvider } from '@tanstack/react-query';
 
-import { queryClient } from '@/lib/query';
 import App from '@/App';
 import AppErrorBoundary from '@/components/AppErrorBoundary';
+import { queryClient } from '@/lib/query';
 
 import '@/styles/glass.css';
 import '@/styles/globals.css';

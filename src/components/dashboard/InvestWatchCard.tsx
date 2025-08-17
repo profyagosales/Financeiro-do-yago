@@ -3,11 +3,14 @@ import { Landmark, TrendingDown, TrendingUp } from 'lucide-react';
 import useInvestWatch from '../../hooks/useInvestWatch';
 import { percent } from '../../utils/format';
 
+import { Skeleton } from '@/components/ui/Skeleton';
+
 export default function InvestWatchCard(){
-  const { data } = useInvestWatch();
+  const { data, isLoading } = useInvestWatch();
   const total = data?.total ?? 0;
   const dailyChange = data?.dailyChange ?? 0;
   const up = dailyChange >= 0;
+  if (isLoading) return <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Investimentos"><Skeleton className="h-20 w-full" /></div>;
   return (
     <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Investimentos">
       <h3 className="flex items-center gap-2 text-sm font-medium" style={{color:'var(--clr-invest)'}}>
