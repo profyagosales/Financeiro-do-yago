@@ -8,9 +8,9 @@ export default function MilesAlertCard(){
   const { data, isLoading } = useMilesExpiring();
   const expiringTotal = data?.expiringTotal ?? 0;
   const nextExpiryDate = data?.nextExpiryDate ?? '--';
-  if (isLoading) return <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Milhas"><Skeleton className="h-16 w-full" /></div>;
+  if (isLoading) return <div className="rounded-lg border-t-4 border-[var(--clr-milhas)] bg-white shadow-sm p-6" aria-label="Milhas"><Skeleton className="h-16 w-full" /></div>;
   return (
-    <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Milhas">
+    <div className="rounded-lg border-t-4 border-[var(--clr-milhas)] bg-white shadow-sm p-6" aria-label="Milhas">
       <h3 className="flex items-center gap-2 text-sm font-medium" style={{color:'var(--clr-milhas)'}}>
         <Plane className="w-4 h-4" />
         Milhas

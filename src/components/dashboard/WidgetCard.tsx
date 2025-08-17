@@ -7,13 +7,14 @@ type WidgetCardProps = PropsWithChildren<{
   className?: string;
   ariaLabelledby?: string;
   role?: string;
+  pulse?: boolean; // ativa animação de novo alerta
 }> & Omit<HTMLMotionProps<'div'>, 'className'>;
 
 // Generic card used by dashboard widgets.
-export function WidgetCard({ className, children, role, ariaLabelledby, ...rest }: WidgetCardProps) {
+export function WidgetCard({ className, children, role, ariaLabelledby, pulse, ...rest }: WidgetCardProps) {
   return (
     <motion.div
-      className={`u-card-interactive p-5 sm:p-6 ${className ?? ""} text-[var(--foreground)]`}
+  className={`rounded-lg bg-white shadow-sm p-6 ${pulse ? 'pulse-border' : ''} ${className ?? ""}`}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
@@ -40,7 +41,7 @@ export function WidgetFooterAction({ to, children }: PropsWithChildren<{ to: str
   return (
     <Link
       to={to}
-      className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:underline"
+      className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:underline"
     >
       {children}
       <ChevronRight className="size-4" />

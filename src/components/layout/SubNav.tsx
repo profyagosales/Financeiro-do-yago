@@ -1,45 +1,44 @@
-import * as Icons from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import clsx from 'clsx';
+import { NavLink, useLocation } from 'react-router-dom';
 
-import { cn } from '@/lib/utils';
-import type { NavItem } from '@/routes/nav.tsx';
-import { APP_COLORS } from '@/theme/colors';
+const FIN_SUB = [
+  { label: 'Mensal', to: '/financas/mensal' },
+  { label: 'Anual',  to: '/financas/anual'  },
+];
 
-interface SubNavProps {
-  items: NavItem[];
-  parentLabel: string;
-}
+const INVEST_SUB = [
+  { label: 'Renda Fixa', to: '/investimentos/renda-fixa' },
+  { label: 'FIIs',       to: '/investimentos/fiis' },
+  { label: 'Bolsa',      to: '/investimentos/bolsa' },
+  { label: 'Cripto',     to: '/investimentos/cripto' },
+];
 
-export function SubNav({ items, parentLabel }: SubNavProps) {
+export function SubNav(){
+  const { pathname } = useLocation();
+  const items = pathname.startsWith('/financas')
+    ? FIN_SUB
+    : pathname.startsWith('/investimentos')
+    ? INVEST_SUB
+    : [];
+  if (!items.length) return null;
   return (
-    <nav className="subnav w-full border-t border-white/10 dark:border-white/5 backdrop-blur" aria-label={`Submenu de ${parentLabel}`} role="tablist">
-      <div className="flex justify-center gap-6 px-6 py-2 flex-wrap">
-        {items.map(item => {
-          const IconCmp = typeof item.icon === 'function' ? item.icon : (item.icon && (Icons as any)[item.icon]);
-          const key = Object.keys(APP_COLORS).find(k => item.color?.includes(k)) as keyof typeof APP_COLORS | undefined;
-          const clr = key ? APP_COLORS[key] : (item.color || 'var(--clr)');
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              role="tab"
-              style={{ ['--clr' as any]: clr }}
-              className={({ isActive }) => cn(
-                'subnav-item inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--clr)]',
-                isActive
-                  ? 'ring-1 ring-[color:var(--clr)] bg-[color:var(--clr)/10] text-[color:var(--clr)] dark:text-[color:var(--clr)]'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-[color:var(--clr)]'
-              )}
-            >
-              {IconCmp && (typeof IconCmp === 'function'
-                ? IconCmp('h-4 w-4 stroke-current')
-                : <IconCmp className="h-4 w-4 stroke-current" />)}
-              {item.label}
-            </NavLink>
-          );
-        })}
-      </div>
+    <nav className="flex gap-4 py-2 px-6 border-b border-neutral-200 bg-gradient-to-b from-neutral-800/10 to-transparent">
+      {items.map(i => (
+        <NavLink
+          key={i.to}
+          to={i.to}
+          className={({ isActive }) => clsx(
+            'rounded-full px-4 py-1 text-sm font-medium transition',
+            isActive
+              ? 'ring-1 ring-[--clr-financas]/50 text-[--clr-financas]'
+              : 'text-neutral-500 hover:text-[--clr-financas]'
+          )}
+        >
+          {i.label}
+        </NavLink>
+      ))}
     </nav>
   );
 }
+
+export default SubNav;

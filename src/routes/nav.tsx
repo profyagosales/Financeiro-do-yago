@@ -17,11 +17,10 @@ export const navRoutes: NavRoute[] = [
   { label: 'Home', to: '/dashboard', icon: (cls: string = '') => <Lucide.Home className={cls} color={APP_COLORS_DARK.home} />, color: APP_COLORS.home },
   {
     label: 'Finanças',
-    to: '/financas',
+    to: '/financas/mensal',
     icon: (cls: string = '') => <Lucide.Wallet className={cls} color={APP_COLORS_DARK.financas} />,
     color: APP_COLORS.financas,
     children: [
-      { label: 'Resumo', to: '/financas/resumo', icon: (cls: string = '') => <Lucide.ClipboardList className={cls} color={APP_COLORS_DARK.financas} />, color: 'var(--clr-financas)' },
       { label: 'Mensal',  to: '/financas/mensal', icon: (cls: string = '') => <Lucide.CalendarDays className={cls} color={APP_COLORS_DARK.financas} />, color: 'var(--clr-financas)' },
       { label: 'Anual',   to: '/financas/anual', icon: (cls: string = '') => <Lucide.CalendarCheck className={cls} color={APP_COLORS_DARK.financas} />, color: 'var(--clr-financas)' }
     ]

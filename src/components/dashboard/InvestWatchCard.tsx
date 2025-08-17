@@ -10,9 +10,9 @@ export default function InvestWatchCard(){
   const total = data?.total ?? 0;
   const dailyChange = data?.dailyChange ?? 0;
   const up = dailyChange >= 0;
-  if (isLoading) return <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Investimentos"><Skeleton className="h-20 w-full" /></div>;
+  if (isLoading) return <div className="rounded-lg border-t-4 border-[var(--clr-invest)] bg-white shadow-sm p-6" aria-label="Investimentos"><Skeleton className="h-20 w-full" /></div>;
   return (
-    <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Investimentos">
+    <div className="rounded-lg border-t-4 border-[var(--clr-invest)] bg-white shadow-sm p-6" aria-label="Investimentos">
       <h3 className="flex items-center gap-2 text-sm font-medium" style={{color:'var(--clr-invest)'}}>
         <Landmark className="w-4 h-4" />
         Investimentos

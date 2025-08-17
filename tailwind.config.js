@@ -1,6 +1,18 @@
+import plugin from 'tailwindcss/plugin';
+
+// Paleta APP (Sprint Finish Finanças)
+const APP = {
+  home:  '#22c3ff',
+  fin:   '#6eca00',
+  invest:'#6366f1',
+  milhas:'#ec4899',
+  desejos:'#f97316',
+  mercado:'#facc15',
+  metas:'#0ea5e9',
+};
+
 /** @type {import('tailwindcss').Config} */
 export default {
-	darkMode: false,
   content: ['./index.html', './src/**/*.{ts,tsx}'],
 	safelist: [
 		'text-white',
@@ -13,12 +25,13 @@ export default {
   		padding: '1rem',
   		center: true
   	},
-  	extend: {
-                colors: {
-				text: {
-					DEFAULT: '#1f2937', // slate-900
-					dark: '#e2e8f0',    // slate-200
-				},
+  		extend: {
+				colors: {
+					APP, // nova chave padronizada (bg-app-fin etc via plugin)
+					text: {
+						DEFAULT: '#1f2937'
+					},
+				// legacy key 'app' mantida para compatibilidade até remoção completa
 				app: {
 					home: '#38BDF8',
 					financas: '#84CC16',
@@ -134,5 +147,14 @@ export default {
   		}
   	}
   },
-	plugins: [],
+	plugins: [
+		plugin(function({ matchUtilities, theme }) {
+			matchUtilities(
+				{
+					'bg-app': (value) => ({ backgroundColor: value })
+				},
+				{ values: Object.fromEntries(Object.entries(APP).map(([k,v]) => [k, v])) }
+			);
+		})
+	],
 }

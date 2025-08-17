@@ -285,7 +285,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
               onChange={(n) => handleChange('value', n)}
             />
             {errors.value && <span className="text-xs text-red-500">{errors.value}</span>}
-            <span className="text-xs text-text/70 dark:text-text-dark/60">Sempre informe valor positivo — o tipo abaixo define se é receita ou despesa.</span>
+            <span className="text-xs text-text/70">Sempre informe valor positivo — o tipo abaixo define se é receita ou despesa.</span>
           </div>
 
           {/* Tipo & Categoria */}
@@ -372,7 +372,7 @@ export function ModalTransacao({ open, onClose, initialData, onSubmit }: Props) 
               accept="application/pdf,image/*"
               onChange={(e) => handleChange('attachment_file', e.target.files?.[0] || null)}
             />
-            <span className="text-xs text-text/70 dark:text-text-dark/60">(Opcional; upload/extração OCR entram no próximo passo.)</span>
+            <span className="text-xs text-text/70">(Opcional; upload/extração OCR entram no próximo passo.)</span>
           </div>
 
           {/* Milhas */}

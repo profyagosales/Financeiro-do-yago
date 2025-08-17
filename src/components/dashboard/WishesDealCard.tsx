@@ -7,9 +7,9 @@ import { Skeleton } from '@/components/ui/Skeleton';
 export default function WishesDealCard(){
   const { data, isLoading } = useWishesDeals();
   const deals = data?.deals ?? [];
-  if (isLoading) return <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Desejos"><Skeleton className="h-24 w-full" /></div>;
+  if (isLoading) return <div className="rounded-lg border-t-4 border-[var(--clr-desejos)] bg-white shadow-sm p-6" aria-label="Desejos"><Skeleton className="h-24 w-full" /></div>;
   return (
-    <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Desejos">
+    <div className="rounded-lg border-t-4 border-[var(--clr-desejos)] bg-white shadow-sm p-6" aria-label="Desejos">
       <h3 className="flex items-center gap-2 text-sm font-medium" style={{color:'var(--clr-desejos)'}}>
         <Heart className="w-4 h-4" />
         Desejos

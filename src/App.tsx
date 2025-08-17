@@ -8,13 +8,11 @@ import RouteLoader from '@/components/RouteLoader';
 import { Toaster } from '@/components/ui/Toasts';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { PeriodProvider } from '@/contexts/PeriodContext';
+import { financeRoutes } from '@/features/finance/Finance.routes';
 /* ---------- lazy imports de páginas ---------- */
-const FinancasResumo = lazy(() => import('./pages/FinancasResumo'));
 // Visão geral com cartões-resumo dos módulos
 // Nova Home (Dashboard Resumo Geral)
 const DashboardHome  = lazy(() => import('./pages/dashboard'));
-const FinancasMensal = lazy(() => import('./pages/FinancasMensal'));
-const FinancasAnual  = lazy(() => import('./pages/FinancasAnual'));
 
 // ✅ manter apenas a página em PT-BR
 const Investimentos  = lazy(() => import('./pages/Investimentos'));
@@ -82,17 +80,14 @@ function AppRoutes() {
 
       <Suspense fallback={<RouteLoader />}>
 
-        <Routes>
+  <Routes>
             {/* Dashboard (Home) */}
             <Route path="/dashboard" element={<DashboardHome />} />
             <Route path="/home" element={<Navigate to="/dashboard" replace />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-            {/* Finanças */}
-            <Route path="/financas/resumo" element={<FinancasResumo />} />
-            <Route path="/financas/mensal" element={<FinancasMensal />} />
-            <Route path="/financas/anual"  element={<FinancasAnual />} />
-            <Route path="/financas" element={<Navigate to="/financas/resumo" replace />} />
+            {/* Finanças (agrupadas) */}
+            {financeRoutes}
             <Route
               path="/resumo-financas"
               element={<Navigate to="/financas/resumo" replace />}

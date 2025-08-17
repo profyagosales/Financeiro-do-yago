@@ -65,7 +65,10 @@ export function AppHotkeys() {
         }
         if (e.key === '/') {
           e.preventDefault();
-          window.dispatchEvent(new CustomEvent('global-search'));
+          // tenta focar input de busca global se existir
+          const search: HTMLElement | null = document.querySelector('[data-global-search] input, input[data-global-search]');
+          if (search && 'focus' in search) (search as HTMLInputElement).focus();
+          else window.dispatchEvent(new CustomEvent('global-search'));
           return;
         }
       }

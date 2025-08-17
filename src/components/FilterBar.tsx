@@ -84,13 +84,13 @@ export default function FilterBar({ variant = "default", className = "" }: Props
       transition={{ duration: 0.3 }}
     >
       {/* Toggle Mensal/Anual */}
-      <div className="inline-flex overflow-hidden rounded-xl border border-white/30 bg-white/70 backdrop-blur shadow-sm dark:border-white/10 dark:bg-zinc-900/50">
+  <div className="inline-flex overflow-hidden rounded-xl border border-white/30 bg-white/70 backdrop-blur shadow-sm">
         <button
           onClick={() => setMode("monthly")}
           className={`px-3 py-2 text-sm transition ${
             mode === "monthly"
               ? "bg-emerald-600 text-white"
-              : "text-zinc-700 hover:bg-white/60 dark:text-zinc-200 dark:hover:bg-white/10"
+              : "text-zinc-700 hover:bg-white/60"
           }`}
           aria-pressed={mode === "monthly"}
         >
@@ -101,7 +101,7 @@ export default function FilterBar({ variant = "default", className = "" }: Props
           className={`px-3 py-2 text-sm transition ${
             mode === "yearly"
               ? "bg-emerald-600 text-white"
-              : "text-zinc-700 hover:bg-white/60 dark:text-zinc-200 dark:hover:bg-white/10"
+              : "text-zinc-700 hover:bg-white/60"
           }`}
           aria-pressed={mode === "yearly"}
         >
@@ -112,12 +112,12 @@ export default function FilterBar({ variant = "default", className = "" }: Props
       {/* Seletor de mês (premium) */}
       {mode === "monthly" && (
         <div className="inline-flex items-center gap-2">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm">
             <CalendarBlank size={16} className="h-4 w-4 text-emerald-600" />
           </span>
           {/* Nunca usar "" como value controlado */}
           <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
-            <SelectTrigger className="w-[120px] rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+            <SelectTrigger className="w-[120px] rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm">
               <SelectValue placeholder="Mês" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
@@ -133,12 +133,12 @@ export default function FilterBar({ variant = "default", className = "" }: Props
 
       {/* Seletor de ano (premium) */}
       <div className="inline-flex items-center gap-2">
-        <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+  <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm">
           <Calendar size={16} className="h-4 w-4 text-emerald-600" />
         </span>
         {/* Nunca passe "" como value */}
         <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
-          <SelectTrigger className="w-[110px] rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10">
+          <SelectTrigger className="w-[110px] rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm">
             <SelectValue placeholder="Ano" />
           </SelectTrigger>
           <SelectContent className="rounded-xl max-h-72">

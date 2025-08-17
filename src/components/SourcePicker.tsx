@@ -74,10 +74,10 @@ export default function SourcePicker({
   return (
     <div className={`grid gap-2 ${className}`}>
       {/* Toggle Conta/Cartão */}
-      <div className="inline-flex overflow-hidden rounded-xl border border-white/30 bg-white/70 backdrop-blur shadow-sm dark:border-white/10 dark:bg-zinc-900/50">
+  <div className="inline-flex overflow-hidden rounded-xl border border-white/30 bg-white/70 backdrop-blur shadow-sm">
         <button
           type="button"
-          className={`px-3 py-2 text-sm transition-colors ${kind === "account" ? "bg-emerald-600 text-white" : "text-zinc-700 dark:text-zinc-200"}`}
+          className={`px-3 py-2 text-sm transition-colors ${kind === "account" ? "bg-emerald-600 text-white" : "text-zinc-700"}`}
           onClick={() => {
             setKind("account");
             onChange({ kind: "account", id: "all" });
@@ -88,7 +88,7 @@ export default function SourcePicker({
         </button>
         <button
           type="button"
-          className={`px-3 py-2 text-sm transition-colors ${kind === "card" ? "bg-emerald-600 text-white" : "text-zinc-700 dark:text-zinc-200"}`}
+          className={`px-3 py-2 text-sm transition-colors ${kind === "card" ? "bg-emerald-600 text-white" : "text-zinc-700"}`}
           onClick={() => {
             setKind("card");
             onChange({ kind: "card", id: "all" });
@@ -108,7 +108,7 @@ export default function SourcePicker({
         >
           <SelectTrigger
             aria-label={ariaLabel ?? placeholder}
-            className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+            className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm"
           >
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
@@ -122,7 +122,7 @@ export default function SourcePicker({
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                   <span className="font-medium">{a.name}</span>
                   {a.institution && (
-                    <span className="ml-1 text-xs text-neutral-500 dark:text-neutral-400">{a.institution}</span>
+                    <span className="ml-1 text-xs text-neutral-500">{a.institution}</span>
                   )}
                 </span>
               </SelectItem>
@@ -138,7 +138,7 @@ export default function SourcePicker({
           >
           <SelectTrigger
             aria-label={ariaLabel ?? placeholder}
-            className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+            className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm"
           >
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
@@ -150,7 +150,7 @@ export default function SourcePicker({
                     <span className="h-2.5 w-2.5 rounded-full bg-sky-500" />
                     <span className="font-medium">{c.name}</span>
                     {typeof c.limit_amount === "number" && (
-                      <span className="ml-1 text-xs text-neutral-500 dark:text-neutral-400">limite {brl(c.limit_amount)}</span>
+                      <span className="ml-1 text-xs text-neutral-500">limite {brl(c.limit_amount)}</span>
                     )}
                   </span>
                 </SelectItem>
@@ -158,7 +158,7 @@ export default function SourcePicker({
             </SelectContent>
           </Select>
           {cardHint && (
-            <div className="text-xs text-zinc-600 dark:text-zinc-300/80 px-1">
+            <div className="text-xs text-zinc-600 px-1">
               {cardHint}
             </div>
           )}

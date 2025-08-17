@@ -8,7 +8,7 @@ export default function MarketTickerCard(){
     { id:3, name:'Leite', price: 5.2 }
   ];
   return (
-    <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Mercado">
+    <div className="rounded-lg border-t-4 border-[var(--clr-mercado)] bg-white shadow-sm p-6" aria-label="Mercado">
       <h3 className="flex items-center gap-2 text-sm font-medium" style={{color:'var(--clr-mercado)'}}>
         <ShoppingCart className="w-4 h-4" />
         Mercado

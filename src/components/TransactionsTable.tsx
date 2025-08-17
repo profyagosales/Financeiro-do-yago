@@ -278,27 +278,27 @@ export default function TransactionsTable({
   return (
     <TooltipProvider delayDuration={200} disableHoverableContent>
       <div className="space-y-3">
-      {/* Toolbar premium */}
-      <div className="flex flex-col gap-3 rounded-xl border border-white/30 dark:border-white/10 bg-white/70 dark:bg-zinc-900/50 backdrop-blur p-3 sm:p-4">
+    {/* Toolbar premium */}
+    <div className="flex flex-col gap-3 rounded-xl border border-white/30 bg-white/70 backdrop-blur p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
           <Input
-            value={q}
-            onChange={e => { setQ(e.target.value); setPage(1); }}
-            placeholder="Buscar por descrição, categoria ou data…"
-            className="w-full sm:max-w-xs rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+              value={q}
+              onChange={e => { setQ(e.target.value); setPage(1); }}
+              placeholder="Buscar por descrição, categoria ou data…"
+              className="w-full sm:max-w-xs rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm"
           />
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm">
             <span className="text-muted">
               {ordered.length} {ordered.length === 1 ? 'registro' : 'registros'}
             </span>
-            <div className="h-4 w-px bg-slate-300/60 dark:bg-white/10" />
+            <div className="h-4 w-px bg-slate-300/60" />
             <Button variant="outline" size="sm" onClick={selectAllFiltered} className="inline-flex items-center gap-2">
               <CheckSquare className="h-4 w-4"/> Selecionar tudo
             </Button>
             <Button variant="outline" size="sm" onClick={clearSelection} className="inline-flex items-center gap-2">
               <Square className="h-4 w-4"/> Limpar
             </Button>
-            <div className="h-4 w-px bg-slate-300/60 dark:bg-white/10" />
+            <div className="h-4 w-px bg-slate-300/60" />
             {onImportCSV && (
               <>
                 <input ref={fileRef} type="file" accept="text/csv" className="hidden" onChange={onFileChange} />
@@ -326,11 +326,11 @@ export default function TransactionsTable({
       </div>
 
       {/* Tabela com header fixo e rolagem */}
-      <div className="rounded-xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur overflow-hidden">
+  <div className="rounded-xl border bg-white/70 backdrop-blur overflow-hidden">
         <div className="max-h-[60vh] overflow-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50/70 dark:bg-slate-800/70 sticky top-0 z-10">
+              <TableRow className="bg-gray-50/70 sticky top-0 z-10">
                 <TableHead className="w-10">
                   <input
                     type="checkbox"
@@ -367,7 +367,7 @@ export default function TransactionsTable({
                 const n = Number(t.installment_no ?? t.installment_number ?? 1);
                 const N = Number(t.installment_total ?? t.installments_total ?? 1);
                 return (
-                  <TableRow key={t.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/60">
+                  <TableRow key={t.id} className="hover:bg-slate-50/60">
                     <TableCell>
                       <input
                         type="checkbox"
@@ -415,7 +415,7 @@ export default function TransactionsTable({
                                 <Badge variant="secondary" className="gap-1">
                                   <CreditCard size={12} />
                                   <span className="max-w-[80px] truncate">{short}</span>
-                                  {brand && <span className="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">{brand}</span>}
+                                  {brand && <span className="text-[10px] uppercase text-neutral-500">{brand}</span>}
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>{name}</TooltipContent>
@@ -483,13 +483,13 @@ export default function TransactionsTable({
                 </TableRow>
               )}
               {rows.length > 0 && (
-                <TableRow className="bg-slate-50/60 dark:bg-slate-800/40 font-medium">
+                <TableRow className="bg-slate-50/60 font-medium">
                   <TableCell colSpan={5}></TableCell>
                   <TableCell className="text-right">Página:</TableCell>
                   <TableCell className="text-right tabular-nums">
-                    <span className="text-emerald-700 dark:text-emerald-400 mr-4">{brl(totalsPage.income)}</span>
-                    <span className="text-rose-600 dark:text-rose-400 mr-4">{brl(totalsPage.expense)}</span>
-                    <span className={`${totalsPage.balance >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>{brl(totalsPage.balance)}</span>
+                    <span className="text-emerald-700 mr-4">{brl(totalsPage.income)}</span>
+                    <span className="text-rose-600 mr-4">{brl(totalsPage.expense)}</span>
+                    <span className={`${totalsPage.balance >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>{brl(totalsPage.balance)}</span>
                   </TableCell>
                   <TableCell />
                 </TableRow>
@@ -517,16 +517,16 @@ export default function TransactionsTable({
       {/* Totais do filtro (fora da rolagem) */}
       {ordered.length > 0 && (
   <div className="flex flex-wrap items-center gap-4 text-sm text-muted">
-          <span className="font-medium">Totais (filtro):</span>
-          <span className="text-emerald-700 dark:text-emerald-400">Entradas {brl(totalsAll.income)}</span>
-          <span className="text-rose-600 dark:text-rose-400">Saídas {brl(totalsAll.expense)}</span>
-          <span className={`${totalsAll.balance >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>Saldo {brl(totalsAll.balance)}</span>
+      <span className="font-medium">Totais (filtro):</span>
+      <span className="text-emerald-700">Entradas {brl(totalsAll.income)}</span>
+      <span className="text-rose-600">Saídas {brl(totalsAll.expense)}</span>
+      <span className={`${totalsAll.balance >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>Saldo {brl(totalsAll.balance)}</span>
         </div>
       )}
 
       {/* Dialog Duplicar p/ mês (se habilitado) */}
       <Dialog open={dupOpen} onOpenChange={setDupOpen}>
-        <DialogContent className="sm:max-w-md bg-white/80 dark:bg-zinc-950/80 backdrop-blur rounded-2xl border border-white/30 dark:border-white/10 shadow-xl">
+  <DialogContent className="sm:max-w-md bg-white/80 backdrop-blur rounded-2xl border border-white/30 shadow-xl">
           <DialogHeader>
             <DialogTitle className="text-base sm:text-lg">Duplicar selecionadas</DialogTitle>
           </DialogHeader>
@@ -535,12 +535,12 @@ export default function TransactionsTable({
               {selected.size} item(ns) serão copiados para o mês selecionado.
             </div>
             <div>
-              <span className="mb-1 block text-xs text-emerald-900/70 dark:text-emerald-100/80">Mês destino</span>
+              <span className="mb-1 block text-xs text-emerald-900/70">Mês destino</span>
               <Input
                 type="month"
                 value={mesDestino}
                 onChange={(e) => setMesDestino(e.target.value)}
-                className="rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
+                className="rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm"
               />
             </div>
           </div>
