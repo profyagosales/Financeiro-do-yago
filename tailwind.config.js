@@ -28,6 +28,7 @@ export default {
   		extend: {
 				colors: {
 					APP, // nova chave padronizada (bg-app-fin etc via plugin)
+					slateDark: '#1f2937',
 					text: {
 						DEFAULT: '#1f2937'
 					},
@@ -148,13 +149,23 @@ export default {
   	}
   },
 	plugins: [
-		plugin(function({ matchUtilities, theme }) {
+		plugin(function({ matchUtilities, theme, addBase }) {
+			// utilidade bg-app-<key>
 			matchUtilities(
 				{
 					'bg-app': (value) => ({ backgroundColor: value })
 				},
 				{ values: Object.fromEntries(Object.entries(APP).map(([k,v]) => [k, v])) }
 			);
+			// util ring-app-<key>
+			matchUtilities(
+				{
+					'ring-app': (value) => ({ '--ring-color': value })
+				},
+				{ values: Object.fromEntries(Object.entries(APP).map(([k,v]) => [k, v])) }
+			);
+			// base: texto padrão
+			addBase({ 'html, body': { color: theme('colors.slateDark') } });
 		})
 	],
 }

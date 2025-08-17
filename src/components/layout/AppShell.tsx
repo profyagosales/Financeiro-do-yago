@@ -13,7 +13,7 @@ export default function AppShell({ children, mainClassName }: AppShellProps) {
       <Header />
       <main
         className={cn(
-          'mx-auto w-full max-w-screen-2xl p-6 pt-4',
+          'mx-auto w-full max-w-screen-2xl px-6 pt-6 pb-12',
           mainClassName,
         )}
       >
