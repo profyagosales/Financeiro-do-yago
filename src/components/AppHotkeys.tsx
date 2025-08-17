@@ -4,10 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/Toasts";
 
 const map: Record<string, string> = {
-  d: "/dashboard",
+  d: "/", // visão geral / home
   f: "/financas/mensal",
   i: "/investimentos/renda-fixa",
   m: "/metas",
+  w: "/desejos",
+  k: "/mercado",
+  l: "/milhas/livelo",
   c: "/configuracoes",
 };
 
@@ -26,7 +29,7 @@ export function AppHotkeys() {
         e.preventDefault();
         toast.message("Atalhos", {
           description:
-            "N: nova transação • /: buscar • F: Finanças • M: Milhas • g d: Visão geral • g f: Finanças • g i: Investimentos (Resumo) • g m: Metas • g c: Configurações",
+            "N: nova transação • /: buscar • F: Finanças • M: Milhas • W: Desejos • K: Mercado • g d: Início • g f: Finanças • g i: Investimentos • g m: Metas • g l: Milhas • g w: Desejos • g k: Mercado • g c: Configurações",
         });
         return;
       }
@@ -40,9 +43,19 @@ export function AppHotkeys() {
           nav('/financas/mensal');
           return;
         }
-        if (key === 'm') {
+        if (key === 'm') { // Milhas
           e.preventDefault();
           nav('/milhas/livelo');
+          return;
+        }
+        if (key === 'w') { // Desejos (wishlist)
+          e.preventDefault();
+          nav('/desejos');
+          return;
+        }
+        if (key === 'k') { // Mercado (compras)
+          e.preventDefault();
+          nav('/mercado');
           return;
         }
         if (key === 'n') {

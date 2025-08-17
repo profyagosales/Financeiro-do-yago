@@ -1,16 +1,18 @@
 import React from "react";
 
 export type LogoProps = {
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "2xl";
   variant?: "full" | "mark";
   monochrome?: boolean;
   className?: string;
+  color?: string; // para modo monocromático dinâmico
 };
 
-const SIZE_MAP: Record<NonNullable<LogoProps["size"]>, number> = {
+const SIZE_MAP: Record<Exclude<LogoProps["size"], undefined>, number> = {
   sm: 24,
   md: 32,
   lg: 48,
+  '2xl': 68,
 };
 
 function Logo({
@@ -18,6 +20,7 @@ function Logo({
   variant = "mark",
   monochrome = false,
   className,
+  color,
 }: LogoProps) {
   const id = React.useId();
   const dimension = SIZE_MAP[size];
@@ -26,7 +29,7 @@ function Logo({
     <defs>
       <linearGradient id={id} x1="0" y1="0" x2="48" y2="48">
         <stop stopColor="#10B981" />
-        <stop offset="1" stopColor="#06B6D4" />
+        <stop offset="1" stopColor="#d1fae5" />
       </linearGradient>
     </defs>
   ) : null;
@@ -40,13 +43,16 @@ function Logo({
         width="44"
         height="44"
         rx="12"
-        fill={monochrome ? "currentColor" : `url(#${id})`}
+        fill={monochrome ? (color || 'currentColor') : `url(#${id})`}
+  className="transition-colors duration-500 ease-out"
       />
       <path
         d="M13 18h14M13 24h10M25 18v12M30 24h5M35 24v6"
-        stroke="white"
+  // Stroke do desenho interno permanece sempre branco para consistência visual
+  stroke={'white'}
         strokeWidth="3"
         strokeLinecap="round"
+  className="transition-colors duration-500 ease-out"
       />
     </>
   );
@@ -59,7 +65,7 @@ function Logo({
         viewBox="0 0 48 48"
         fill="none"
         aria-label="Logo Financeiro do Yago"
-        className={className}
+  className={[className, 'transition-colors duration-500 ease-out'].filter(Boolean).join(' ')}
       >
         {mark}
       </svg>

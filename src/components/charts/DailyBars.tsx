@@ -1,20 +1,21 @@
 // src/components/charts/DailyBars.tsx
+import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  LabelList,
+    Bar,
+    BarChart,
+    LabelList,
+    Legend,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from 'recharts';
-import dayjs from 'dayjs';
 
-import { SERIES_COLORS } from '@/lib/palette';
+import { Heading } from '@/components/ui/Heading';
 import type { UITransaction } from '@/components/TransactionsTable';
 import { SkeletonLine } from '@/components/ui/SkeletonLine';
+import { SERIES_COLORS } from '@/lib/palette';
 
 type Props = { transacoes?: UITransaction[]; mes?: string; isLoading?: boolean };
 
@@ -39,7 +40,7 @@ export default function DailyBars({ transacoes = [], mes, isLoading = false }: P
 
   return (
     <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
-      <h3 className="font-medium mb-3">Movimento diário</h3>
+      <Heading level={3}>Movimento diário</Heading>
       <div className="h-[320px]">
         {isLoading ? (
           <SkeletonLine className="h-full w-full" />
@@ -72,7 +73,7 @@ export default function DailyBars({ transacoes = [], mes, isLoading = false }: P
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-full flex items-center justify-center text-sm text-slate-500">
+          <div className="h-full flex items-center justify-center text-sm text-muted">
             Sem dados no período
           </div>
         )}

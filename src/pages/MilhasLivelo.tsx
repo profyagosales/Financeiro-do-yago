@@ -3,10 +3,12 @@ import { useMemo, useState, type CSSProperties } from 'react';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 import ModalMilesMovement, { type MilesMovement } from '@/components/ModalMilesMovement';
+import { SectionChroming } from '@/components/layout/SectionChroming';
 import MilesHeader, { type MilesProgram } from '@/components/miles/MilesHeader';
 import MilesPendingList from '@/components/miles/MilesPendingList';
 import { BRANDS } from '@/components/miles/brandConfig';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
+import Heading from '@/components/ui/Heading';
 import { MotionCard } from '@/components/ui/MotionCard';
 import { toast } from '@/components/ui/Toasts';
 import { Button } from '@/components/ui/button';
@@ -105,10 +107,12 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
 
   const cfg = BRANDS[program];
   return (
-    <section
-      className="rounded-2xl p-6 bg-gradient-to-r text-slate-900 dark:text-slate-100"
-      style={{ backgroundImage: `linear-gradient(120deg, ${cfg.realFrom}, ${cfg.realTo})` } as CSSProperties}
-    >
+    <SectionChroming clr="milhas" className="[&_[data-program-hero]]:text-white" style={{ ['--clr-active' as any]: cfg.realFrom }}>
+      <section
+        data-program-hero
+  className="hero-surface p-6 text-text dark:text-text-dark"
+        style={{ backgroundImage: `linear-gradient(120deg, ${cfg.realFrom}, ${cfg.realTo})` } as CSSProperties }
+      >
       <div className="space-y-6">
         <MilesHeader program={program} subtitle={`Saldo, expiração e movimentos - ${BRANDS[program].label}`}>
           <Button
@@ -127,25 +131,25 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
       <section className="grid gap-4 sm:grid-cols-4">
         <MotionCard>
           <div>
-            <div className="text-sm text-slate-500">Saldo</div>
+            <div className="text-sm text-muted">Saldo</div>
             <AnimatedNumber value={saldo} currency={false} />
           </div>
         </MotionCard>
         <MotionCard>
           <div>
-            <div className="text-sm text-slate-500">Expira (60 dias)</div>
+            <div className="text-sm text-muted">Expira (60 dias)</div>
             <AnimatedNumber value={expira60} currency={false} />
           </div>
         </MotionCard>
         <MotionCard>
           <div>
-            <div className="text-sm text-slate-500">Ganhos (mês)</div>
+            <div className="text-sm text-muted">Ganhos (mês)</div>
             <AnimatedNumber value={ganhosMes} currency={false} />
           </div>
         </MotionCard>
         <MotionCard>
           <div>
-            <div className="text-sm text-slate-500">Resgates (mês)</div>
+            <div className="text-sm text-muted">Resgates (mês)</div>
             <AnimatedNumber value={-resgMes} currency={false} />
           </div>
         </MotionCard>
@@ -153,7 +157,7 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
 
       {/* Donut mês */}
       <div className="rounded-xl border bg-white p-4 dark:bg-slate-900">
-        <h3 className="mb-3 font-medium">Movimentos no mês</h3>
+        <Heading level={3}>Movimentos no mês</Heading>
         <div className="h-[300px]">
           <ResponsiveContainer>
             <PieChart>
@@ -170,10 +174,10 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
 
       {/* Tabela simples */}
       <div className="rounded-xl border bg-white p-4 dark:bg-slate-900">
-        <h3 className="mb-3 font-medium">Movimentos</h3>
+        <Heading level={3}>Movimentos</Heading>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="text-left text-slate-500">
+            <thead className="text-left text-muted">
               <tr>
                 <th className="py-2">Data</th>
                 <th>Tipo</th>
@@ -212,7 +216,7 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
               ))}
               {movs.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-slate-500">
+                  <td colSpan={6} className="py-10 text-center text-muted">
                     Sem movimentos.
                   </td>
                 </tr>
@@ -232,6 +236,7 @@ export default function MilhasLivelo({ program = 'livelo' }: MilhasLiveloProps) 
         onSubmit={addOrUpdate}
       />
       </div>
-    </section>
+      </section>
+    </SectionChroming>
   );
 }

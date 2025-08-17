@@ -1,6 +1,8 @@
 
 import { Plane } from '@/components/icons';
 // import { BRANDS } from '@/components/miles/brandConfig'; // não usado diretamente aqui
+import { ProgramTabs } from '@/components/brand/ProgramTabs';
+import { SectionChroming } from '@/components/layout/SectionChroming';
 import MilesMonthlyTotals from '@/components/miles/MilesMonthlyTotals';
 import MilesPendingList from '@/components/miles/MilesPendingList';
 import MilesProgramCard from '@/components/miles/MilesProgramCard';
@@ -15,14 +17,17 @@ export default function MilhasHome() {
   ];
 
   return (
-    <div className="space-y-6 pb-24">
+  <SectionChroming clr="milhas" className="space-y-6 pb-24">
       <PageHeader
         title="Milhas"
         subtitle="Resumo geral e atalhos para programas"
         icon={<Plane className="h-5 w-5" />}
       />
 
-      {/* Tabs / cards dos programas (branding real) */}
+  {/* Tabs branding (links diretos) */}
+  <ProgramTabs />
+
+  {/* Cards dos programas */}
       <div className="grid gap-4 sm:grid-cols-3" aria-label="Programas de milhas" role="list">
         {(['livelo','latampass','azul'] as const).map(key => (
           <div role="listitem" key={key}>
@@ -65,6 +70,6 @@ export default function MilhasHome() {
       <MilesPendingList />
 
   {/* (cards antigos removidos – substituídos pelos novos brand tabs no topo) */}
-    </div>
+  </SectionChroming>
   );
 }

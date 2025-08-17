@@ -4,16 +4,15 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import AlertsDrawer from './financas/AlertsDrawer';
 import { Logo } from './Logo';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { ThemeToggle } from './ui/ThemeToggle';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
-import { navRoutes } from '@/routes/nav';
+import { navRoutes } from '@/routes/nav.tsx';
 
 const buttonStyles = {
   base: "inline-flex items-center justify-center whitespace-nowrap gap-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
@@ -100,7 +99,6 @@ export default function TopNav() {
 
         <div className="flex items-center gap-2">
           <AlertsDrawer />
-          <ThemeToggle />
           <NavLink
             to="/configuracoes"
             className={cn(

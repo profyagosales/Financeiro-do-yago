@@ -2,8 +2,7 @@ import { Suspense, lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import AppHotkeys from '@/components/AppHotkeys';
-import AppShell from '@/components/AppShell';
-import Topbar from '@/components/layout/Topbar';
+import AppShell from '@/components/layout/AppShell';
 import { ModalRoot } from '@/components/ModalRoot';
 import RouteLoader from '@/components/RouteLoader';
 import { Toaster } from '@/components/ui/Toasts';
@@ -32,7 +31,7 @@ const MilhasLatam  = lazy(() => import('./pages/MilhasLatam'));
 const MilhasAzul   = lazy(() => import('./pages/MilhasAzul'));
 
 const Desejos = lazy(() => import('./pages/Desejos'));
-const ListaCompras = lazy(() => import('./pages/ListaCompras'));
+const Mercado = lazy(() => import('./pages/Mercado'));
 
 const Configuracoes = lazy(() => import('./pages/Configuracoes'));
 const Login         = lazy(() => import('./pages/Login'));
@@ -75,7 +74,7 @@ function AppRoutes() {
     );
 
   return (
-    <AppShell topbar={<Topbar />}>
+  <AppShell>
       {/* ⬇️ Atalhos globais (g d, g f, g i, g m, g c, Shift+/? para ajuda) */}
       <AppHotkeys />
       <Toaster position="top-right" />
@@ -98,11 +97,11 @@ function AppRoutes() {
               element={<Navigate to="/financas/resumo" replace />}
             />
 
-            {/* Investimentos (landing usa componente Investimentos) */}
+            {/* Investimentos (landing) */}
             <Route path="/investimentos/resumo" element={<Investimentos />} />
             <Route path="/investimentos/renda-fixa" element={<Investimentos />} />
             <Route path="/investimentos" element={<Navigate to="/investimentos/resumo" replace />} />
-            <Route path="/investments" element={<Navigate to="/investimentos/resumo" replace />} />
+            <Route path="/investments" element={<Navigate to="/investimentos/renda-fixa" replace />} />
             <Route path="/carteira" element={<Navigate to="/investimentos/resumo" replace />} />
             {/* Página específica de renda fixa removida (CarteiraRendaFixa) para evitar duplicidade de landing */}
             <Route path="/investimentos/fiis"       element={<CarteiraFIIs />} />
@@ -120,8 +119,7 @@ function AppRoutes() {
 
             {/* Listas */}
             <Route path="/desejos" element={<Desejos />} />
-            <Route path="/compras" element={<ListaCompras />} />
-            <Route path="/lista-compras" element={<Navigate to="/compras" replace />} />
+            <Route path="/mercado" element={<Mercado />} />
 
             {/* Configurações */}
             <Route path="/configuracoes" element={<Configuracoes />} />

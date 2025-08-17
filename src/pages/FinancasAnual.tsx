@@ -4,25 +4,26 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
+import { Heading } from '@/components/ui/Heading';
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import PageHeader from "@/components/PageHeader";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { Button } from "@/components/ui/button";
 import { MotionCard } from "@/components/ui/MotionCard";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { useCategories } from "@/hooks/useCategories";
 import { getYearSummary, type YearSummary } from "@/hooks/useTransactions";
@@ -155,7 +156,7 @@ export default function FinancasAnual() {
               <TrendingUp size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-neutral-300/80">Entradas</span>
+              <span className="text-sm text-muted">Entradas</span>
               <AnimatedNumber value={kpis.income} />
             </div>
           </div>
@@ -167,7 +168,7 @@ export default function FinancasAnual() {
               <TrendingDown size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-neutral-300/80">Saídas</span>
+              <span className="text-sm text-muted">Saídas</span>
               <AnimatedNumber value={kpis.expense} />
             </div>
           </div>
@@ -179,7 +180,7 @@ export default function FinancasAnual() {
               <Coins size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-neutral-300/80">Saldo</span>
+              <span className="text-sm text-muted">Saldo</span>
               <AnimatedNumber value={kpis.balance} />
             </div>
           </div>
@@ -191,9 +192,9 @@ export default function FinancasAnual() {
               <CalendarRange size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-neutral-300/80">Mês com maior despesa</span>
+              <span className="text-sm text-muted">Mês com maior despesa</span>
               <AnimatedNumber value={worstMonth?.expense || 0} />
-              <span className="text-xs text-neutral-300/80">{worstLabel || '—'}</span>
+              <span className="text-xs text-muted">{worstLabel || '—'}</span>
             </div>
           </div>
         </MotionCard>
@@ -203,7 +204,7 @@ export default function FinancasAnual() {
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="rounded-xl border border-white/10 bg-white dark:bg-slate-900 p-4">
-            <h3 className="font-medium mb-3 text-foreground">Saldo mensal</h3>
+            <Heading level={3} className="text-foreground">Saldo mensal</Heading>
             <div className="h-[320px]">
               <ResponsiveContainer>
                 <AreaChart data={curveData}>
@@ -251,10 +252,10 @@ export default function FinancasAnual() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-neutral-200">Mês</TableHead>
-              <TableHead className="text-right text-neutral-200">Entradas</TableHead>
-              <TableHead className="text-right text-neutral-200">Saídas</TableHead>
-              <TableHead className="text-right text-neutral-200">Saldo</TableHead>
+              <TableHead className="text-muted">Mês</TableHead>
+              <TableHead className="text-right text-muted">Entradas</TableHead>
+              <TableHead className="text-right text-muted">Saídas</TableHead>
+              <TableHead className="text-right text-muted">Saldo</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
@@ -265,7 +266,7 @@ export default function FinancasAnual() {
               const linkMes = `${year}-${String(m.month).padStart(2, '0')}`;
               return (
                 <TableRow key={m.month}>
-                  <TableCell className="text-neutral-300/80">{label}</TableCell>
+                  <TableCell className="text-muted">{label}</TableCell>
                   <TableCell className="text-right">
                     {(Number(m.income) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </TableCell>

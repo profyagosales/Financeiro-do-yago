@@ -1,26 +1,27 @@
 import {
-  Building2,
-  CandlestickChart,
-  Coins,
-  Landmark,
-  PieChart as PieIcon,
+    Building2,
+    CandlestickChart,
+    Coins,
+    Landmark,
+    PieChart as PieIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
-  Tooltip as RTooltip,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Pie,
+    PieChart,
+    Tooltip as RTooltip,
+    ResponsiveContainer,
+    XAxis,
+    YAxis,
 } from "recharts";
 
 import { LineChart as LineIcon } from "@/components/icons";
+import { SectionChroming } from "@/components/layout/SectionChroming";
 import PageHeader from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -80,7 +81,7 @@ export default function InvestimentosResumo() {
   const latest = useMemo(() => rows.slice(0, 10), [rows]);
 
   return (
-    <div className="space-y-6 pb-24">
+  <SectionChroming clr="invest" decorate className="space-y-6 pb-24">
       <PageHeader
         title="Investimentos — Resumo"
         subtitle="Visão geral dos seus aportes por classe de ativos. Crie e edite nas páginas de Carteira."
@@ -351,6 +352,6 @@ export default function InvestimentosResumo() {
           </table>
         </CardContent>
       </Card>
-    </div>
+  </SectionChroming>
   );
 }

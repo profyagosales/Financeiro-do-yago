@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import AlertList, { type AlertItem } from "@/components/dashboard/AlertList";
 import { KPIStat } from "@/components/dashboard/KPIStat";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
+import { SectionChroming } from "@/components/layout/SectionChroming";
 import Logo from "@/components/Logo";
 import InsightCard from "@/components/overview/InsightCard";
 import type { OverviewPoint } from "@/components/overview/OverviewChart";
@@ -175,13 +176,19 @@ export default function HomeOverview() {
     { to: "/financas/resumo", label: "Finanças", icon: <Wallet className="h-5 w-5" />, badge: alerts.length },
     { to: "/metas", label: "Metas", icon: <Target className="h-5 w-5" /> },
     { to: "/milhas", label: "Milhas", icon: <Plane className="h-5 w-5" /> },
-    { to: "/compras", label: "Compras", icon: <ShoppingCart className="h-5 w-5" /> },
+  { to: "/mercado", label: "Mercado", icon: <ShoppingCart className="h-5 w-5" /> },
     { to: "/desejos", label: "Desejos", icon: <Heart className="h-5 w-5" /> },
   ];
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-      <section className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+  <SectionChroming clr="home" decorate className="space-y-6">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="space-y-6"
+      >
+  <section className="hero-surface p-6 text-center text-white">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -299,7 +306,8 @@ export default function HomeOverview() {
           </div>
         )}
       </section>
-    </motion.div>
+      </motion.div>
+    </SectionChroming>
   );
 }
 

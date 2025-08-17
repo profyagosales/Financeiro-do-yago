@@ -1,19 +1,9 @@
-import {
-    Bitcoin,
-    Building2,
-    CalendarDays,
-    CalendarRange,
-    CandlestickChart,
-    Heart,
-    Landmark,
-    LayoutDashboard,
-    PieChart,
-    Plane,
-    ShoppingCart,
-    Target,
-    TrendingUp,
-    WalletCards,
-} from 'lucide-react';
+/**
+ * DEPRECATED: Este arquivo era a estrutura antiga de navegação (navSections).
+ * Agora usamos `nav.ts` como fonte única de verdade.
+ * Mantido temporariamente apenas para evitar que imports quebrados falhem no build.
+ * TODO: remover após confirmar que nada mais importa `navigation.ts`.
+ */
 import { type ComponentType } from 'react';
 
 export interface NavChild {
@@ -29,34 +19,10 @@ export interface NavSection {
   children?: NavChild[];
 }
 
-export const navSections: NavSection[] = [
-  { label: 'Visão geral', to: '/dashboard', icon: LayoutDashboard },
-  {
-    label: 'Finanças',
-    icon: WalletCards,
-    children: [
-      { label: 'Resumo', to: '/financas/resumo', icon: PieChart },
-      { label: 'Mensal', to: '/financas/mensal', icon: CalendarDays },
-      { label: 'Anual', to: '/financas/anual', icon: CalendarRange },
-    ],
-  },
-  {
-    label: 'Investimentos',
-    icon: TrendingUp,
-    children: [
-      { label: 'Renda Fixa', to: '/investimentos/renda-fixa', icon: Landmark },
-      { label: 'FIIs', to: '/investimentos/fiis', icon: Building2 },
-      { label: 'Bolsa', to: '/investimentos/bolsa', icon: CandlestickChart },
-      { label: 'Cripto', to: '/investimentos/cripto', icon: Bitcoin },
-    ],
-  },
-  { label: 'Metas & Projetos', to: '/metas', icon: Target },
-  { label: 'Milhas', to: '/milhas', icon: Plane },
-  { label: 'Desejos', to: '/desejos', icon: Heart },
-  { label: 'Compras', to: '/compras', icon: ShoppingCart },
-];
+ 
+export const navSections: NavSection[] = [];
 
-export const INVESTMENTS_DEFAULT = '/investimentos/renda-fixa';
+export const INVESTMENTS_DEFAULT = '/investimentos/renda-fixa'; // mantido para compat.
 
 export function flattenNav(): NavChild[] {
   const out: NavChild[] = [];

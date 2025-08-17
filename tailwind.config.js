@@ -1,14 +1,33 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: ['class', 'class'],
+	darkMode: false,
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+	safelist: [
+		'text-white',
+		'ring-[color:var(--clr)]',
+		'bg-[color:var(--clr)/10]',
+		'text-[color:var(--clr)]'
+	],
   theme: {
-  	container: {
+	container: {
   		padding: '1rem',
   		center: true
   	},
   	extend: {
                 colors: {
+				text: {
+					DEFAULT: '#1f2937', // slate-900
+					dark: '#e2e8f0',    // slate-200
+				},
+				app: {
+					home: '#38BDF8',
+					financas: '#84CC16',
+					invest: '#6366F1',
+					milhas: '#EC4899',
+					desejos: '#F97316',
+					mercado: '#FACC15',
+					metas: '#0EA5E9'
+				},
                         fy: {
                                 bg: '#014D46',
                                 primary: '#009579',
@@ -65,11 +84,10 @@ export default {
                                 purple: '#9D00FF'
                         }
                 },
-  		fontFamily: {
-  			sans: [
-  				'Inter',
-  				'sans-serif'
-  			],
+		fontFamily: {
+			sans: [
+				'InterVariable', 'Inter', 'system-ui', 'sans-serif'
+			],
   			numeric: [
   				'Lexend',
   				'Inter',
@@ -114,21 +132,5 @@ export default {
   		}
   	}
   },
-  plugins: [
-        require("tailwindcss-animate"),
-        function({ addUtilities }) {
-                addUtilities({
-                        '.glass': {
-                                'background-color': 'rgba(255,255,255,0.7)',
-                                'backdrop-filter': 'blur(12px)',
-                                'border': '1px solid rgba(255,255,255,0.4)',
-                                'box-shadow': '0 1px 2px rgba(0,0,0,0.05)'
-                        },
-                        '.dark .glass': {
-                                'background-color': 'rgba(255,255,255,0.05)',
-                                'border': '1px solid rgba(255,255,255,0.1)'
-                        }
-                });
-        }
-  ],
+	plugins: [],
 }

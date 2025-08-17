@@ -1,13 +1,11 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-// Font import removed; install '@fontsource-variable/inter' or re-add if desired
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 
-import App from '@/App'
-import AppErrorBoundary from '@/components/AppErrorBoundary'
-
-import '@/index.css'
-import '@/styles/glass.css'
-import { BrowserRouter } from 'react-router-dom'
+import App from '@/App';
+import AppErrorBoundary from '@/components/AppErrorBoundary';
+import '@/styles/glass.css';
+import '@/styles/globals.css';
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   navigator.serviceWorker.register('/sw.js').catch((err) => {

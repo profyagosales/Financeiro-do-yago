@@ -34,8 +34,8 @@ export function MilesProgramCard({ program, to, className }: MilesProgramCardPro
         {/* overlay para contraste em dark */}
         <span className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-white/0 via-white/0 to-white/10 dark:from-black/20 dark:via-black/10 dark:to-black/40 mix-blend-overlay" />
         <div className="relative z-10">
-          <div className="text-[11px] uppercase tracking-wide font-medium text-slate-600 dark:text-slate-300 mb-1">Programa</div>
-          <div className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
+          <div className="text-[11px] uppercase tracking-wide font-medium text-muted mb-1">Programa</div>
+          <div className="text-lg font-semibold tracking-tight text-text dark:text-text-dark drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
             {cfg.label}
           </div>
         </div>

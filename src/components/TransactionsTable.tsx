@@ -1,17 +1,17 @@
 import dayjs from "dayjs";
 import {
-  ArrowUpDown,
-  CheckSquare,
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  CreditCard,
-  Download,
-  Pencil,
-  Plus,
-  Square,
-  Trash2,
-  Upload,
+    ArrowUpDown,
+    CheckSquare,
+    ChevronLeft,
+    ChevronRight,
+    Copy,
+    CreditCard,
+    Download,
+    Pencil,
+    Plus,
+    Square,
+    Trash2,
+    Upload,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+    Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/table';
 import { toast } from "@/components/ui/Toasts";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -288,7 +288,7 @@ export default function TransactionsTable({
             className="w-full sm:max-w-xs rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm dark:bg-zinc-900/50 dark:border-white/10"
           />
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm">
-            <span className="text-slate-500 dark:text-slate-300">
+            <span className="text-muted">
               {ordered.length} {ordered.length === 1 ? 'registro' : 'registros'}
             </span>
             <div className="h-4 w-px bg-slate-300/60 dark:bg-white/10" />
@@ -320,7 +320,7 @@ export default function TransactionsTable({
             </Button>
           </div>
         </div>
-        <div className="text-xs text-slate-500 dark:text-slate-300">
+  <div className="text-xs text-muted">
           {selected.size > 0 ? `${selected.size} selecionada(s)` : 'Nenhuma seleção'}
         </div>
       </div>
@@ -438,7 +438,7 @@ export default function TransactionsTable({
                         );
                       })()}
                     </TableCell>
-                    <TableCell className="tabular-nums text-slate-600 dark:text-slate-300">
+                    <TableCell className="tabular-nums text-muted">
                       {N > 1 ? `${n}/${N}` : '—'}
                     </TableCell>
                     <TableCell className={`text-right font-numeric tabular-nums ${negativo ? 'text-red-600' : 'text-emerald-600'}`}>
@@ -470,7 +470,7 @@ export default function TransactionsTable({
               {rows.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={8} className="py-12 text-center">
-                    <div className="flex flex-col items-center gap-3 text-slate-500 dark:text-slate-300">
+                    <div className="flex flex-col items-center gap-3 text-muted">
                       <div className="text-sm">Nenhum registro encontrado.</div>
                       <div className="text-xs">Ajuste os filtros ou cadastre um novo lançamento.</div>
                       <div className="mt-2">
@@ -501,7 +501,7 @@ export default function TransactionsTable({
 
       {/* Paginação */}
       <div className="flex items-center justify-between">
-        <span className="text-sm text-slate-500 dark:text-slate-300">
+  <span className="text-sm text-muted">
           Página {pageSafe} de {totalPages}
         </span>
         <div className="flex gap-2">
@@ -516,7 +516,7 @@ export default function TransactionsTable({
 
       {/* Totais do filtro (fora da rolagem) */}
       {ordered.length > 0 && (
-        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-300">
+  <div className="flex flex-wrap items-center gap-4 text-sm text-muted">
           <span className="font-medium">Totais (filtro):</span>
           <span className="text-emerald-700 dark:text-emerald-400">Entradas {brl(totalsAll.income)}</span>
           <span className="text-rose-600 dark:text-rose-400">Saídas {brl(totalsAll.expense)}</span>
@@ -531,7 +531,7 @@ export default function TransactionsTable({
             <DialogTitle className="text-base sm:text-lg">Duplicar selecionadas</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3">
-            <div className="text-sm text-slate-600 dark:text-slate-300">
+            <div className="text-sm text-muted">
               {selected.size} item(ns) serão copiados para o mês selecionado.
             </div>
             <div>
@@ -567,7 +567,7 @@ function Th({
         title="Ordenar"
       >
         <span className="font-medium">{label}</span>
-        <ArrowUpDown size={14} className={`opacity-60 group-hover:opacity-100 ${active ? 'text-slate-900 dark:text-slate-100' : ''}`} />
+  <ArrowUpDown size={14} className={`opacity-60 group-hover:opacity-100 ${active ? 'text-text dark:text-text-dark' : ''}`} />
         {active && <span className="sr-only">{dir === 'asc' ? '(asc)' : '(desc)'}</span>}
       </button>
     </TableHead>

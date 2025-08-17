@@ -14,6 +14,7 @@ import {
 } from "recharts";
 
 import PageHeader from "@/components/PageHeader";
+import { SectionChroming } from "@/components/layout/SectionChroming";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -122,12 +123,11 @@ export default function InvestmentsResumo() {
   }, [items]);
 
   return (
-    <>
+    <SectionChroming clr="invest" className="space-y-6">
       <PageHeader
         title="Investimentos"
         subtitle="Acompanhe seus aportes e a distribuição por classe. (Resumo geral)"
         icon={<PieIcon className="h-5 w-5" />}
-        gradient="from-emerald-600 to-teal-600"
       />
 
       {/* Filtros topo */}
@@ -210,6 +210,6 @@ export default function InvestmentsResumo() {
           <CardDescription>Cadastre seus aportes nas páginas de Carteira (Renda fixa, FIIs, Ações, Cripto).</CardDescription>
         </Card>
       )}
-    </>
+  </SectionChroming>
   );
 }

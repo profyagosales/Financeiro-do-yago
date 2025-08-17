@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useAuth } from '@/contexts/AuthContext';
 import BRANDS, { type MilesProgram } from '@/components/miles/brandConfig';
+import Heading from '@/components/ui/Heading';
+import { useAuth } from '@/contexts/AuthContext';
 
 export type MilesPending = {
   id: string;
@@ -61,8 +62,8 @@ export default function MilesPendingList({ program }: { program?: MilesProgram }
   if (!user?.id && !loading) {
     return (
       <div className="rounded-xl border bg-white p-4 dark:bg-slate-900">
-        <h3 className="mb-3 font-medium">A receber</h3>
-        <div className="py-10 text-center text-slate-500">
+        <Heading level={3}>A receber</Heading>
+  <div className="py-10 text-center text-muted">
           Faça login para ver as pendências.
         </div>
       </div>
@@ -73,10 +74,10 @@ export default function MilesPendingList({ program }: { program?: MilesProgram }
 
   return (
     <div className="rounded-xl border bg-white p-4 dark:bg-slate-900">
-      <h3 className="mb-3 font-medium">A receber</h3>
+      <Heading level={3}>A receber</Heading>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
-          <thead className="text-left text-slate-500">
+          <thead className="text-left text-muted">
             <tr>
               {!program && <th className="py-2">Programa</th>}
               <th className="py-2">Origem</th>
@@ -95,7 +96,7 @@ export default function MilesPendingList({ program }: { program?: MilesProgram }
             ))}
             {itens.length === 0 && (
               <tr>
-                <td colSpan={colSpan} className="py-10 text-center text-slate-500">
+                <td colSpan={colSpan} className="py-10 text-center text-muted">
                   Sem pendências.
                 </td>
               </tr>

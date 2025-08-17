@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  CalendarClock,
-  Download,
-  ListTodo,
-  Receipt,
-  Wallet,
+    ArrowDownCircle,
+    ArrowUpCircle,
+    CalendarClock,
+    Download,
+    ListTodo,
+    Receipt,
+    Wallet,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -15,7 +15,9 @@ import TransactionsTable, { type UITransaction } from "@/components/Transactions
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import DailyBars from "@/components/charts/DailyBars";
 import { WidgetCard, WidgetFooterAction, WidgetHeader } from "@/components/dashboard/WidgetCard";
+import { SectionChroming } from "@/components/layout/SectionChroming";
 import { EmptyState } from "@/components/ui/EmptyState";
+import Heading from '@/components/ui/Heading';
 import { SkeletonLine } from "@/components/ui/SkeletonLine";
 import { Button } from "@/components/ui/button";
 import { useBills } from "@/hooks/useBills";
@@ -180,7 +182,7 @@ export default function FinancasResumo() {
   };
 
   return (
-    <div className="space-y-6">
+  <SectionChroming clr="financas" decorate className="space-y-6">
       <PageHeader
         title="Finanças — Resumo"
         breadcrumbs={[
@@ -381,7 +383,7 @@ export default function FinancasResumo() {
           )}
         </WidgetCard>
         <div className="col-span-12 rounded-2xl shadow/soft bg-background/60 backdrop-blur border border-white/10 dark:border-white/5 p-4">
-          <h3 className="mb-3 font-medium">Transações recentes</h3>
+          <Heading level={3}>Transações recentes</Heading>
           {transLoading ? (
             <SkeletonLine className="h-40" />
           ) : recentTransactions.length ? (
@@ -395,6 +397,6 @@ export default function FinancasResumo() {
           )}
         </div>
       </div>
-    </div>
+  </SectionChroming>
   );
 }

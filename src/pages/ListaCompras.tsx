@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import PageHeader from '@/components/PageHeader';
+import { SectionChroming } from '@/components/layout/SectionChroming';
 import ShoppingCard from '@/components/shopping/ShoppingCard';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -12,7 +13,7 @@ interface ShoppingItem {
   wishlist_item_id?: string;
 }
 
-export default function Compras() {
+export default function Mercado() {
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -68,9 +69,9 @@ export default function Compras() {
   };
 
   return (
-    <div className="space-y-6">
-      <PageHeader title="🧾 Compras" />
+    <SectionChroming clr="mercado" className="space-y-6">
+      <PageHeader title="🛒 Mercado" />
       {list()}
-    </div>
+    </SectionChroming>
   );
 }

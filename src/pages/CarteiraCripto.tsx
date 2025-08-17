@@ -2,6 +2,7 @@
 import { Coins, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { SectionChroming } from "@/components/layout/SectionChroming";
 import ModalInvest from "@/components/ModalInvest";
 import PageHeader from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
@@ -64,7 +65,7 @@ export default function CarteiraCripto() {
   };
 
   return (
-    <>
+    <SectionChroming clr="invest" className="space-y-6 pb-24">
       <PageHeader
         title="Carteira — Cripto"
         subtitle="Lançamentos e aportes desta classe."
@@ -181,6 +182,6 @@ export default function CarteiraCripto() {
           defaultType="Cripto"
           onSubmit={(payload) => { if (editing) return onUpdate(editing.id, payload); }}
         />
-    </>
+  </SectionChroming>
   );
 }

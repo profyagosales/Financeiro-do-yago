@@ -1,23 +1,24 @@
 // src/components/wishlist/WishlistCharts.tsx
-import { useMemo } from 'react';
 import dayjs from 'dayjs';
+import { useMemo } from 'react';
 import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+    CartesianGrid,
+    Cell,
+    Legend,
+    Line,
+    LineChart,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from 'recharts';
 
-import { mapCategoryColor } from '@/lib/palette';
-import type { WishlistItem, PricePoint } from '@/services/wishlistApi';
+import { Heading } from '@/components/ui/Heading';
 import { SkeletonLine } from '@/components/ui/SkeletonLine';
+import { mapCategoryColor } from '@/lib/palette';
+import type { PricePoint, WishlistItem } from '@/services/wishlistApi';
 
 export type WishlistCategoryDonutProps = {
   items?: WishlistItem[];
@@ -44,7 +45,7 @@ export function WishlistCategoryDonut({ items = [], isLoading = false }: Wishlis
 
   if (!data.length) {
     return (
-      <div className="rounded-xl border bg-white dark:bg-slate-900 p-4 h-[360px] flex items-center justify-center text-sm text-slate-500">
+  <div className="rounded-xl border bg-white dark:bg-slate-900 p-4 h-[360px] flex items-center justify-center text-sm text-muted">
         Sem itens
       </div>
     );
@@ -52,7 +53,7 @@ export function WishlistCategoryDonut({ items = [], isLoading = false }: Wishlis
 
   return (
     <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
-      <h3 className="font-medium mb-3">Itens por categoria</h3>
+      <Heading level={3}>Itens por categoria</Heading>
       <div className="h-[320px]">
         <ResponsiveContainer>
           <PieChart margin={{ top: 12, right: 16, bottom: 12, left: 8 }}>
@@ -97,7 +98,7 @@ export function WishlistPriceHistoryLine({ points = [], isLoading = false, heigh
 
   return (
     <div className="rounded-xl border bg-white dark:bg-slate-900 p-4">
-      <h3 className="font-medium mb-3">Histórico de preço</h3>
+      <Heading level={3}>Histórico de preço</Heading>
       <div style={{ height }}>
         {isLoading ? (
           <SkeletonLine className="h-full w-full" />
@@ -112,7 +113,7 @@ export function WishlistPriceHistoryLine({ points = [], isLoading = false, heigh
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-full flex items-center justify-center text-sm text-slate-500">Sem histórico</div>
+          <div className="h-full flex items-center justify-center text-sm text-muted">Sem histórico</div>
         )}
       </div>
     </div>

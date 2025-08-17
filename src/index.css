@@ -7,6 +7,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tipografia global unificada */
+body {
+  @apply font-sans text-text leading-relaxed antialiased;
+}
+.dark body {
+  @apply text-text-dark;
+}
+
 /* Design tokens */
 :root {
   /* Colors */
@@ -42,15 +50,106 @@
   --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.08);
   /* Header gradient opacity */
   --header-alpha: 1;
+
+  /* Header gradients (light/dark handled via data-theme attribute) */
+  --header-gradient-light: linear-gradient(90deg, #0f766e 0%, #0e7490 100%);
+  --header-gradient-dark: linear-gradient(90deg, #0d9488 0%, #0f766e 100%);
+  --bg-header-gradient: var(--header-gradient-light);
+  --text-on-header: #fff;
+  /* Rebranding section color tokens */
+  --clr-home: #38bdf8; /* sky-400 */
+  --clr-financas: #84cc16; /* lime-500 */
+  --clr-invest: #6366f1; /* indigo-500 */
+  --clr-milhas: #ec4899; /* fuchsia-500 */
+  --clr-desejos: #f97316; /* orange-500 */
+  --clr-mercado: #facc15; /* amber-400 */
+  --clr-metas: #0ea5e9; /* cyan-500 */
+  /* Cor ativa fallback (sobrescrita pelo Topbar via inline style) */
+  --clr: var(--clr-home);
+}
+
+/* Ícones herdam cor de texto por padrão */
+@layer base {
+  svg {
+    stroke: currentColor;
+  }
+}
+
+/* Section chroming (data-clr mapping -> --clr-active) */
+[data-clr="home"] {
+  --clr-active: var(--clr-home);
+}
+[data-clr="financas"] {
+  --clr-active: var(--clr-financas);
+}
+[data-clr="invest"] {
+  --clr-active: var(--clr-invest);
+}
+[data-clr="milhas"] {
+  --clr-active: var(--clr-milhas);
+}
+[data-clr="desejos"] {
+  --clr-active: var(--clr-desejos);
+}
+[data-clr="mercado"] {
+  --clr-active: var(--clr-mercado);
+}
+[data-clr="metas"] {
+  --clr-active: var(--clr-metas);
+}
+
+/* Auto contrast audit flag: quando a razão cai abaixo do threshold fornecido,
+   SectionChroming aplica data-contrast='low'. Reforçamos contraste com leve
+   text-shadow e aumento de font-weight base dentro da seção. */
+[data-contrast="low"] {
+  --section-fg: #0f172a; /* fallback escura */
+}
+html[data-theme="dark"] [data-contrast="low"] {
+  --section-fg: #ffffff; /* fallback clara em dark */
+}
+[data-contrast="low"] h1,
+[data-contrast="low"] h2,
+[data-contrast="low"] h3,
+[data-contrast="low"] h4 {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+[data-contrast="low"] p,
+[data-contrast="low"] span,
+[data-contrast="low"] li {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+[data-contrast="low"] .btn,
+[data-contrast="low"] button {
+  filter: contrast(1.15) saturate(1.05);
+}
+
+/* Contrast helpers for lighter section backgrounds */
+[data-clr="mercado"],
+[data-clr="desejos"] {
+  --section-fg: #1e293b;
+}
+[data-theme="dark"] [data-clr="mercado"],
+[data-theme="dark"] [data-clr="desejos"] {
+  --section-fg: #fff;
 }
 
 /* Preferência de tema */
 :root {
   color-scheme: light;
 }
-.dark {
-  color-scheme: dark;
-  --color-surface: #1e293b;
+html[data-theme="dark"] {
+  --bg-header-gradient: var(--header-gradient-dark);
+  --text-on-header: #fff;
+  /* Subtab active tokens (dark) */
+  --subtab-active-bg: rgba(255, 255, 255, 0.08);
+  --subtab-active-fg: #fff;
+}
+html[data-theme="light"] {
+  --bg-header-gradient: var(--header-gradient-light);
+  --text-on-header: #052e27;
+  /* Subtab active tokens (light) */
+  --subtab-active-bg: #e2e8f0; /* slate-200 */
+  --subtab-active-fg: #0f172a; /* slate-900 */
 }
 
 /* Tokens (mantém compatível com shadcn) */
@@ -67,10 +166,10 @@
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  /* Disabled tokens (light) */
-  --disabled-bg: 214.3 31.8% 91.4%;
-  --disabled-fg: 215.4 16.3% 46.9%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Disabled tokens (light) */
+    --disabled-bg: 214.3 31.8% 91.4%;
+    --disabled-fg: 215.4 16.3% 46.9%;
     --accent: 210 40% 96%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 72% 51%;
@@ -99,9 +198,9 @@
     --chart-tooltip-bg: 0 0% 100%;
     --chart-tooltip-fg: 222.2 47.4% 11.2%;
 
-  /* Derived full color tokens (allow direct var(--color-fg) usage in class utilities) */
-  --color-fg: hsl(var(--foreground));
-  --color-fg-muted: hsl(var(--muted-foreground));
+    /* Derived full color tokens (allow direct var(--color-fg) usage in class utilities) */
+    --color-fg: hsl(var(--foreground));
+    --color-fg-muted: hsl(var(--muted-foreground));
 
     --font-sans:
       "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
@@ -122,11 +221,11 @@
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
-  /* Slightly boosted contrast for dark muted foreground */
-  --muted-foreground: 215 22% 72%;
-  /* Disabled tokens (dark) */
-  --disabled-bg: 217.2 32.6% 22%;
-  --disabled-fg: 215 20.2% 65.1%;
+    /* Slightly boosted contrast for dark muted foreground */
+    --muted-foreground: 215 22% 72%;
+    /* Disabled tokens (dark) */
+    --disabled-bg: 217.2 32.6% 22%;
+    --disabled-fg: 215 20.2% 65.1%;
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 84% 60%;
@@ -140,6 +239,27 @@
     --chart-axis: 215 15% 65%;
     --chart-tooltip-bg: 222.2 84% 8%;
     --chart-tooltip-fg: 210 40% 98%;
+  }
+
+  /* Dark mode overrides - Ajusta tokens para modo dark */
+  .dark {
+    --background: 0 0% 13%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 20%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 20%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 210 40% 96%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 215.4 16.3% 46.9%;
+    --accent: 222.2 47.4% 11.2%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
   }
 
   * {
@@ -218,27 +338,118 @@ body::after {
 
 /* Cards “glass” utilitário opcional */
 @layer utilities {
-  .placeholder-fg-muted::placeholder { color: var(--color-fg-muted); }
-  .placeholder-fg-muted::-ms-input-placeholder { color: var(--color-fg-muted); }
+  .subtab {
+    @apply transition-colors;
+  }
+  /* Parent (link) gets ring on active via attribute on child span; keep specificity low */
+  .subtab [data-active="true"] {
+    background: var(--subtab-active-bg);
+    color: var(--subtab-active-fg);
+  }
+  .subtab [data-active="true"] svg {
+    stroke: currentColor;
+  }
+  .subtab:focus-visible {
+    @apply ring-2 ring-emerald-400;
+  }
+  html[data-theme="light"] .subtab:focus-visible {
+    @apply ring-emerald-500;
+  }
+  .placeholder-fg-muted::placeholder {
+    color: var(--color-fg-muted);
+  }
+  .placeholder-fg-muted::-ms-input-placeholder {
+    color: var(--color-fg-muted);
+  }
   .sidebar-header {
     @apply bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white;
   }
   .glass {
     @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-sm;
   }
-  .dark .glass {
-    @apply bg-white/5 border-white/10;
-  }
   /* (legacy .card-surface, .glass-card, .kpi-* removidos em favor de .u-card-base / .u-card-interactive) */
-  .text-fg-muted { color: var(--color-fg-muted); }
+  .text-fg-muted {
+    color: var(--color-fg-muted);
+  }
+  /* Alias semantic para texto secundário */
+  .text-muted {
+    color: var(--color-fg-muted);
+  }
   /* Card unificado */
-  .u-card-base { @apply rounded-2xl border bg-white/70 backdrop-blur shadow-sm border-white/40 dark:bg-white/5 dark:border-white/10; }
-  .u-card-interactive { @apply u-card-base transition-transform duration-200 will-change-transform; }
-  .u-card-interactive:hover { @apply -translate-y-0.5; }
-  .u-card-sm { @apply u-card-base p-4; }
-  .u-card-lg { @apply u-card-base p-8; }
-  .u-card-accent { @apply u-card-base bg-emerald-500/10 dark:bg-emerald-400/10 border-emerald-500/30 dark:border-emerald-400/20; }
-  .u-card-muted { @apply u-card-base bg-neutral-50/70 dark:bg-slate-900/50; }
+  .u-card-base {
+    @apply rounded-2xl border bg-white/70 backdrop-blur shadow-sm border-white/40;
+  }
+  .u-card-interactive {
+    @apply u-card-base transition-transform duration-200 will-change-transform;
+  }
+  .u-card-interactive:hover {
+    @apply -translate-y-0.5;
+  }
+  .u-card-sm {
+    @apply u-card-base p-4;
+  }
+  .u-card-lg {
+    @apply u-card-base p-8;
+  }
+  .u-card-accent {
+    @apply u-card-base bg-emerald-500/10 border-emerald-500/30;
+  }
+  .u-card-muted {
+    @apply u-card-base bg-neutral-50/70;
+  }
+  .hero-surface {
+    @apply rounded-2xl border shadow-sm relative overflow-hidden;
+    background: linear-gradient(
+      135deg,
+      var(--clr-active) 0%,
+      var(--clr-active) 55%,
+      rgba(255, 255, 255, 0.1) 100%
+    );
+  }
+  /* === Logo dynamic minimal elegant transition === */
+  @keyframes logo-pop {
+    0% {
+      transform: scale(0.965);
+      filter: saturate(0.85) brightness(0.9);
+    }
+    55% {
+      transform: scale(1.015);
+      filter: saturate(1.18) brightness(1.06);
+    }
+    100% {
+      transform: scale(1);
+      filter: saturate(1) brightness(1);
+    }
+  }
+  .logo-dynamic-transition {
+    transition:
+      color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      fill 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .logo-dynamic-pop {
+    animation: logo-pop 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* Vertical nav drawer glass gradient (estático para evitar parsing tailwind em color-mix arbitrário) */
+  .glass-vert-nav {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--clr-active) 28%, transparent) 0%,
+      color-mix(in oklab, var(--clr-active) 12%, transparent) 35%,
+      hsl(var(--background) / 0.85) 65%,
+      hsl(var(--background) / 0.9) 100%
+    );
+  }
+}
+
+/* Light theme overrides para SubNav itens ativos (melhor contraste em fundo claro) */
+html[data-theme="light"] .subnav a[aria-current="page"] {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+html[data-theme="light"] .subnav a[aria-current="page"] svg {
+  stroke: currentColor;
 }
 
 /* Ajuste fino para sidebar */

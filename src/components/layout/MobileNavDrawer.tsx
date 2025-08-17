@@ -4,9 +4,8 @@ import { ChevronDown, Menu, Settings } from "lucide-react";
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 
-import { ThemeToggle } from "../ui/ThemeToggle";
 
-import { navRoutes } from '@/routes/nav';
+import { navRoutes } from '@/routes/nav.tsx';
 
 export default function MobileNavDrawer() {
   const [open, setOpen] = React.useState(false);
@@ -29,7 +28,7 @@ export default function MobileNavDrawer() {
         <button
           ref={triggerRef}
           aria-label="Menu"
-          className="ml-6 inline-flex h-9 w-9 items-center justify-center rounded-md text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/70 dark:focus:ring-emerald-300/50 lg:hidden"
+          className="ml-6 inline-flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-[var(--clr-active)]/50 lg:hidden transition-colors"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -52,7 +51,7 @@ export default function MobileNavDrawer() {
                   animate={{ x: 0 }}
                   exit={{ x: "-100%" }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col rounded-r-2xl border-r border-white/40 bg-white/70 backdrop-blur shadow-xl dark:border-white/10 dark:bg-white/5"
+                  className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col rounded-r-2xl border-r border-white/30 glass-vert-nav backdrop-blur-xl shadow-[0_4px_24px_-4px_rgba(0,0,0,0.35)]"
                 >
                   <nav className="flex-1 overflow-y-auto p-4 space-y-2">
                     {navRoutes.map((item) => {
@@ -62,9 +61,9 @@ export default function MobileNavDrawer() {
                           <div key={item.label} className="border-b pb-2">
                             <button
                               onClick={() => toggleAccordion(item.label)}
-                              className="flex w-full items-center justify-between py-2 text-left font-medium"
+                              className="flex w-full items-center justify-between py-2 text-left font-medium rounded-lg px-2 hover:bg-white/10 transition-colors"
                             >
-                              {item.label}
+                              <span className="inline-flex items-center gap-2">{typeof item.icon === 'function' ? item.icon('h-4 w-4') : null}{item.label}</span>
                               <ChevronDown
                                 className={`h-4 w-4 transition-transform ${
                                   isOpen ? "rotate-180" : ""
@@ -78,15 +77,9 @@ export default function MobileNavDrawer() {
                                     key={child.to}
                                     to={child.to}
                                     onClick={() => setOpen(false)}
-                                    className={({ isActive }) =>
-                                      `block rounded px-2 py-1 text-sm ${
-                                        isActive
-                                          ? "font-semibold text-emerald-600 dark:text-emerald-300"
-                                          : "text-foreground/80"
-                                      }`
-                                    }
+                                    className={({ isActive }) => `block rounded px-2 py-1 text-sm transition-colors ${isActive ? 'font-semibold text-[var(--clr-active)]' : 'text-foreground/80 hover:text-foreground'} hover:bg-white/10`}
                                   >
-                                    {child.label}
+                                    <span className="inline-flex items-center gap-2">{typeof child.icon === 'function' ? child.icon('h-4 w-4') : null}{child.label}</span>
                                   </NavLink>
                                 ))}
                               </div>
@@ -101,19 +94,9 @@ export default function MobileNavDrawer() {
                             key={item.to}
                             to={item.to}
                             onClick={() => setOpen(false)}
-                            className={({ isActive }) =>
-                              `block rounded px-3 py-2 text-sm ${
-                                item.label === "Visão geral"
-                                  ? "font-semibold"
-                                  : ""
-                              } ${
-                                isActive
-                                  ? "text-emerald-600 dark:text-emerald-300"
-                                  : "text-foreground/80"
-                              }`
-                            }
+                            className={({ isActive }) => `block rounded-lg px-3 py-2 text-sm transition-colors ${isActive ? 'text-[var(--clr-active)] font-semibold bg-white/10' : 'text-foreground/80 hover:text-foreground hover:bg-white/5'}`}
                           >
-                            {item.label}
+                            <span className="inline-flex items-center gap-2">{typeof item.icon === 'function' ? item.icon('h-4 w-4') : null}{item.label}</span>
                           </NavLink>
                         );
                       }
@@ -121,12 +104,11 @@ export default function MobileNavDrawer() {
                       return null;
                     })}
                   </nav>
-                  <div className="border-t p-4 flex items-center justify-between">
-                    <ThemeToggle />
+          <div className="border-t p-4 flex items-center justify-end">
                     <NavLink
                       to="/configuracoes"
                       onClick={() => setOpen(false)}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground hover:bg-foreground/10 focus:outline-none focus:ring-2 focus:ring-emerald-400/70 dark:focus:ring-emerald-300/50"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[var(--clr-active)]/60"
                     >
                       <Settings className="h-4 w-4" />
                     </NavLink>

@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-base: #f4f5f7;
+  --fg-base: #1f2937;
+}
+
+body {
+  @apply bg-[color:var(--bg-base)] text-[color:var(--fg-base)] antialiased;
+}
+
+header,
+.subnav,
+.card {
+  @apply bg-white shadow-sm;
+}

@@ -5,17 +5,7 @@ import NavItem from './layout/NavItem';
 
 import { Logo } from '@/components/Logo';
 import { Settings } from '@/components/icons';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import type { NavRoute } from '@/routes/nav';
-import { navRoutes } from '@/routes/nav';
-
-function getNavItem(item: NavRoute) {
-  return (
-    <NavItem key={item.to} to={item.to} variant={item.variant}>
-      {item.label}
-    </NavItem>
-  );
-}
+import { navRoutes } from '@/routes/nav.tsx';
 
 export default function AppTopbar() {
   return (
@@ -29,10 +19,17 @@ export default function AppTopbar() {
           <span className="ml-2 text-xl font-semibold">FY</span>
         </NavLink>
         <nav className="ml-6 flex items-center gap-2 text-white">
-          {navRoutes.map(getNavItem)}
+          {navRoutes.map(r => (
+            <NavItem
+              key={r.to}
+              to={r.to}
+              label={r.label}
+              color={r.color}
+              icon={typeof r.icon === 'function' ? r.icon('h-5 w-5') : undefined}
+            />
+          ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2 text-white">
-          <ThemeToggle />
+  <div className="ml-auto flex items-center gap-2 text-white">
           <NavLink
             to="/configuracoes"
             aria-label="Configurações"

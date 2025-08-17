@@ -430,7 +430,7 @@ export default function FinancasMensal() {
                       <Coins size={18} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-slate-500 dark:text-slate-300 text-sm">Saldo do mês</span>
+                      <span className="text-muted text-sm">Saldo do mês</span>
                       <AnimatedNumber value={saldo} />
                     </div>
                   </div>
@@ -447,7 +447,7 @@ export default function FinancasMensal() {
                       <TrendingUp size={18} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-sm text-slate-500 dark:text-slate-300">Entradas</span>
+                      <span className="text-sm text-muted">Entradas</span>
                       <AnimatedNumber value={entradas} />
                     </div>
                   </div>
@@ -464,7 +464,7 @@ export default function FinancasMensal() {
                       <TrendingDown size={18} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-sm text-slate-500 dark:text-slate-300">Saídas</span>
+                      <span className="text-sm text-muted">Saídas</span>
                       <AnimatedNumber value={saidasAbs} />
                     </div>
                   </div>
@@ -479,7 +479,7 @@ export default function FinancasMensal() {
                   <Clock size={18} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm text-slate-500 dark:text-slate-300">A pagar hoje</span>
+                  <span className="text-sm text-muted">A pagar hoje</span>
                   <AnimatedNumber value={aPagarHoje} />
                 </div>
               </div>
@@ -581,7 +581,7 @@ export default function FinancasMensal() {
             <DialogTitle className="text-base sm:text-lg">Duplicar lançamentos</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3">
-            <div className="text-sm text-slate-600 dark:text-slate-300">
+            <div className="text-sm text-muted">
               {idsParaDuplicar.length} itens serão copiados para o mês selecionado.
             </div>
             <div>

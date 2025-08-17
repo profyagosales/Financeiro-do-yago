@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -19,16 +19,16 @@ export default function AvatarMenu() {
       <DropdownMenuTrigger asChild>
         <button
           aria-label="Abrir menu do usuário"
-          className="flex h-9 w-9 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+          className="flex h-12 w-12 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--clr)] text-white/80 hover:text-white hover:bg-white/10"
         >
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt=""
-              className="h-9 w-9 rounded-full object-cover"
+              className="h-12 w-12 rounded-full object-cover"
             />
           ) : (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold text-white">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-base font-semibold text-white">
               {initials}
             </span>
           )}

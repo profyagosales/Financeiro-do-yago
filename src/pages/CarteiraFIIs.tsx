@@ -2,6 +2,7 @@
 import { Building2, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { SectionChroming } from "@/components/layout/SectionChroming";
 import ModalInvest from "@/components/ModalInvest";
 import PageHeader from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
@@ -64,7 +65,7 @@ export default function CarteiraFIIs() {
   };
 
   return (
-    <>
+    <SectionChroming clr="invest" className="space-y-6 pb-24">
       <PageHeader
         title="Carteira — FIIs"
         subtitle="Lançamentos e aportes desta classe."
@@ -181,6 +182,6 @@ export default function CarteiraFIIs() {
           defaultType="FIIs"
           onSubmit={(payload) => { if (editing) return onUpdate(editing.id, payload); }}
         />
-    </>
+  </SectionChroming>
   );
 }

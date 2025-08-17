@@ -7,7 +7,7 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useAuth } from "@/contexts/AuthContext";
 import useRouteVisits, { clearVisits, incrementVisit, writeWindowDays } from '@/hooks/useRouteVisits';
 import { cn } from "@/lib/utils";
-import { navRoutes } from '@/routes/nav';
+import { navRoutes } from '@/routes/nav.tsx';
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -128,9 +128,9 @@ export default function Sidebar() {
 
       <nav className="flex-1 space-y-1 px-2">
       {navRoutes.map((item) => {
-          const iconName = item.icon || 'Home';
-          const IconComponent = ({ className }: { className?: string }) => {
-            const icons: Record<string, React.ReactElement> = {
+          const iconVal = item.icon;
+          const IconLegacy = ({ className }: { className?: string }) => {
+            const paths: Record<string, React.ReactElement> = {
               Home: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />,
               Wallet: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />,
               Landmark: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />,
@@ -139,7 +139,8 @@ export default function Sidebar() {
               Heart: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />,
               ShoppingCart: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8" />
             };
-            return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">{icons[iconName] || icons.Home}</svg>;
+            const key = typeof iconVal === 'string' ? iconVal : 'Home';
+            return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">{paths[key] || paths.Home}</svg>;
           };
           
           if (item.children) {
@@ -150,7 +151,7 @@ export default function Sidebar() {
       onClick={() => setOpenSections(s => ({ ...s, [item.label]: !expanded }))}
                   className="flex w-full items-center rounded-md p-2 text-sm hover:bg-white/10 dark:hover:bg-black/10 transition-all duration-200 ease-out"
                 >
-                  <IconComponent className="h-5 w-5" />
+                  {typeof iconVal === 'function' ? iconVal('h-5 w-5') : <IconLegacy className="h-5 w-5" />}
                   {!collapsed && (
                     <span className="ml-3 flex-1 text-left">{item.label}</span>
                   )}
@@ -213,7 +214,7 @@ export default function Sidebar() {
                 )
               }
             >
-               <IconComponent className="h-5 w-5" />
+               {typeof iconVal === 'function' ? iconVal('h-5 w-5') : <IconLegacy className="h-5 w-5" />}
               {!collapsed && <span className="ml-3">{item.label}</span>}
               {!collapsed && (countsLastN[item.to!] ?? 0) > 0 && (
                 <span className="ml-auto inline-flex items-center justify-center rounded-full bg-emerald-600 text-xs font-semibold text-white px-2">{countsLastN[item.to!]}</span>

@@ -16,6 +16,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import { Target } from "@/components/icons";
+import { SectionChroming } from "@/components/layout/SectionChroming";
 import PageHeader from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -360,7 +361,7 @@ export default function Metas() {
   /* ------------------------------ UI ------------------------------ */
   return (
     <>
-      <div className="space-y-6 pb-24">
+      <SectionChroming clr="metas" className="space-y-6 pb-24">
         <PageHeader
           title="Metas & Projetos"
           subtitle="Defina objetivos, acompanhe progresso, registre aportes e mantenha tudo sob controle."
@@ -377,8 +378,8 @@ export default function Metas() {
         />
 
         {/* KPIs */}
-        <div className="grid gap-4 md:grid-cols-4">
-        <Card className="shadow-sm">
+  <div className="grid gap-4 md:grid-cols-4">
+  <Card className="shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription>Patrimônio alvo</CardDescription>
             <CardTitle className="text-2xl">{BRL(kpis.totalTarget)}</CardTitle>
@@ -416,10 +417,9 @@ export default function Metas() {
           <CardContent className="pt-0 text-fg-muted flex items-center gap-2">
             <CalendarDays className="h-4 w-4" /> em andamento
           </CardContent>
-        </Card>
-      </div>
-
-      {/* Filtros */}
+  </Card>
+  </div>
+  {/* Filtros */}
       <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <Tabs value={tab} onValueChange={(v: any) => setTab(v)}>
           <TabsList>
@@ -536,9 +536,8 @@ export default function Metas() {
             </Card>
           ))}
         </div>
-      </div>
 
-      {/* Dialog Nova/Editar Meta */}
+        {/* Dialog Nova/Editar Meta */}
       <Dialog open={openGoal} onOpenChange={setOpenGoal}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
@@ -643,9 +642,9 @@ export default function Metas() {
             <Button onClick={saveGoal}>{editingGoal ? "Salvar alterações" : "Criar meta"}</Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+  </Dialog>
 
-      {/* Dialog Aporte */}
+  {/* Dialog Aporte */}
       <Dialog open={openContrib} onOpenChange={setOpenContrib}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
@@ -706,6 +705,7 @@ export default function Metas() {
       >
         <Plus className="h-5 w-5" />
       </Button>
-    </>
+      </SectionChroming>
+  </>
   );
 }

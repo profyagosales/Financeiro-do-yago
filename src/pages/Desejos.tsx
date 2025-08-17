@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Button } from "@/components/ui/button";
 // Removidos cards inline em favor de WishlistCard reutilizável
+import { SectionChroming } from "@/components/layout/SectionChroming";
+import PageHeader from "@/components/PageHeader";
 import WishlistCard from "@/components/wishlist/WishlistCard";
 import WishlistDrawer from "@/components/wishlist/WishlistDrawer";
 import WishlistFilters from "@/components/wishlist/WishlistFilters";
@@ -44,16 +46,13 @@ export default function Desejos() {
   };
 
   return (
-    <div className="space-y-4">
+  <SectionChroming clr="desejos" className="space-y-4">
       <WishlistFilters
         onPeriodChange={() => {}}
         onStatusChange={() => {}}
         onCategoryChange={() => {}}
       />
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">🛍️ Desejos</h1>
-        <Button onClick={() => setNewOpen(true)}>Novo desejo</Button>
-      </div>
+  <PageHeader title="🛍️ Desejos" actions={<Button onClick={() => setNewOpen(true)}>Novo desejo</Button>} />
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {items.map(item => (
@@ -71,7 +70,7 @@ export default function Desejos() {
       </div>
       <WishlistNewItemModal open={newOpen} onOpenChange={setNewOpen} onCreated={handleCreated} />
       <WishlistDrawer item={drawerItem} open={drawerOpen} onOpenChange={setDrawerOpen} />
-    </div>
+  </SectionChroming>
   );
 }
 
