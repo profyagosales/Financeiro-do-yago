@@ -3,7 +3,9 @@ import { AlertTriangle, Plane } from 'lucide-react';
 import useMilesExpiring from '../../hooks/useMilesExpiring';
 
 export default function MilesAlertCard(){
-  const { expiringTotal, nextExpiryDate } = useMilesExpiring();
+  const { data } = useMilesExpiring();
+  const expiringTotal = data?.expiringTotal ?? 0;
+  const nextExpiryDate = data?.nextExpiryDate ?? '--';
   return (
     <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Milhas">
       <h3 className="flex items-center gap-2 text-sm font-medium" style={{color:'var(--clr-milhas)'}}>

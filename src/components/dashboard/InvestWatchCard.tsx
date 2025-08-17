@@ -4,7 +4,9 @@ import useInvestWatch from '../../hooks/useInvestWatch';
 import { percent } from '../../utils/format';
 
 export default function InvestWatchCard(){
-  const { total, dailyChange } = useInvestWatch();
+  const { data } = useInvestWatch();
+  const total = data?.total ?? 0;
+  const dailyChange = data?.dailyChange ?? 0;
   const up = dailyChange >= 0;
   return (
     <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Investimentos">

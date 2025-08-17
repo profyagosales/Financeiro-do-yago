@@ -3,7 +3,8 @@ import { Heart, Tag } from 'lucide-react';
 import useWishesDeals from '../../hooks/useWishesDeals';
 
 export default function WishesDealCard(){
-  const { deals } = useWishesDeals();
+  const { data } = useWishesDeals();
+  const deals = data?.deals ?? [];
   return (
     <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Desejos">
       <h3 className="flex items-center gap-2 text-sm font-medium" style={{color:'var(--clr-desejos)'}}>

@@ -4,7 +4,10 @@ import useFinSummary from '../../hooks/useFinSummary';
 import { currency, percent } from '../../utils/format';
 
 export default function FinSummaryCard(){
-  const { saldo, diff, upcoming } = useFinSummary();
+  const { data } = useFinSummary();
+  const saldo = data?.saldo ?? 0;
+  const diff = data?.diff ?? 0;
+  const upcoming = data?.upcoming ?? [];
   const up = diff >= 0;
   return (
     <div className="rounded-lg bg-[--surface] ring-1 ring-[--border] p-5" aria-label="Resumo Financeiro">
