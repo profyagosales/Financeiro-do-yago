@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import App from '@/App';
 import AppErrorBoundary from '@/components/AppErrorBoundary';
+
 import '@/styles/glass.css';
 import '@/styles/globals.css';
 

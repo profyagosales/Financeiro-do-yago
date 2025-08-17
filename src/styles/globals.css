@@ -5,10 +5,14 @@
 :root {
   --bg-base: #f4f5f7;
   --fg-base: #1f2937;
+  --surface: #f1f3f7;
+  --border: rgba(0, 0, 0, 0.05);
 }
 
 body {
-  @apply bg-[color:var(--bg-base)] text-[color:var(--fg-base)] antialiased;
+  background: var(--surface);
+  color: #111827;
+  @apply antialiased font-sans;
 }
 
 header,

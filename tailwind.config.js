@@ -28,6 +28,8 @@ export default {
 					mercado: '#FACC15',
 					metas: '#0EA5E9'
 				},
+				surface: '#F1F3F7',
+				border: 'rgba(0,0,0,.05)',
                         fy: {
                                 bg: '#014D46',
                                 primary: '#009579',
