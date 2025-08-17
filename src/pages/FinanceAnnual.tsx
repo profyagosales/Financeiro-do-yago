@@ -7,15 +7,16 @@ import { Link } from "react-router-dom";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import CategoryDonut from "@/components/charts/CategoryDonut";
-import PageHeader from "@/components/PageHeader";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { Button } from "@/components/ui/button";
 import { Heading } from '@/components/ui/Heading';
 import { MotionCard } from "@/components/ui/MotionCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { NovaTransacaoDialog } from '@/features/finances/NovaTransacaoDialog';
 import { useCategories } from "@/hooks/useCategories";
 import { getYearSummary, type YearSummary } from "@/hooks/useTransactions";
+import HeroFin from '@/pages/finances/components/Hero';
 import { APP_COLORS } from '@/theme/colors';
 dayjs.locale('pt-br');
 
@@ -33,7 +34,24 @@ export default function FinanceAnnual() {
 	const curveData = useMemo(() => { if (!summary) return [] as { mes: string; saldo: number }[]; return summary.months.map((m) => { const label = dayjs(`${year}-${String(m.month).padStart(2, '0')}-01`).format('MMM'); return { mes: label.charAt(0).toUpperCase() + label.slice(1), saldo: m.balance }; }); }, [summary, year]);
 	const categoriesData = useMemo(() => { if (!summary) return [] as { category: string; value: number }[]; const agg: Record<string, number> = {}; summary.months.forEach((m) => { Object.entries(m.byCategory).forEach(([cat, val]) => { agg[cat] = (agg[cat] ?? 0) + (Number(val) || 0); }); }); return Object.entries(agg).map(([catId, value]) => ({ category: catId === 'null' ? 'Sem categoria' : categoriasById.get(catId)?.name ?? 'Sem categoria', value })); }, [summary, categoriasById]);
 	const monthsTable = useMemo(() => summary ? summary.months : [], [summary]);
-	return (<div className="space-y-6 pb-24"><PageHeader title="Finanças — Anual" actions={<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-end"><div><span className="mb-1 block text-xs text-emerald-900/70">Ano</span><Select value={String(year)} onValueChange={(v) => setYear(Number(v))}><SelectTrigger className="min-w-[120px] bg-background text-foreground"><SelectValue placeholder="Ano" /></SelectTrigger><SelectContent className="rounded-xl">{yearOptions.map((y) => (<SelectItem key={y} value={String(y)}>{y}</SelectItem>))}</SelectContent></Select></div><div className="sm:col-span-1"><Button asChild><Link to="/financas/mensal">Ver Mensal</Link></Button></div></div>} />
+	return (<div className="space-y-6 pb-24">
+	<HeroFin title="Finanças — Anual">
+		<div className="flex flex-wrap gap-4 items-end">
+			<div>
+				<span className="mb-1 block text-xs text-white/80">Ano</span>
+				<Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
+					<SelectTrigger className="min-w-[120px] bg-white/20 text-white border-white/30">
+						<SelectValue placeholder="Ano" />
+					</SelectTrigger>
+					<SelectContent className="rounded-xl">
+						{yearOptions.map((y) => (<SelectItem key={y} value={String(y)}>{y}</SelectItem>))}
+					</SelectContent>
+				</Select>
+			</div>
+			<Button asChild variant="secondary"><Link to="/financas/mensal">Ver Mensal</Link></Button>
+			<NovaTransacaoDialog />
+		</div>
+	</HeroFin>
 	<section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 		<MotionCard className="bg-white border-t-4 ring-app-fin rounded-lg shadow-sm p-4"><div className="flex items-center gap-3"><div className="p-2 rounded-full bg-blue-600 text-white"><TrendingUp size={18} /></div><div className="flex flex-col"><span className="text-sm text-muted">Entradas</span><AnimatedNumber value={kpis.income} /></div></div></MotionCard>
 		<MotionCard className="bg-white border-t-4 ring-app-fin rounded-lg shadow-sm p-4"><div className="flex items-center gap-3"><div className="p-2 rounded-full bg-rose-500 text-white"><TrendingDown size={18} /></div><div className="flex flex-col"><span className="text-sm text-muted">Saídas</span><AnimatedNumber value={kpis.expense} /></div></div></MotionCard>

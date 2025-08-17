@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import PageHeader from "@/components/PageHeader";
 import TransactionsTable, { type UITransaction } from "@/components/TransactionsTable";
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import DailyBars from "@/components/charts/DailyBars";
@@ -20,11 +19,13 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import Heading from '@/components/ui/Heading';
 import { SkeletonLine } from "@/components/ui/SkeletonLine";
 import { Button } from "@/components/ui/button";
+import { NovaTransacaoDialog } from '@/features/finances/NovaTransacaoDialog';
 import { useBills } from "@/hooks/useBills";
 import { useCategories } from "@/hooks/useCategories";
 import { usePeriod } from "@/hooks/usePeriod";
 import { useRecurrences } from "@/hooks/useRecurrences";
 import { useTransactions } from "@/hooks/useTransactions";
+import HeroFin from '@/pages/finances/components/Hero';
 import { exportTransactionsPDF } from "@/utils/pdf";
 
 // STUBS (mantidos até migração completa)
@@ -164,18 +165,12 @@ export default function FinanceSummary() {
 
   return (
     <SectionChroming clr="financas" decorate className="space-y-6">
-      <PageHeader
-        title="Finanças — Resumo"
-        breadcrumbs={[
-          { label: "Finanças", href: "/financas" },
-          { label: "Resumo" },
-        ]}
-        actions={
-          <Button onClick={handleExport} variant="secondary">
-            <Download className="mr-2 size-4" /> Exportar PDF
-          </Button>
-        }
-      />
+      <HeroFin title="Finanças — Resumo">
+        <div className="flex flex-wrap gap-3 items-end">
+          <Button onClick={handleExport} variant="secondary" className="bg-white/20 border-white/30 text-white"><Download className="mr-2 size-4" /> PDF</Button>
+          <NovaTransacaoDialog />
+        </div>
+      </HeroFin>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <SourcePicker value={source} onChange={setSource} className="w-full sm:w-52" />
@@ -184,12 +179,12 @@ export default function FinanceSummary() {
 
       <div className="grid grid-cols-12 gap-5">
         {kpis.map((k) => (
-          <div key={k.title} className="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl border border-white/10 bg-background/70 backdrop-blur p-4 flex flex-col justify-center min-h-[110px]">
+          <div key={k.title} className="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl bg-white border border-emerald-900/10 shadow-sm p-4 flex flex-col justify-center min-h-[110px] ring-app-fin/50 border-t-4">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-primary/90 p-2 text-primary-foreground">{k.icon}</div>
+              <div className="rounded-lg bg-emerald-600 p-2 text-white">{k.icon}</div>
               <div className="flex flex-col leading-tight">
-                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{k.title}</span>
-                {transLoading ? <SkeletonLine className="mt-1 h-6 w-24" /> : <span className="text-xl font-semibold tabular-nums">{k.fmt(k.value)}</span>}
+                <span className="text-xs font-medium uppercase tracking-wide text-emerald-900/70">{k.title}</span>
+                {transLoading ? <SkeletonLine className="mt-1 h-6 w-24" /> : <span className="text-xl font-semibold tabular-nums text-emerald-950">{k.fmt(k.value)}</span>}
               </div>
             </div>
           </div>

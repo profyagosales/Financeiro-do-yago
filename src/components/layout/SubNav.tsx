@@ -22,7 +22,7 @@ export function SubNav(){
     : [];
   if (!items.length) return null;
   return (
-    <nav className="flex gap-4 py-2 px-6 border-b border-neutral-200 bg-gradient-to-b from-neutral-800/10 to-transparent">
+  <nav className="flex gap-4 py-2 px-6 border-b border-neutral-200">
       {items.map(i => (
         <NavLink
           key={i.to}
@@ -30,8 +30,8 @@ export function SubNav(){
           className={({ isActive }) => clsx(
             'rounded-full px-4 py-1 text-sm font-medium transition',
             isActive
-              ? 'ring-1 ring-[--clr-financas]/50 text-[--clr-financas]'
-              : 'text-neutral-500 hover:text-[--clr-financas]'
+              ? 'ring-1 ring-app-fin/50 text-app-fin'
+              : 'text-neutral-500 hover:text-app-fin'
           )}
         >
           {i.label}

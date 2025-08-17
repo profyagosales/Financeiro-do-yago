@@ -7,55 +7,23 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
     data-clr="financas"
     style="background-image: radial-gradient(at 30% 20%, var(--clr-active)/15%, transparent 70%); --section-fg: #0f172a; color: var(--section-fg);"
   >
-    <div
-      class="mb-6 rounded-2xl text-white backdrop-blur-sm border border-white/10 overflow-hidden relative bg-[linear-gradient(90deg,var(--clr-active)_0%,var(--clr-active)_55%,rgba(255,255,255,0.15)_100%)] dark:bg-[linear-gradient(90deg,var(--clr-active)_0%,var(--clr-active)_50%,rgba(255,255,255,0.08)_100%)]"
-      style="opacity: 0; transform: translateY(-10px);"
+    <section
+      class="rounded-xl p-8 shadow-sm bg-gradient-to-b from-[color:var(--clr)]/80 to-[color:var(--clr)]/10 relative overflow-hidden"
+      style="--clr: #6eca00;"
     >
+      <h1
+        class="text-2xl font-semibold text-white flex items-center gap-3 drop-shadow-sm"
+      >
+         Finanças — Resumo
+      </h1>
       <div
-        class="container mx-auto px-4 py-6 flex items-center justify-between gap-4"
+        class="mt-4 space-y-4 text-white/90"
       >
         <div
-          class="flex items-center gap-3 min-w-0"
-        >
-          <div
-            class="min-w-0"
-          >
-            <h1
-              class="text-xl sm:text-2xl font-semibold tracking-tight truncate drop-shadow-sm"
-            >
-              Finanças — Resumo
-            </h1>
-            <div
-              class="mt-1 flex flex-wrap items-center gap-1 text-xs text-white/80"
-            >
-              <span
-                class="inline-flex items-center gap-1"
-              >
-                <a
-                  class="underline"
-                  href="/financas"
-                >
-                  Finanças
-                </a>
-              </span>
-              <span
-                class="inline-flex items-center gap-1"
-              >
-                <span>
-                  /
-                </span>
-                <span>
-                  Resumo
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div
-          class="shrink-0"
+          class="flex flex-wrap gap-3 items-end"
         >
           <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-9 px-4 py-2"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow-sm hover:bg-secondary/80 h-9 px-4 py-2 bg-white/20 border-white/30 text-white"
             style="opacity: 0; transform: translateY(-4px);"
             tabindex="0"
           >
@@ -82,11 +50,18 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
                 d="m7 10 5 5 5-5"
               />
             </svg>
-             Exportar PDF
+             PDF
+          </button>
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-xs"
+            style="opacity: 0; transform: translateY(-4px);"
+            tabindex="0"
+          >
+            + Nova transação
           </button>
         </div>
       </div>
-    </div>
+    </section>
     <div
       class="flex flex-col gap-2 sm:flex-row sm:items-center"
     />
@@ -94,13 +69,13 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
       class="grid grid-cols-12 gap-5"
     >
       <div
-        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl border border-white/10 bg-background/70 backdrop-blur p-4 flex flex-col justify-center min-h-[110px]"
+        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl bg-white border border-emerald-900/10 shadow-sm p-4 flex flex-col justify-center min-h-[110px] ring-app-fin/50 border-t-4"
       >
         <div
           class="flex items-center gap-3"
         >
           <div
-            class="rounded-lg bg-primary/90 p-2 text-primary-foreground"
+            class="rounded-lg bg-emerald-600 p-2 text-white"
           >
             <svg
               aria-hidden="true"
@@ -127,7 +102,7 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
             class="flex flex-col leading-tight"
           >
             <span
-              class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              class="text-xs font-medium uppercase tracking-wide text-emerald-900/70"
             >
               Saldo
             </span>
@@ -138,13 +113,13 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
         </div>
       </div>
       <div
-        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl border border-white/10 bg-background/70 backdrop-blur p-4 flex flex-col justify-center min-h-[110px]"
+        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl bg-white border border-emerald-900/10 shadow-sm p-4 flex flex-col justify-center min-h-[110px] ring-app-fin/50 border-t-4"
       >
         <div
           class="flex items-center gap-3"
         >
           <div
-            class="rounded-lg bg-primary/90 p-2 text-primary-foreground"
+            class="rounded-lg bg-emerald-600 p-2 text-white"
           >
             <svg
               aria-hidden="true"
@@ -176,7 +151,7 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
             class="flex flex-col leading-tight"
           >
             <span
-              class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              class="text-xs font-medium uppercase tracking-wide text-emerald-900/70"
             >
               Entradas
             </span>
@@ -187,13 +162,13 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
         </div>
       </div>
       <div
-        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl border border-white/10 bg-background/70 backdrop-blur p-4 flex flex-col justify-center min-h-[110px]"
+        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl bg-white border border-emerald-900/10 shadow-sm p-4 flex flex-col justify-center min-h-[110px] ring-app-fin/50 border-t-4"
       >
         <div
           class="flex items-center gap-3"
         >
           <div
-            class="rounded-lg bg-primary/90 p-2 text-primary-foreground"
+            class="rounded-lg bg-emerald-600 p-2 text-white"
           >
             <svg
               aria-hidden="true"
@@ -225,7 +200,7 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
             class="flex flex-col leading-tight"
           >
             <span
-              class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              class="text-xs font-medium uppercase tracking-wide text-emerald-900/70"
             >
               Saídas
             </span>
@@ -236,13 +211,13 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
         </div>
       </div>
       <div
-        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl border border-white/10 bg-background/70 backdrop-blur p-4 flex flex-col justify-center min-h-[110px]"
+        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl bg-white border border-emerald-900/10 shadow-sm p-4 flex flex-col justify-center min-h-[110px] ring-app-fin/50 border-t-4"
       >
         <div
           class="flex items-center gap-3"
         >
           <div
-            class="rounded-lg bg-primary/90 p-2 text-primary-foreground"
+            class="rounded-lg bg-emerald-600 p-2 text-white"
           >
             <svg
               aria-hidden="true"
@@ -272,7 +247,7 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
             class="flex flex-col leading-tight"
           >
             <span
-              class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              class="text-xs font-medium uppercase tracking-wide text-emerald-900/70"
             >
               Ticket médio
             </span>
@@ -283,13 +258,13 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
         </div>
       </div>
       <div
-        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl border border-white/10 bg-background/70 backdrop-blur p-4 flex flex-col justify-center min-h-[110px]"
+        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl bg-white border border-emerald-900/10 shadow-sm p-4 flex flex-col justify-center min-h-[110px] ring-app-fin/50 border-t-4"
       >
         <div
           class="flex items-center gap-3"
         >
           <div
-            class="rounded-lg bg-primary/90 p-2 text-primary-foreground"
+            class="rounded-lg bg-emerald-600 p-2 text-white"
           >
             <svg
               aria-hidden="true"
@@ -329,7 +304,7 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
             class="flex flex-col leading-tight"
           >
             <span
-              class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              class="text-xs font-medium uppercase tracking-wide text-emerald-900/70"
             >
               Transações do mês
             </span>
@@ -340,13 +315,13 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
         </div>
       </div>
       <div
-        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl border border-white/10 bg-background/70 backdrop-blur p-4 flex flex-col justify-center min-h-[110px]"
+        class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-2 rounded-xl bg-white border border-emerald-900/10 shadow-sm p-4 flex flex-col justify-center min-h-[110px] ring-app-fin/50 border-t-4"
       >
         <div
           class="flex items-center gap-3"
         >
           <div
-            class="rounded-lg bg-primary/90 p-2 text-primary-foreground"
+            class="rounded-lg bg-emerald-600 p-2 text-white"
           >
             <svg
               aria-hidden="true"
@@ -387,7 +362,7 @@ exports[`FinanceSummary snapshot > matches structure 1`] = `
             class="flex flex-col leading-tight"
           >
             <span
-              class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              class="text-xs font-medium uppercase tracking-wide text-emerald-900/70"
             >
               A receber
             </span>

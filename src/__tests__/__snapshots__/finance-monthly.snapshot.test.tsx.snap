@@ -5,41 +5,26 @@ exports[`FinanceMonthly snapshot > matches structure 1`] = `
   <div
     class="space-y-6 pb-24"
   >
-    <div
-      class="mb-6 rounded-2xl text-white backdrop-blur-sm border border-white/10 overflow-hidden relative bg-[linear-gradient(90deg,var(--clr-active)_0%,var(--clr-active)_55%,rgba(255,255,255,0.15)_100%)] dark:bg-[linear-gradient(90deg,var(--clr-active)_0%,var(--clr-active)_50%,rgba(255,255,255,0.08)_100%)]"
-      style="opacity: 0; transform: translateY(-10px);"
+    <section
+      class="rounded-xl p-8 shadow-sm bg-gradient-to-b from-[color:var(--clr)]/80 to-[color:var(--clr)]/10 relative overflow-hidden"
+      style="--clr: #6eca00;"
     >
+      <h1
+        class="text-2xl font-semibold text-white flex items-center gap-3 drop-shadow-sm"
+      >
+         Finanças — Mensal
+      </h1>
       <div
-        class="container mx-auto px-4 py-6 flex items-center justify-between gap-4"
+        class="mt-4 space-y-4 text-white/90"
       >
         <div
-          class="flex items-center gap-3 min-w-0"
+          class="grid grid-cols-2 lg:grid-cols-7 gap-3 items-end w-full"
         >
           <div
-            class="min-w-0"
+            class="col-span-2"
           >
-            <h1
-              class="text-xl sm:text-2xl font-semibold tracking-tight truncate drop-shadow-sm"
-            >
-              Finanças — Mensal
-            </h1>
-            <p
-              class="text-white/85 text-sm leading-relaxed truncate"
-            >
-              Cadastre e acompanhe lançamentos do mês
-            </p>
-          </div>
-        </div>
-      </div>
-      <div
-        class="container mx-auto px-4 pb-6"
-      >
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end"
-        >
-          <div>
             <span
-              class="mb-1 block text-xs text-emerald-100/90"
+              class="mb-1 block text-xs text-white/80"
             >
               Mês
             </span>
@@ -48,7 +33,7 @@ exports[`FinanceMonthly snapshot > matches structure 1`] = `
               aria-controls="radix-«r0»"
               aria-expanded="false"
               aria-label="Mês"
-              class="flex items-center justify-between whitespace-nowrap px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))] [&>span]:line-clamp-1 text-foreground data-[placeholder]:text-fg-muted w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm"
+              class="flex w-full items-center justify-between whitespace-nowrap border px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))] [&>span]:line-clamp-1 data-[placeholder]:text-fg-muted h-10 rounded-xl bg-white/20 text-white border-white/30"
               data-state="closed"
               dir="ltr"
               role="combobox"
@@ -80,7 +65,7 @@ exports[`FinanceMonthly snapshot > matches structure 1`] = `
           </div>
           <div>
             <span
-              class="mb-1 block text-xs text-emerald-100/90"
+              class="mb-1 block text-xs text-white/80"
             >
               Categoria
             </span>
@@ -126,7 +111,7 @@ exports[`FinanceMonthly snapshot > matches structure 1`] = `
           </div>
           <div>
             <span
-              class="mb-1 block text-xs text-emerald-100/90"
+              class="mb-1 block text-xs text-white/80"
             >
               Fonte
             </span>
@@ -243,10 +228,10 @@ exports[`FinanceMonthly snapshot > matches structure 1`] = `
             </div>
           </div>
           <div
-            class="sm:col-span-2"
+            class="col-span-2"
           >
             <span
-              class="mb-1 block text-xs text-emerald-100/90"
+              class="mb-1 block text-xs text-white/80"
             >
               Buscar
             </span>
@@ -255,7 +240,7 @@ exports[`FinanceMonthly snapshot > matches structure 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-200/70"
+                class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -277,26 +262,33 @@ exports[`FinanceMonthly snapshot > matches structure 1`] = `
               </svg>
               <input
                 aria-label="Buscar"
-                class="flex px-3 py-1 text-base transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder-fg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))] md:text-sm w-full h-10 pl-9 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm"
-                placeholder="Descrição, loja, observações…"
+                class="flex w-full border px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder-fg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))] md:text-sm h-10 pl-9 rounded-xl bg-white/20 text-white placeholder:text-white/50 border-white/30"
+                placeholder="Descrição, loja…"
                 value=""
               />
             </div>
           </div>
           <div
-            class="sm:col-span-2"
+            class="flex flex-col gap-2"
           >
             <button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 w-full"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 w-full bg-white/10 border-white/30 text-white"
               style="opacity: 0; transform: translateY(-4px);"
               tabindex="0"
             >
-              Limpar filtros
+              Limpar
+            </button>
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:bg-[hsl(var(--disabled-bg))] disabled:text-[hsl(var(--disabled-fg))] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-xs"
+              style="opacity: 0; transform: translateY(-4px);"
+              tabindex="0"
+            >
+              + Nova transação
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
     <section
       class="u-card-base p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-3 justify-between"
     >

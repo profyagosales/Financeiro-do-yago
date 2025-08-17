@@ -8,7 +8,6 @@ import CategoryPicker from "@/components/CategoryPicker";
 import CategoryDonut from "@/components/charts/CategoryDonut";
 import DailyBars from "@/components/charts/DailyBars";
 import { ModalTransacao, type BaseData } from "@/components/ModalTransacao";
-import PageHeader from "@/components/PageHeader";
 import SourcePicker from "@/components/SourcePicker";
 import TransactionsTable, { type UITransaction } from "@/components/TransactionsTable";
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
@@ -22,10 +21,12 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { toast } from '@/components/ui/Toasts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts/AuthContext';
+import { NovaTransacaoDialog } from '@/features/finances/NovaTransacaoDialog';
 import { useCategories } from '@/hooks/useCategories';
 import { useMonthlyFilters } from '@/hooks/useMonthlyFilters';
 import { useTransactions, type Transaction, type TransactionInput } from '@/hooks/useTransactions';
 import { supabase } from '@/lib/supabaseClient';
+import HeroFin from '@/pages/finances/components/Hero';
 import { exportTransactionsPDF } from '@/utils/pdf';
 dayjs.locale('pt-br');
 const norm = (s: string) => (s || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
@@ -113,43 +114,40 @@ export default function FinanceMonthly() {
 
 	return (
 		<div className="space-y-6 pb-24">
-			<PageHeader title="Finanças — Mensal" subtitle="Cadastre e acompanhe lançamentos do mês">
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
-					<div>
-						<span className="mb-1 block text-xs text-emerald-100/90">Mês</span>
+			<HeroFin title="Finanças — Mensal">
+				<div className="grid grid-cols-2 lg:grid-cols-7 gap-3 items-end w-full">
+					<div className="col-span-2">
+						<span className="mb-1 block text-xs text-white/80">Mês</span>
 						<Select value={mesAtual} onValueChange={setMesAtual}>
-							<SelectTrigger aria-label="Mês" className="w-full h-10 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm">
-								<SelectValue placeholder="Selecione o mês" />
+							<SelectTrigger aria-label="Mês" className="h-10 rounded-xl bg-white/20 text-white border-white/30">
+								<SelectValue placeholder="Selecione" />
 							</SelectTrigger>
 							<SelectContent className="rounded-xl">
-								{Array.from({ length: 18 }).map((_, i) => {
-									const d = dayjs().subtract(i, 'month');
-									const v = d.format('YYYY-MM');
-									return <SelectItem key={v} value={v}>{d.format('MMMM/YYYY')}</SelectItem>;
-								})}
+								{Array.from({ length: 18 }).map((_, i) => { const d = dayjs().subtract(i, 'month'); const v = d.format('YYYY-MM'); return <SelectItem key={v} value={v}>{d.format('MMMM/YYYY')}</SelectItem>; })}
 							</SelectContent>
 						</Select>
 					</div>
 					<div>
-						<span className="mb-1 block text-xs text-emerald-100/90">Categoria</span>
+						<span className="mb-1 block text-xs text-white/80">Categoria</span>
 						<CategoryPicker value={categoriaId ?? undefined} onChange={(v) => { if (!v) return setCategoriaId(undefined); if (v === 'Todas') return setCategoriaId(undefined); if (v === 'SemCategoria') return setCategoriaId('SemCategoria'); return setCategoriaId(v); }} placeholder="Todas" ariaLabel="Categoria" showAll allowClear={false} className="w-full" />
 					</div>
 					<div>
-						<span className="mb-1 block text-xs text-emerald-100/90">Fonte</span>
+						<span className="mb-1 block text-xs text-white/80">Fonte</span>
 						<SourcePicker value={fonte} onChange={setFonte} placeholder="Todas" ariaLabel="Fonte" className="w-full" showCardHints={false} />
 					</div>
-						<div className="sm:col-span-2">
-							<span className="mb-1 block text-xs text-emerald-100/90">Buscar</span>
-							<div className="relative">
-								<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-200/70" />
-								<Input value={buscaInput} onChange={(e) => setBuscaInput(e.target.value)} placeholder="Descrição, loja, observações…" aria-label="Buscar" className="w-full h-10 pl-9 rounded-xl bg-white/70 backdrop-blur border border-white/30 shadow-sm" />
-							</div>
+					<div className="col-span-2">
+						<span className="mb-1 block text-xs text-white/80">Buscar</span>
+						<div className="relative">
+							<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
+							<Input value={buscaInput} onChange={(e) => setBuscaInput(e.target.value)} placeholder="Descrição, loja…" aria-label="Buscar" className="h-10 pl-9 rounded-xl bg-white/20 text-white placeholder:text-white/50 border-white/30" />
 						</div>
-						<div className="sm:col-span-2">
-							<Button variant="outline" onClick={limparFiltros} className="w-full">Limpar filtros</Button>
-						</div>
+					</div>
+					<div className="flex flex-col gap-2">
+						<Button variant="outline" onClick={limparFiltros} className="w-full bg-white/10 border-white/30 text-white">Limpar</Button>
+						<NovaTransacaoDialog />
+					</div>
 				</div>
-			</PageHeader>
+			</HeroFin>
 
 			<section className="u-card-base p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-3 justify-between">
 				<div className="text-xs sm:text-sm text-emerald-900/80">
